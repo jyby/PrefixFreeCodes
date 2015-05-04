@@ -1,0 +1,5 @@
+#+TITLE: Prefix Free Codes Implementations
+#+DESCRIPTION: Implementations of various algorithms to compute Prefix Free Codes
+#+AUTHOR: Jérémy Barbay
+#+EMAIL: jeremy@barbay.cl
+#+CATEGORY: 
