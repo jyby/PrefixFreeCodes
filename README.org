@@ -3,3 +3,61 @@
 #+AUTHOR: Jérémy Barbay
 #+EMAIL: jeremy@barbay.cl
 #+CATEGORY: 
+
+* Algorithm ``Group-Dock-Mix'' (GDM)
+
+** Intuition
+There are five main phases in the =GDM= algorithm: the /Initialization/, three phases (/Grouping/, /Docking/ and /Mixing/, hence the name ``=GDM='' of the algorithm) inside a loop running until only internal nodes are left to process, and the /Conclusion/:
+
+- In the /Initialization/ phase, initialize the \texttt{Partial Sum} deferred data structure with the input, and the first internal node by pairing the two smallest weights of the input.
+- In the /Grouping/ phase,  detect and  group the weights smaller than the smallest internal node: this corresponds to a run of consecutive $E$ in the van Leeuwen signature of the instance.
+- In the /Docking/ phase, pair the consecutive /positions/ of those weights (as opposed to the weights themselves, which can be reordered by future operations) into internal nodes, and pair  those internal nodes until the weight of at least one such internal node becomes equal or larger than the smallest remaining weight: this corresponds to a run of consecutive $I$ in the van Leeuwen signature of the instance.
+- In the /Mixing/ phase, rank the smallest unpaired weight among the weights of the available internal nodes: this corresponds to an occurrence of $IE$ in the van Leeuwen signature of the instance.
+- In the /Conclusion/ phase, with $i$ internal nodes left to process,  assign codelength $l=\lfloor \log_2 i\rfloor$ to the $i-2^l$ largest ones and  codelength $l{+}1$ to the 
+$2^l$ smallest ones: this corresponds to the last run of consecutive $I$ in the van Leeuwen signature of the instance.
+
+** Pseudo Code
+We describe the pseudo-code for the <<<Group-Dock-Mix>>> algorithm (=GDM= for short) as follows:
+
+#+BEGIN_QUOTE
+   IF{ n==1 }
+     return W
+   ENDIF
+   Initialize the \texttt{Partial Sum} deferred data structure with $W$; \\
+   nbExternalProcessed = 2;
+   currentMinExternal = select(3);
+   currentMinInternal = partialSum(2);
+   nbInternals = 1;
+   =Internals= = [(partialSum(2),1,2)];
+   WHILE{ nbExternalProcessed < n}
+    STATE r = rank(currentMinInternal); 
+    STATE (...)
+   ENDWHILE  
+   return;
+#+END_QUOTE
+
+** Detailed Descriptions of each phases
+*** Initialization 
+Initialize the =Partial Sum deferred data structure;
+compute the weight =currentMinInternal= of the first internal node through the operation =partialSum(2)= (the sum of the two smallest weights); 
+create this first internal node as a node of weight =currentMinInternal= and children $1$ and $2$ (the positions of the first and second weights, in any order);
+compute the weight =currentMinExternal= of the first unpaired weight (i.e. the first available external node) by the operation =select(3)=;
+setup the variables =nbInternals=1= and =nbExternalProcessed=2=.
+
+*** Grouping
+Compute the position $r$ of the first unpaired weight which is larger than the smallest unpaired internal node, through the operation =rank= with parameter =currentMinInternal=;
+pair the ((r-=nbExternalProcessed=) modulo 2) indices to form $\lfloor\frac{r-nbExternalProcessed}{2}\rfloor$ /pure/ internal nodes;
+if the number $r-\idtt{nbExternalProcessed}$ of unpaired weights smaller than the first unpaired internal node is odd, select the $r$-th weight through the operation $\idtt{select}(r)$, compute the weight of the first unpaired internal node, compare it with the next unpaired weight, to form one /mixed/ node by combining the minimal of the two with the extraneous weight.
+
+*** Docking
+Pair all internal nodes by batches (their weights are all within a factor of two, so all internal nodes of a generation are processed before any internal node of the next generation);
+after each batch, compare the weight of the largest such internal node (compute it through =partialSum= on its range if it is a /pure/ node, otherwise it is already computed) with the first unpaired weight: if smaller, pair another batch, and if larger, the phase is finished.
+
+*** Mixing
+Rank the smallest unpaired weight among the weights of the available internal nodes, by a doubling search starting from the beginning of the list of internal nodes. For each comparison, if the internal node's weight is not already known, compute it through a =partialSum= operation on the corresponding range (if it is a /mixed/ node, it is already known). If the number $r$ of internal nodes of weight smaller than the unpaired weight is odd, pair all but one, compute the weight of the last one and pair it with the unpaired weight. If $r$ is even, pair all of the $r$ internal nodes of weight smaller than the unpaired weight, compare the weight of the next unpaired internal node with the weight of the next unpaired external node, and pair the minimum of the two with the first unpaired weight.
+If there are some unpaired weights left, go back to the /Grouping/ phase, otherwise continue to the /Conclusion/ phase.
+
+*** Conclusion
+There are only internal nodes left, and their weights are all within a factor of two from each other. 
+Pair the nodes two by two in batch as in the /Docking/ phase, computing the weight of an internal node only when the number of internal nodes of a batch is odd.
+
