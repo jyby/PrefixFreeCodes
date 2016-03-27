@@ -4,7 +4,53 @@
 #+EMAIL: jeremy@barbay.cl
 #+CATEGORY: 
 
-* Algorithm ``Group-Dock-Mix'' (GDM)
+* Algorithm "Huffman"
+  #+BEGIN_SRC python
+    import heapq
+    def huffman(frequencies):
+       """Given a set of frequencies, returns a code tree minimizing the
+    average weighted codelength of the leaves.
+    
+       This is an heap-based implementation of the method originally
+       described by Huffman in 1952.
+       """
+       trees = list(frequencies)
+       heapq.heapify(trees)
+       while len(trees) > 1:
+          childR, childL = heapq.heappop(trees), heapq.heappop(trees)
+          parent = [childL[0]+childR[0], childL, childR]
+          heapq.heappush(trees, parent)
+       return trees[0]
+  #+END_SRC
+* Algorithm "van Leeuwen"
+  #+BEGIN_SRC python
+    def leeuwenSorted(frequencies):
+       """Given a set of frequencies, returns a code tree minimizing the
+    average weighted codelength of the leaves.
+       
+       This is a factorized-based implementation of the algorithm
+       originally described by van Leeuwen in 1976 (so that to minimize
+       code repetition).
+       """
+       external = sorted(frequencies)
+       internal = []
+       while len(external)+len(internal) > 1:
+          weight = 0
+          children = []
+          for i in range(2):
+             if  len(internal)==0 or (len(external)>0 and external[0][0]<=internal[0][0]):
+                weight += external[0][0]
+                children.append(external[0])
+                external = external[1:]
+             else:
+                weight += internal[0][0]
+                children.append(internal[0])
+                internal = internal[1:]
+          internal.append([weight,children[0],children[1]])
+       return internal[0]      
+  #+END_SRC
+
+* Algorithm "Group-Dock-Mix" (GDM)
 
 ** Intuition
 There are five main phases in the =GDM= algorithm: the /Initialization/, three phases (/Grouping/, /Docking/ and /Mixing/, hence the name ``=GDM='' of the algorithm) inside a loop running until only internal nodes are left to process, and the /Conclusion/:
@@ -35,7 +81,6 @@ We describe the pseudo-code for the <<<Group-Dock-Mix>>> algorithm (=GDM= for sh
    ENDWHILE  
    return;
 #+END_QUOTE
-
 ** Detailed Descriptions of each phases
 *** Initialization 
 Initialize the =Partial Sum deferred data structure;
