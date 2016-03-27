@@ -12,7 +12,8 @@ def gdm(frequencies):
           - an array of the same size containing the associated code lengths forming an optimal prefix free code for those frequencies.
 
     """
-
+    if len(frequencies) == 0 :
+        return [],[]
 
 
 class GDMTest(unittest.TestCase):
