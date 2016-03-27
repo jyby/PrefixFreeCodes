@@ -12,11 +12,25 @@ def gdm(frequencies):
           - an array of the same size containing the associated code lengths forming an optimal prefix free code for those frequencies.
 
     """
+    # Degenerated cases
     if len(frequencies) == 0 :
         return [],[]
     if len(frequencies) < 3 :
-        return frequencies,[1]*len(frequencies)
-
+        return frequencies,[1]*len(frequencies)    
+    # Initialization
+    externals = PartiallySortedArray(frequencies)
+    nbExternalProcessed = 2;
+    currentMinExternal = externals.select(3)
+    currentMinInternal = externals.partialSum(2)
+    internals = [(externals.partialSum(2),1,2)]
+    # Loop
+    while nbExternalProcessed < len(externals):
+        # Group
+        r = externals.rank(currentMinInternal)
+        # Dock
+        # Merge
+    # Conclusion
+        
 
 class GDMTest(unittest.TestCase):
     """Basic tests for the GDM algorithm computing optimal prefix free codes.
