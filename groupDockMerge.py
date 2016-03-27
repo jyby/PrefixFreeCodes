@@ -14,6 +14,8 @@ def gdm(frequencies):
     """
     if len(frequencies) == 0 :
         return [],[]
+    if len(frequencies) < 3 :
+        return frequencies,[1]*len(frequencies)
 
 
 class GDMTest(unittest.TestCase):
@@ -30,7 +32,12 @@ class GDMTest(unittest.TestCase):
         """Test what happens on singleton.
         """
         self.assertEqual(gdm([1]),([1],[1]))
-        
+
+    def testSizeTwoInstance(self):
+        """Test what happens on simple pair.
+        """
+        self.assertEqual(gdm([1,76]),([1,76],[1,1]))
+
     
     
 def main():
