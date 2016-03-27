@@ -23,6 +23,8 @@
        return trees[0]
   #+END_SRC
 * Algorithm "van Leeuwen"
+  See the file [[file:vanLeeuwen.py][file:~/OnGoing/ProgrammingPrefixFreeCodes/vanLeeuwen.py]]
+
   #+BEGIN_SRC python
     def leeuwenSorted(frequencies):
        """Given a set of frequencies, returns a code tree minimizing the
@@ -74,7 +76,7 @@ We describe the pseudo-code for the <<<Group-Dock-Mix>>> algorithm (=GDM= for sh
    currentMinExternal = select(3);
    currentMinInternal = partialSum(2);
    nbInternals = 1;
-   =Internals= = [(partialSum(2),1,2)];
+   Internals = [(partialSum(2),1,2)];
    WHILE{ nbExternalProcessed < n}
     STATE r = rank(currentMinInternal); 
     STATE (...)
