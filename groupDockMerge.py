@@ -21,11 +21,16 @@ class GDMTest(unittest.TestCase):
 
     """
         
-    def testTrivialInstance(self):
-        """Test what happens on an empty Instance.
+    def testSizeZeroInstance(self):
+        """Test what happens on empty array.
         """
         self.assertEqual(gdm([]),([],[]))
 
+    def testSizeOneInstance(self):
+        """Test what happens on singleton.
+        """
+        self.assertEqual(gdm([1]),([1],[1]))
+        
     
     
 def main():
