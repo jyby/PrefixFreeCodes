@@ -1,60 +1,64 @@
 #+TITLE: Prefix Free Codes Implementations
-#+DESCRIPTION: Implementations of various algorithms to compute Prefix Free Codes
+#+DESCRIPTION: Implementation and evaluation of various algorithms to compute Optimal Prefix Free Codes
 #+AUTHOR: Jérémy Barbay
 #+EMAIL: jeremy@barbay.cl
-#+CATEGORY: 
+#+CATEGORY: Programming
 
-* Algorithm "Huffman"
-  #+BEGIN_SRC python
-    import heapq
-    def huffman(frequencies):
-       """Given a set of frequencies, returns a code tree minimizing the
-    average weighted codelength of the leaves.
-    
-       This is an heap-based implementation of the method originally
-       described by Huffman in 1952.
-       """
-       trees = list(frequencies)
-       heapq.heapify(trees)
-       while len(trees) > 1:
-          childR, childL = heapq.heappop(trees), heapq.heappop(trees)
-          parent = [childL[0]+childR[0], childL, childR]
-          heapq.heappush(trees, parent)
-       return trees[0]
-  #+END_SRC
-* Algorithm "van Leeuwen"
-  See the file [[file:vanLeeuwen.py][file:~/OnGoing/ProgrammingPrefixFreeCodes/vanLeeuwen.py]]
+This project aims to gather the implementations in python of various algorithms computing an optimal prefix free code given an array of integer frequencies, and an engine to compare those implementations in terms of the number of comparisons performed, of the space used, and of the experimental running time, on various realistic data sets.
 
-  #+BEGIN_SRC python
-    def leeuwenSorted(frequencies):
-       """Given a set of frequencies, returns a code tree minimizing the
-    average weighted codelength of the leaves.
-       
-       This is a factorized-based implementation of the algorithm
-       originally described by van Leeuwen in 1976 (so that to minimize
-       code repetition).
-       """
-       external = sorted(frequencies)
-       internal = []
-       while len(external)+len(internal) > 1:
-          weight = 0
-          children = []
-          for i in range(2):
-             if  len(internal)==0 or (len(external)>0 and external[0][0]<=internal[0][0]):
-                weight += external[0][0]
-                children.append(external[0])
-                external = external[1:]
-             else:
-                weight += internal[0][0]
-                children.append(internal[0])
-                internal = internal[1:]
-          internal.append([weight,children[0],children[1]])
-       return internal[0]      
-  #+END_SRC
+* The "Optimal Prefix Free Code" Problem
 
-* Algorithm "Group-Dock-Mix" (GDM)
+** Definition
+Given $n$ positive weights $W[1..n]$ coding for the frequencies $\left\{{W[i]}/{\sum_{j=1}^nW[j]}\right\}_{i\in[1..n]}$ of $n$ messages, and a number $D$ of output symbols, an \textsc{Optimal Prefix Free Code}~\cite{1952-IRE-AMethodForTheInstructionOfMinimumRedundancyCodes-Huffman} is a set of $n$ code strings on alphabet $[1..D]$, of variable lengths $L[1..n]$ and such that no string is prefix of another, and the average length of a code is minimized (i.e. $\sum_{i=1}^nL[i]W[i]$ is minimal).
+** Description
 
-** Intuition
+Any prefix free code can be computed in linear time from a set of code lengths satisfying the Kraft inequality $\sum_{i=1}^nD^{-L[i]}\leq1$.  The original description of the code by Huffman~\cite{1952-IRE-AMethodForTheInstructionOfMinimumRedundancyCodes-Huffman} yields a heap-based algorithm performing $O(n\log n)$ algebraic operations, using the bijection between $D$-ary prefix free codes and $D$-ary cardinal trees~\cite{2012-Book-GraphAlgorithms-EvenEven}.  This complexity is asymptotically optimal for any constant value of $D$ in the algebraic decision tree computational model\footnote{The algebraic decision tree computational model is composed of algorithms which can be modelled as a decision tree where the decision made in each node is based only on algebraic operations on the input.}, in the worst case over instances composed of $n$ positive weights, as computing the optimal binary prefix free code for the weights $W[0,\ldots,D n]=\{D^{x_1},\ldots,D^{x_1},D^{x_2},\ldots,D^{x_2},\ldots,D^{x_n},\ldots,D^{x_n}\}$ is equivalent to sorting the positive integers $\{x_1,\ldots,x_n\}$. We consider here only the binary case, where $D=2$.
+** Relevance
+
+   Albeit 60 year old, Huffman's result is still relevant nowadays.  Optimal Prefix Free codes are used not only for compressed encodings: they are also used in the construction of compressed data structures for permutations~\cite{2009-STACS-CompressedRepresentationsOfPermutationsAndApplications-BarbayNavarro}, and using similar techniques for sorting faster multisets which contains subsequences of consecutive positions already ordered~\cite{2009-STACS-CompressedRepresentationsOfPermutationsAndApplications-BarbayNavarro}.
+
+
+    In 1991, Gary Stix~\cite{1991-SAME-ProfileDavidAHuffman-Stix} stated that ``\emph{Large networks of IBM computers use it. So do high-definition television, modems and a popular electronic device that takes the brain work out of programming a videocassette recorder. All these \textbf{digital wonders rely on} the results of \textbf{a 40-year-old term paper by a modest} Massachusetts Institute of Technology \textbf{graduate student}-a data compression scheme known as Huffman encoding (...)  \textbf{Products that use Huffman code might fill a consumer electronics store}. A recent entry on the shop shelf is VCR Plus+, a device that automatically programs a VCR and is making its inventors wealthy. (...)  Instead of confronting the frustrating process of programming a VCR, the user simply types into the small handheld device a numerical code that is printed in the television listings. When it is time to record, the gadget beams its decoded instructions to the VCR and cable box with an infrared beam like those on standard remote-control devices. This turns on the VCR, sets it (and the cable box) to the proper channel and records for the designated time}.''.
+
+    In 1995, Moffat and Katajainen~\cite{1995-WADAS-InPlaceCalculationOfMinimumRedundancyCodes-MoffatKatajainen}, stated that: ``\emph{The algorithm introduced by Huffman for devising minimum-redundancy prefix free codes is well known and continues to enjoy \textbf{widespread use in data compression programs}. Huffman's method is also a good illustration of the greedy paradigm of algorithm design and, at the implementation level, provides a useful motivation for the priority queue abstract data type. For these reasons Huffman's algorithm enjoys \textbf{a prominence enjoyed by only a} relatively \textbf{small number of fundamental methods}}''.
+
+    In 1997, Moffat and Turpin~\cite{1997-IEEE-OnTheImplementstionOfMinimumRedundsncyPrefixCodes-MoffatTurpin} stated that those were ``\emph{one of the \textbf{enduring techniques of data compression}. It was used in the venerable PACK compression program, authored by Szymanski in 1978, and \textbf{remains no less popular today}}''.
+
+    In 2010 Donald E. Knuth was quoted~\cite{2010-BOOK-DiscreteMathematics-Chandrasekaran} as saying that: ``\emph{Huffman code is one of the \textbf{fundamental ideas that people} in computer science and data communications \textbf{are using all the time}}''.
+
+    In 2010, the answer to the question ``\emph{What are the real-world applications of Huffman coding?}'' on the website \texttt{Stacks Exchange}~\cite{2010-stacksExchange-realWorldApplicationsHuffman} states that ``\emph{Huffman is widely used in all the mainstream compression formats that you might encounter - from GZIP, PKZIP (winzip etc) and BZIP2, to image formats such as JPEG and PNG.}''.
+
+    The Wikipedia website on Huffman coding states that ``\emph{Huffman coding today is often used as a "back-end" to some other compression method. DEFLATE (PKZIP's algorithm) and multimedia codecs such as JPEG and MP3 have a front-end model and quantization followed by Huffman coding.}''~\cite{2012-wikipedia-HuffmanCoding}.
+
+    Ironically, the pseudo-optimality of this algorithm seems to have become part of the folklore of the area, as illustrated by a quote from Parker\etal~\cite{1999-SIAM-HuffmanCodesSubmodularOptimization-ParkerRam} in 1999: ``\emph{While there may be little hope of improving on the $\Oh(\nbWeights\log\nbWeights)$ complexity of the Huffman algorithm itself, there is still room for improvement in our understanding of the algorithm}.''.
+
+* Objectives
+
+Not all instances require the same amount of work to compute an optimal code:
+
+   - When the weights are given in sorted order, van Leeuwen~\cite{1976-ICALP-OnTheConstructionOfHuffmanTrees-Leeuwen} showed that an optimal code can be computed using within $O(n)$ algebraic operations.
+
+   - When the weights consist of $r\in[1..n]$ distinct values and are given in a sorted, compressed form, Moffat and Turpin~\cite{1998-TIT-EfficientConstructionOfMinimumRedundancyCodesForLargeAlphabets-MoffatTurpin} showed how to compute an optimal code using within $O(r(1+\log(n/r)))$ algebraic operations, which is often sublinear in $n$.
+
+   - In the case where the weights are given unsorted, Belal~\emph{et al.}~\cite{2006-STACS-DistributionSensitiveConstructionOfMinimumRedundancyPrefixCodes-BelalElmasry,2006-IEEE-VerificationOfMinimumRedundancyPrefixCodes-BelalElmasry} described several families of instances for which an optimal prefix free code can be computed in linear time, along with an algorithm claimed to perform $O(kn)$ algebraic operations, in the worst case over instances formed by $n$ weights such that there is an optimal binary prefix free code with $k$ distinct code lengths\footnote{Note that $k$ is not uniquely defined, as for a given set of weights there can exist several optimal prefix free codes varying in the number of distinct code lengths used.}.  This complexity was later downgraded to $O(16^k n)$ in an extended version\cite{2005-ARXIV-DistributionSensitiveConstructionOfMinimumRedundancyPrefixCodes-BelalElmasry} of their article. Both results are better than the state of the art when $k$ is finite, but worse when $k$ is larger than $\log n$.
+
+We aim to formalize various notions of "easy" instance for the Optimal Prefix Free Code problem, and to study the frequency with which such instances occur in practical applications, from the compression (and indexing) of texts word by word to the use of Huffman codes in the compression of images such as in the =jpeg= format.
+
+* Algorithms
+** "Huffman"
+   The algorithm described by van Leeuwen is implemented in the file file:huffman.py
+*** Intuition
+
+The algorithm suggested by Huffman~\cite{1952-IRE-AMethodForTheInstructionOfMinimumRedundancyCodes-Huffman} starts with a heap of external nodes, selects the two nodes of minimal weight, pair them into a new node which it adds to the heap, and iterates till only one node is left. The resulting code tree yields an optimal prefix free code for the input.
+
+** "van Leeuwen"
+   The algorithm described by van Leeuwen is implemented in the file file:vanLeeuwen.py
+*** Intuition
+
+Observing that the algorithm suggested by Huffman~\cite{1952-IRE-AMethodForTheInstructionOfMinimumRedundancyCodes-Huffman} always creates the internal nodes in increasing order of weight, van Leeuwen~\cite{1976-ICALP-OnTheConstructionOfHuffmanTrees-Leeuwen} described an algorithm to compute optimal prefix free codes in linear time when the input (i.e. the weights of the external nodes) is given in sorted order.
+** GDM ("Group-Dock-Mix")
+   The GDM algorithm is implemented in the file file:gdm.py
+*** Intuition
 There are five main phases in the =GDM= algorithm: the /Initialization/, three phases (/Grouping/, /Docking/ and /Mixing/, hence the name ``=GDM='' of the algorithm) inside a loop running until only internal nodes are left to process, and the /Conclusion/:
 
 - In the /Initialization/ phase, initialize the \texttt{Partial Sum} deferred data structure with the input, and the first internal node by pairing the two smallest weights of the input.
@@ -63,48 +67,29 @@ There are five main phases in the =GDM= algorithm: the /Initialization/, three p
 - In the /Mixing/ phase, rank the smallest unpaired weight among the weights of the available internal nodes: this corresponds to an occurrence of $IE$ in the van Leeuwen signature of the instance.
 - In the /Conclusion/ phase, with $i$ internal nodes left to process,  assign codelength $l=\lfloor \log_2 i\rfloor$ to the $i-2^l$ largest ones and  codelength $l{+}1$ to the 
 $2^l$ smallest ones: this corresponds to the last run of consecutive $I$ in the van Leeuwen signature of the instance.
-
-** Pseudo Code
-We describe the pseudo-code for the <<<Group-Dock-Mix>>> algorithm (=GDM= for short) as follows:
-
-#+BEGIN_QUOTE
-   IF{ n==1 }
-     return W
-   ENDIF
-   Initialize the \texttt{Partial Sum} deferred data structure with $W$; \\
-   nbExternalProcessed = 2;
-   currentMinExternal = select(3);
-   currentMinInternal = partialSum(2);
-   nbInternals = 1;
-   Internals = [(partialSum(2),1,2)];
-   WHILE{ nbExternalProcessed < n}
-    STATE r = rank(currentMinInternal); 
-    STATE (...)
-   ENDWHILE  
-   return;
-#+END_QUOTE
-** Detailed Descriptions of each phases
-*** Initialization 
+*** Detailed Description
+**** Initialization 
 Initialize the =Partial Sum deferred data structure;
 compute the weight =currentMinInternal= of the first internal node through the operation =partialSum(2)= (the sum of the two smallest weights); 
 create this first internal node as a node of weight =currentMinInternal= and children $1$ and $2$ (the positions of the first and second weights, in any order);
 compute the weight =currentMinExternal= of the first unpaired weight (i.e. the first available external node) by the operation =select(3)=;
 setup the variables =nbInternals=1= and =nbExternalProcessed=2=.
 
-*** Grouping
+**** Grouping
 Compute the position $r$ of the first unpaired weight which is larger than the smallest unpaired internal node, through the operation =rank= with parameter =currentMinInternal=;
 pair the ((r-=nbExternalProcessed=) modulo 2) indices to form $\lfloor\frac{r-nbExternalProcessed}{2}\rfloor$ /pure/ internal nodes;
 if the number $r-\idtt{nbExternalProcessed}$ of unpaired weights smaller than the first unpaired internal node is odd, select the $r$-th weight through the operation $\idtt{select}(r)$, compute the weight of the first unpaired internal node, compare it with the next unpaired weight, to form one /mixed/ node by combining the minimal of the two with the extraneous weight.
 
-*** Docking
+**** Docking
 Pair all internal nodes by batches (their weights are all within a factor of two, so all internal nodes of a generation are processed before any internal node of the next generation);
 after each batch, compare the weight of the largest such internal node (compute it through =partialSum= on its range if it is a /pure/ node, otherwise it is already computed) with the first unpaired weight: if smaller, pair another batch, and if larger, the phase is finished.
 
-*** Mixing
+**** Mixing
 Rank the smallest unpaired weight among the weights of the available internal nodes, by a doubling search starting from the beginning of the list of internal nodes. For each comparison, if the internal node's weight is not already known, compute it through a =partialSum= operation on the corresponding range (if it is a /mixed/ node, it is already known). If the number $r$ of internal nodes of weight smaller than the unpaired weight is odd, pair all but one, compute the weight of the last one and pair it with the unpaired weight. If $r$ is even, pair all of the $r$ internal nodes of weight smaller than the unpaired weight, compare the weight of the next unpaired internal node with the weight of the next unpaired external node, and pair the minimum of the two with the first unpaired weight.
 If there are some unpaired weights left, go back to the /Grouping/ phase, otherwise continue to the /Conclusion/ phase.
 
-*** Conclusion
+**** Conclusion
 There are only internal nodes left, and their weights are all within a factor of two from each other. 
 Pair the nodes two by two in batch as in the /Docking/ phase, computing the weight of an internal node only when the number of internal nodes of a batch is odd.
+
 
