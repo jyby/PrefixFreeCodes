@@ -10,10 +10,11 @@ This project aims to gather the implementations in python of various algorithms 
 * The "Optimal Prefix Free Code" Problem
 
 ** Definition
-Given $n$ positive weights $W[1..n]$ coding for the frequencies $\left\{{W[i]}/{\sum_{j=1}^nW[j]}\right\}_{i\in[1..n]}$ of $n$ messages, and a number $D$ of output symbols, an \textsc{Optimal Prefix Free Code}~\cite{1952-IRE-AMethodForTheInstructionOfMinimumRedundancyCodes-Huffman} is a set of $n$ code strings on alphabet $[1..D]$, of variable lengths $L[1..n]$ and such that no string is prefix of another, and the average length of a code is minimized (i.e. $\sum_{i=1}^nL[i]W[i]$ is minimal).
+Given n positive weights W[1..n] coding for the frequencies of n messages, and a number D of output symbols, an =Optimal Prefix Free Code=~\cite{1952-IRE-AMethodForTheInstructionOfMinimumRedundancyCodes-Huffman} is a set of n code strings on alphabet [1..D], of variable lengths L[1..n] and such that no string is prefix of another, and the average length of a code is minimized (i.e. \sum_{i\in[1..n
+} L[i]W[i] is minimal).
 ** Description
 
-Any prefix free code can be computed in linear time from a set of code lengths satisfying the Kraft inequality $\sum_{i=1}^nD^{-L[i]}\leq1$.  The original description of the code by Huffman~\cite{1952-IRE-AMethodForTheInstructionOfMinimumRedundancyCodes-Huffman} yields a heap-based algorithm performing $O(n\log n)$ algebraic operations, using the bijection between $D$-ary prefix free codes and $D$-ary cardinal trees~\cite{2012-Book-GraphAlgorithms-EvenEven}.  This complexity is asymptotically optimal for any constant value of $D$ in the algebraic decision tree computational model\footnote{The algebraic decision tree computational model is composed of algorithms which can be modelled as a decision tree where the decision made in each node is based only on algebraic operations on the input.}, in the worst case over instances composed of $n$ positive weights, as computing the optimal binary prefix free code for the weights $W[0,\ldots,D n]=\{D^{x_1},\ldots,D^{x_1},D^{x_2},\ldots,D^{x_2},\ldots,D^{x_n},\ldots,D^{x_n}\}$ is equivalent to sorting the positive integers $\{x_1,\ldots,x_n\}$. We consider here only the binary case, where $D=2$.
+Any prefix free code can be computed in linear time from a set of code lengths satisfying the Kraft inequality \sum_{i\in[1..n]}D^{-L[i]}\leq1.  The original description of the code by Huffman~\cite{1952-IRE-AMethodForTheInstructionOfMinimumRedundancyCodes-Huffman} yields a heap-based algorithm performing O(n\log n) algebraic operations, using the bijection between D-ary prefix free codes and D-ary cardinal trees~\cite{2012-Book-GraphAlgorithms-EvenEven}.  This complexity is asymptotically optimal for any constant value of D in the algebraic decision tree computational model\footnote{The algebraic decision tree computational model is composed of algorithms which can be modelled as a decision tree where the decision made in each node is based only on algebraic operations on the input.}, in the worst case over instances composed of n positive weights, as computing the optimal binary prefix free code for the weights W[0,\ldots,D n]=\{D^{x_1},\ldots,D^{x_1},D^{x_2},\ldots,D^{x_2},\ldots,D^{x_n},\ldots,D^{x_n}\} is equivalent to sorting the positive integers \{x_1,\ldots,x_n\}. We consider here only the binary case, where D=2.
 ** Relevance
 
    Albeit 60 year old, Huffman's result is still relevant nowadays.  Optimal Prefix Free codes are used not only for compressed encodings: they are also used in the construction of compressed data structures for permutations~\cite{2009-STACS-CompressedRepresentationsOfPermutationsAndApplications-BarbayNavarro}, and using similar techniques for sorting faster multisets which contains subsequences of consecutive positions already ordered~\cite{2009-STACS-CompressedRepresentationsOfPermutationsAndApplications-BarbayNavarro}.
@@ -31,28 +32,28 @@ Any prefix free code can be computed in linear time from a set of code lengths s
 
     The Wikipedia website on Huffman coding states that ``Huffman coding today is often used as a "back-end" to some other compression method. DEFLATE (PKZIP's algorithm) and multimedia codecs such as JPEG and MP3 have a front-end model and quantization followed by Huffman coding.''~\cite{2012-wikipedia-HuffmanCoding}.
 
-    Ironically, the pseudo-optimality of this algorithm seems to have become part of the folklore of the area, as illustrated by a quote from Parker\etal~\cite{1999-SIAM-HuffmanCodesSubmodularOptimization-ParkerRam} in 1999: ``While there may be little hope of improving on the $O(\nbWeights\log\nbWeights)$ complexity of the Huffman algorithm itself, there is still room for improvement in our understanding of the algorithm.''.
+    Ironically, the pseudo-optimality of this algorithm seems to have become part of the folklore of the area, as illustrated by a quote from Parker\etal~\cite{1999-SIAM-HuffmanCodesSubmodularOptimization-ParkerRam} in 1999: ``While there may be little hope of improving on the O(\nbWeights\log\nbWeights) complexity of the Huffman algorithm itself, there is still room for improvement in our understanding of the algorithm.''.
 
 * Objectives
 
 Not all instances require the same amount of work to compute an optimal code:
 
-   - When the weights are given in sorted order, van Leeuwen~\cite{1976-ICALP-OnTheConstructionOfHuffmanTrees-Leeuwen} showed that an optimal code can be computed using within $O(n)$ algebraic operations.
+   - When the weights are given in sorted order, van Leeuwen~\cite{1976-ICALP-OnTheConstructionOfHuffmanTrees-Leeuwen} showed that an optimal code can be computed using within O(n) algebraic operations.
 
-   - When the weights consist of $r\in[1..n]$ distinct values and are given in a sorted, compressed form, Moffat and Turpin~\cite{1998-TIT-EfficientConstructionOfMinimumRedundancyCodesForLargeAlphabets-MoffatTurpin} showed how to compute an optimal code using within $O(r(1+\log(n/r)))$ algebraic operations, which is often sublinear in $n$.
+   - When the weights consist of r\in[1..n] distinct values and are given in a sorted, compressed form, Moffat and Turpin~\cite{1998-TIT-EfficientConstructionOfMinimumRedundancyCodesForLargeAlphabets-MoffatTurpin} showed how to compute an optimal code using within O(r(1+\log(n/r))) algebraic operations, which is often sublinear in n.
 
-   - In the case where the weights are given unsorted, Belal~et al.~\cite{2006-STACS-DistributionSensitiveConstructionOfMinimumRedundancyPrefixCodes-BelalElmasry,2006-IEEE-VerificationOfMinimumRedundancyPrefixCodes-BelalElmasry} described several families of instances for which an optimal prefix free code can be computed in linear time, along with an algorithm claimed to perform $O(kn)$ algebraic operations, in the worst case over instances formed by $n$ weights such that there is an optimal binary prefix free code with $k$ distinct code lengths\footnote{Note that $k$ is not uniquely defined, as for a given set of weights there can exist several optimal prefix free codes varying in the number of distinct code lengths used.}.  This complexity was later downgraded to $O(16^k n)$ in an extended version\cite{2005-ARXIV-DistributionSensitiveConstructionOfMinimumRedundancyPrefixCodes-BelalElmasry} of their article. Both results are better than the state of the art when $k$ is finite, but worse when $k$ is larger than $\log n$.
+   - In the case where the weights are given unsorted, Belal~et al.~\cite{2006-STACS-DistributionSensitiveConstructionOfMinimumRedundancyPrefixCodes-BelalElmasry,2006-IEEE-VerificationOfMinimumRedundancyPrefixCodes-BelalElmasry} described several families of instances for which an optimal prefix free code can be computed in linear time, along with an algorithm claimed to perform O(kn) algebraic operations, in the worst case over instances formed by n weights such that there is an optimal binary prefix free code with k distinct code lengths\footnote{Note that k is not uniquely defined, as for a given set of weights there can exist several optimal prefix free codes varying in the number of distinct code lengths used.}.  This complexity was later downgraded to O(16^k n) in an extended version\cite{2005-ARXIV-DistributionSensitiveConstructionOfMinimumRedundancyPrefixCodes-BelalElmasry} of their article. Both results are better than the state of the art when k is finite, but worse when k is larger than \log n.
 
 We aim to formalize various notions of "easy" instance for the Optimal Prefix Free Code problem, and to study the frequency with which such instances occur in practical applications, from the compression (and indexing) of texts word by word to the use of Huffman codes in the compression of images such as in the =jpeg= format.
 
 * Algorithms
-** "Huffman"
+** Huffman
    The algorithm described by van Leeuwen is implemented in the file file:huffman.py
 *** Intuition
 
 The algorithm suggested by Huffman~\cite{1952-IRE-AMethodForTheInstructionOfMinimumRedundancyCodes-Huffman} starts with a heap of external nodes, selects the two nodes of minimal weight, pair them into a new node which it adds to the heap, and iterates till only one node is left. The resulting code tree yields an optimal prefix free code for the input.
 
-** "van Leeuwen"
+** van Leeuwen
    The algorithm described by van Leeuwen is implemented in the file file:vanLeeuwen.py
 *** Intuition
 
@@ -63,30 +64,30 @@ Observing that the algorithm suggested by Huffman~\cite{1952-IRE-AMethodForTheIn
 There are five main phases in the =GDM= algorithm: the /Initialization/, three phases (/Grouping/, /Docking/ and /Mixing/, hence the name ``=GDM='' of the algorithm) inside a loop running until only internal nodes are left to process, and the /Conclusion/:
 
 - In the /Initialization/ phase, initialize the \texttt{Partial Sum} deferred data structure with the input, and the first internal node by pairing the two smallest weights of the input.
-- In the /Grouping/ phase,  detect and  group the weights smaller than the smallest internal node: this corresponds to a run of consecutive $E$ in the van Leeuwen signature of the instance.
-- In the /Docking/ phase, pair the consecutive /positions/ of those weights (as opposed to the weights themselves, which can be reordered by future operations) into internal nodes, and pair  those internal nodes until the weight of at least one such internal node becomes equal or larger than the smallest remaining weight: this corresponds to a run of consecutive $I$ in the van Leeuwen signature of the instance.
-- In the /Mixing/ phase, rank the smallest unpaired weight among the weights of the available internal nodes: this corresponds to an occurrence of $IE$ in the van Leeuwen signature of the instance.
-- In the /Conclusion/ phase, with $i$ internal nodes left to process,  assign codelength $l=\lfloor \log_2 i\rfloor$ to the $i-2^l$ largest ones and  codelength $l{+}1$ to the 
-$2^l$ smallest ones: this corresponds to the last run of consecutive $I$ in the van Leeuwen signature of the instance.
+- In the /Grouping/ phase,  detect and  group the weights smaller than the smallest internal node: this corresponds to a run of consecutive E in the van Leeuwen signature of the instance.
+- In the /Docking/ phase, pair the consecutive /positions/ of those weights (as opposed to the weights themselves, which can be reordered by future operations) into internal nodes, and pair  those internal nodes until the weight of at least one such internal node becomes equal or larger than the smallest remaining weight: this corresponds to a run of consecutive I in the van Leeuwen signature of the instance.
+- In the /Mixing/ phase, rank the smallest unpaired weight among the weights of the available internal nodes: this corresponds to an occurrence of IE in the van Leeuwen signature of the instance.
+- In the /Conclusion/ phase, with i internal nodes left to process,  assign codelength l=\lfloor \log_2 i\rfloor to the i-2^l largest ones and  codelength l{+}1 to the 
+2^l smallest ones: this corresponds to the last run of consecutive I in the van Leeuwen signature of the instance.
 *** Detailed Description
 **** Initialization 
 Initialize the =Partial Sum deferred data structure;
 compute the weight =currentMinInternal= of the first internal node through the operation =partialSum(2)= (the sum of the two smallest weights); 
-create this first internal node as a node of weight =currentMinInternal= and children $1$ and $2$ (the positions of the first and second weights, in any order);
+create this first internal node as a node of weight =currentMinInternal= and children 1 and 2 (the positions of the first and second weights, in any order);
 compute the weight =currentMinExternal= of the first unpaired weight (i.e. the first available external node) by the operation =select(3)=;
 setup the variables =nbInternals=1= and =nbExternalProcessed=2=.
 
 **** Grouping
-Compute the position $r$ of the first unpaired weight which is larger than the smallest unpaired internal node, through the operation =rank= with parameter =currentMinInternal=;
-pair the ((r-=nbExternalProcessed=) modulo 2) indices to form $\lfloor\frac{r-nbExternalProcessed}{2}\rfloor$ /pure/ internal nodes;
-if the number $r-\idtt{nbExternalProcessed}$ of unpaired weights smaller than the first unpaired internal node is odd, select the $r$-th weight through the operation $\idtt{select}(r)$, compute the weight of the first unpaired internal node, compare it with the next unpaired weight, to form one /mixed/ node by combining the minimal of the two with the extraneous weight.
+Compute the position r of the first unpaired weight which is larger than the smallest unpaired internal node, through the operation =rank= with parameter =currentMinInternal=;
+pair the ((r-=nbExternalProcessed=) modulo 2) indices to form \lfloor\frac{r-nbExternalProcessed}{2}\rfloor /pure/ internal nodes;
+if the number r-\idtt{nbExternalProcessed} of unpaired weights smaller than the first unpaired internal node is odd, select the r-th weight through the operation \idtt{select}(r), compute the weight of the first unpaired internal node, compare it with the next unpaired weight, to form one /mixed/ node by combining the minimal of the two with the extraneous weight.
 
 **** Docking
 Pair all internal nodes by batches (their weights are all within a factor of two, so all internal nodes of a generation are processed before any internal node of the next generation);
 after each batch, compare the weight of the largest such internal node (compute it through =partialSum= on its range if it is a /pure/ node, otherwise it is already computed) with the first unpaired weight: if smaller, pair another batch, and if larger, the phase is finished.
 
 **** Mixing
-Rank the smallest unpaired weight among the weights of the available internal nodes, by a doubling search starting from the beginning of the list of internal nodes. For each comparison, if the internal node's weight is not already known, compute it through a =partialSum= operation on the corresponding range (if it is a /mixed/ node, it is already known). If the number $r$ of internal nodes of weight smaller than the unpaired weight is odd, pair all but one, compute the weight of the last one and pair it with the unpaired weight. If $r$ is even, pair all of the $r$ internal nodes of weight smaller than the unpaired weight, compare the weight of the next unpaired internal node with the weight of the next unpaired external node, and pair the minimum of the two with the first unpaired weight.
+Rank the smallest unpaired weight among the weights of the available internal nodes, by a doubling search starting from the beginning of the list of internal nodes. For each comparison, if the internal node's weight is not already known, compute it through a =partialSum= operation on the corresponding range (if it is a /mixed/ node, it is already known). If the number r of internal nodes of weight smaller than the unpaired weight is odd, pair all but one, compute the weight of the last one and pair it with the unpaired weight. If r is even, pair all of the r internal nodes of weight smaller than the unpaired weight, compare the weight of the next unpaired internal node with the weight of the next unpaired external node, and pair the minimum of the two with the first unpaired weight.
 If there are some unpaired weights left, go back to the /Grouping/ phase, otherwise continue to the /Conclusion/ phase.
 
 **** Conclusion
