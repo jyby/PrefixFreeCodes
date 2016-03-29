@@ -12,7 +12,6 @@ in time within O(n lg n) in the worst case over instances of sizes n.
 
 import unittest, doctest
 from functionsToTestPrefixFreeCodes import testPFCAlgorithm, compressByRunLengths
-from heapq import heapify, heappush, heappop
 
 def vanLeeuwen(W):
     """Given a list of weights, return the codelengths of
