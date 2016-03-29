@@ -6,7 +6,8 @@ Given a list of weights, return a representation of
 an optimal prefix free code, as a list of codelengths.
 
 Runs in linear time if the weights are already sorted, using the fact
-that sorted(W) in python runs in linear time if W is already sorted.
+that sorted(W) in python runs in linear time if W is already sorted, and
+in time within O(n lg n) in the worst case over instances of sizes n.
 """
 
 import unittest, doctest
@@ -16,13 +17,14 @@ from heapq import heapify, heappush, heappop
 def vanLeeuwen(W):
     """Given a list of weights, return the codelengths of
     an optimal prefix free code of minimal redundancy via van Leeuwen's algorithm.
+
     """
     if W==[]:
         return []
     elif len(W)==1:
-        return [(0,1)]
+        return [0]
     elif len(W)==2:
-        return [(1,2)]
+        return [1,1]
     Ws = sorted(W)
     tree = codeTree(Ws)
     codeLengths = depths(tree)
@@ -100,9 +102,9 @@ class TestDepths(unittest.TestCase):
 class vanLeeuwenTest(unittest.TestCase):
     """Basic tests for algorithms computing prefix free codes.
     """
-    # def test(self):
-    #     """Generic test"""
-    #     testPFCAlgorithm(vanLeeuwen, "vanLeeuwen")
+    def test(self):
+        """Generic test"""
+        testPFCAlgorithm(vanLeeuwen, "vanLeeuwen")
     def testSixWeights(self):
         """Six Weights"""
         self.assertEqual(compressByRunLengths(vanLeeuwen([1,1,1,1,1,1])),[(3,4),(2,2)])
