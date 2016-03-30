@@ -7,7 +7,7 @@
 This project aims to gather the implementations in python of various algorithms computing an optimal prefix free code given an array of integer frequencies, and an engine to compare those implementations in terms of the number of comparisons performed, of the space used, and of the experimental running time, on various realistic data sets.
 
 
-* The "Optimal Prefix Free Code" Problem
+* Optimal Prefix Free Codes
 
 ** Definition
 Given n positive weights W[1..n] coding for the frequencies of n messages, and a number D of output symbols, an =Optimal Prefix Free Code=~\cite{1952-IRE-AMethodForTheInstructionOfMinimumRedundancyCodes-Huffman} is a set of n code strings on alphabet [1..D], of variable lengths L[1..n] and such that no string is prefix of another, and the average length of a code is minimized (i.e. \sum_{i\in[1..n]
@@ -34,7 +34,7 @@ Any prefix free code can be computed in linear time from a set of code lengths s
 
     Ironically, the pseudo-optimality of this algorithm seems to have become part of the folklore of the area, as illustrated by a quote from Parker\etal~\cite{1999-SIAM-HuffmanCodesSubmodularOptimization-ParkerRam} in 1999: ``While there may be little hope of improving on the O(\nbWeights\log\nbWeights) complexity of the Huffman algorithm itself, there is still room for improvement in our understanding of the algorithm.''.
 
-* Objectives
+* Project Objectives
 
 Not all instances require the same amount of work to compute an optimal code:
 
@@ -52,7 +52,6 @@ We aim to formalize various notions of "easy" instance for the Optimal Prefix Fr
 *** Intuition
 
 The algorithm suggested by Huffman~\cite{1952-IRE-AMethodForTheInstructionOfMinimumRedundancyCodes-Huffman} starts with a heap of external nodes, selects the two nodes of minimal weight, pair them into a new node which it adds to the heap, and iterates till only one node is left. The resulting code tree yields an optimal prefix free code for the input.
-
 ** van Leeuwen
    The algorithm described by van Leeuwen is implemented in the file file:vanLeeuwen.py
 *** Intuition
