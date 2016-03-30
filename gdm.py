@@ -1,6 +1,7 @@
 import unittest, doctest, copy
 from functionsToTestPrefixFreeCodes import testPFCAlgorithm, compressByRunLengths
-from partiallySortedArrayGreedyImplementation import partiallySortedArray
+from partiallySortedArrayGreedyImplementation import PartiallySortedArray
+from depths import depths
 
 def gdm(frequencies):
     """Implementation in Python of the "Group Dock and Merge" algorithm.
@@ -27,13 +28,13 @@ def gdm(frequencies):
     currentMinInternal = externals.partialSum(2)
     internals = [(externals.partialSum(2),1,2)]
     # Loop
-    while nbExternalProcessed < len(externals):
+    # while nbExternalProcessed < len(externals):
         # Group
-        r = externals.rank(currentMinInternal)
+        # r = externals.rank(currentMinInternal)
         # Dock
         # Merge
     # Conclusion
-        
+    return []
 
 class GDMTest(unittest.TestCase):
     """Basic tests for the GDM algorithm computing optimal prefix free codes.
