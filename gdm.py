@@ -1,5 +1,6 @@
 import unittest, doctest, copy
-
+from functionsToTestPrefixFreeCodes import testPFCAlgorithm, compressByRunLengths
+from partiallySortedArray import partiallySortedArray
 
 def gdm(frequencies):
     """Implementation in Python of the "Group Dock and Merge" algorithm.
@@ -14,9 +15,11 @@ def gdm(frequencies):
     """
     # Degenerated cases
     if len(frequencies) == 0 :
-        return [],[]
-    if len(frequencies) < 3 :
-        return frequencies,[1]*len(frequencies)    
+        return []
+    elif len(frequencies)==1:
+        return [0]
+    elif len(frequencies)==2:
+        return [1,1]
     # Initialization
     externals = PartiallySortedArray(frequencies)
     nbExternalProcessed = 2;
@@ -37,22 +40,12 @@ class GDMTest(unittest.TestCase):
 
     """
         
-    def testSizeZeroInstance(self):
-        """Test what happens on empty array.
-        """
-        self.assertEqual(gdm([]),([],[]))
-
-    def testSizeOneInstance(self):
-        """Test what happens on singleton.
-        """
-        self.assertEqual(gdm([1]),([1],[1]))
-
-    def testSizeTwoInstance(self):
-        """Test what happens on simple pair.
-        """
-        self.assertEqual(gdm([1,76]),([1,76],[1,1]))
-
-    
+    def test(self):
+        """Generic test"""
+        testPFCAlgorithm(gdm, "GDM")
+    # def testSixWeights(self):
+    #     """Six Weights"""
+    #     self.assertEqual(compressByRunLengths(gdm([1,1,1,1,1,1])),[(3,4),(2,2)])
     
 def main():
     unittest.main()
