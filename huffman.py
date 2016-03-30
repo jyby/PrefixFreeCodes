@@ -8,9 +8,10 @@ an optimal prefix free code, as a list of codelengths.
 Runs in time within O(n lg n) in the worst case over instances of sizes n.
 """
 
-import unittest, doctest, copy
-from functionsToTestPrefixFreeCodes import testPFCAlgorithm, compressByRunLengths
+import unittest, doctest
 import heapq
+from functionsToTestPrefixFreeCodes import testPFCAlgorithm, compressByRunLengths
+from depths import depths
 
 def huffmanCodeTree(frequencies):
     """Given an unsorted list of of at least two weights, return a code tree of minimal
@@ -46,33 +47,6 @@ class TestHuffmanCodeTree(unittest.TestCase):
         """Three Weights."""
         self.assertEqual(huffmanCodeTree([1,1,4]),[6, [2, [1], [1]], [4]])
 
-def depths(tree, depth=0):
-    """Given a code tree, return the (unsorted) list of the depths of its leaves.
-    """
-    if tree == []:
-        return []
-    assert len(tree) == 1 or len(tree) == 3
-    if len(tree) == 1 :
-        return [depth]
-    else:
-        (weigth, left, right) = tree
-        depthsOnLeft =  depths(left,depth+1)
-        depthsOnRight = depths(right,depth+1)
-        return depthsOnLeft+depthsOnRight
-    
-class TestDepths(unittest.TestCase):
-    def test_empty(self):
-        """Empty input."""
-        self.assertEqual(depths([]),[])
-    def test_singleton(self):
-        """Singleton input."""
-        self.assertEqual(depths([1]),[0])
-    def test_twoWeights(self):
-        """Two Weights."""
-        self.assertEqual(depths([2, [1], [1]]),[1,1])
-    def test_threeWeights(self):
-        """Three Weights."""
-        self.assertEqual(depths([6, [2, [1], [1]], [4]]),[2,2,1])
 
 
         
