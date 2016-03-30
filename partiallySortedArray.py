@@ -1,5 +1,4 @@
 import unittest, doctest, copy
-from fastLog import lg
 from logSort import logSort
 
 
