@@ -1,6 +1,6 @@
 import unittest, doctest, copy
 from functionsToTestPrefixFreeCodes import testPFCAlgorithm, compressByRunLengths
-from partiallySortedArray import partiallySortedArray
+from partiallySortedArrayGreedyImplementation import partiallySortedArray
 
 def gdm(frequencies):
     """Implementation in Python of the "Group Dock and Merge" algorithm.
