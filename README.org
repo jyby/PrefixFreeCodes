@@ -45,7 +45,6 @@ Not all instances require the same amount of work to compute an optimal code:
    - In the case where the weights are given unsorted, Belal~et al.~\cite{2006-STACS-DistributionSensitiveConstructionOfMinimumRedundancyPrefixCodes-BelalElmasry,2006-IEEE-VerificationOfMinimumRedundancyPrefixCodes-BelalElmasry} described several families of instances for which an optimal prefix free code can be computed in linear time, along with an algorithm claimed to perform O(kn) algebraic operations, in the worst case over instances formed by n weights such that there is an optimal binary prefix free code with k distinct code lengths.  This complexity was later downgraded to O(16^k n) in an extended version\cite{2005-ARXIV-DistributionSensitiveConstructionOfMinimumRedundancyPrefixCodes-BelalElmasry} of their article. Both results are better than the state of the art when k is finite, but worse when k is larger than \log n.
 
 We aim to formalize various notions of "easy" instance for the Optimal Prefix Free Code problem, and to study the frequency with which such instances occur in practical applications, from the compression (and indexing) of texts word by word to the use of Huffman codes in the compression of images such as in the =jpeg= format.
-
 * Algorithms
 ** Huffman
    The algorithm described by van Leeuwen is implemented in the file file:huffman.py
@@ -93,4 +92,17 @@ If there are some unpaired weights left, go back to the /Grouping/ phase, otherw
 There are only internal nodes left, and their weights are all within a factor of two from each other. 
 Pair the nodes two by two in batch as in the /Docking/ phase, computing the weight of an internal node only when the number of internal nodes of a batch is odd.
 
+* Experimentation
+** Data Sets
 
+| file name       | Size | Description |
+|-----------------+------+-------------|
+| shakespeare.txt | 5.4M |             |
+| 14529-0.txt     | 52K  |             |
+| 32575-0.txt     | 400K |             |
+| pg12944.txt     | 84K  |             |
+| pg24742.txt     | 272K |             |
+| pg25373.txt     | 144K |             |
+| pg31471.txt     | 368K |             |
+| pg4545.txt      | 72K  |             |
+| pg7925.txt      | 1.4M |             |
