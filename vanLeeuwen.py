@@ -26,11 +26,11 @@ def vanLeeuwen(W):
     elif len(W)==2:
         return [1,1]
     Ws = sorted(W)
-    tree = codeTree(Ws)
+    tree = vanLeeuwenCodeTree(Ws)
     codeLengths = depths(tree)
     return codeLengths
 
-def codeTree(W):
+def vanLeeuwenCodeTree(W):
     """Given a sorted list of weights, return a code tree of minimal
     redundancy according to vanLeeuwen's algorithm.
     """
@@ -60,16 +60,16 @@ def codeTree(W):
 class TestCodeTree(unittest.TestCase):
     def test_empty(self):
         """Empty input."""
-        self.assertEqual(codeTree([]),[])
+        self.assertEqual(vanLeeuwenCodeTree([]),[])
     def test_singleton(self):
         """Singleton input."""
-        self.assertEqual(codeTree([1]),[1])
+        self.assertEqual(vanLeeuwenCodeTree([1]),[1])
     def test_twoWeights(self):
         """Two Weights."""
-        self.assertEqual(codeTree([1,1]),[2, [1], [1]])
+        self.assertEqual(vanLeeuwenCodeTree([1,1]),[2, [1], [1]])
     def test_threeWeights(self):
         """Three Weights."""
-        self.assertEqual(codeTree([1,1,4]),[6, [2, [1], [1]], [4]])
+        self.assertEqual(vanLeeuwenCodeTree([1,1,4]),[6, [2, [1], [1]], [4]])
 
             
 class vanLeeuwenTest(unittest.TestCase):
