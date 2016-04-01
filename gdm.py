@@ -3,12 +3,11 @@ from functionsToTestPrefixFreeCodes import testPFCAlgorithm, compressByRunLength
 from partiallySortedArrayGreedyImplementation import PartiallySortedArray
 from depths import depths
 
-
 def EISignature(W):
     """Given a list of weights, return the EI signature of the instance recording the result of each comparison performed by Huffman's algorithm or van Leeuwen's algorithm.
  
     >>> EISignature([1,1,4])
-    "EEIEI"
+    'EEIEI'
    """
 
     if W==[]:
@@ -41,10 +40,10 @@ def EISignature(W):
     signature = signature + "I"
     return signature
 
-class EISignature(unittest.TestCase):
+class EISignatureTest(unittest.TestCase):
     def test_empty(self):
         """Empty input."""
-        self.assertEqual(EISignature([]),[])
+        self.assertEqual(EISignature([]),"")
     def test_singleton(self):
         """Singleton input."""
         self.assertEqual(EISignature([1]),"E")
@@ -54,6 +53,8 @@ class EISignature(unittest.TestCase):
     def test_threeWeights(self):
         """Three Weights."""
         self.assertEqual(EISignature([1,1,4]),"EEIEI")
+
+        
 
 
 def gdm(frequencies):
