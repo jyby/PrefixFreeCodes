@@ -3,6 +3,59 @@ from functionsToTestPrefixFreeCodes import testPFCAlgorithm, compressByRunLength
 from partiallySortedArrayGreedyImplementation import PartiallySortedArray
 from depths import depths
 
+
+def EISignature(W):
+    """Given a list of weights, return the EI signature of the instance recording the result of each comparison performed by Huffman's algorithm or van Leeuwen's algorithm.
+ 
+    >>> EISignature([1,1,4])
+    "EEIEI"
+   """
+
+    if W==[]:
+        return ""
+    elif len(W)==1:
+        return "E"
+    W = sorted(W)
+    i = 0
+    trees = []
+    signature = ""
+    while i<len(W) or len(trees)>1:
+        if len(trees) == 0 or (i<len(W) and W[i] <= trees[0][0]):
+            left = [W[i]]
+            i += 1
+            signature = signature + "E"
+        else:
+            left = trees[0]
+            trees = trees[1:]
+            signature = signature + "I"
+        if len(trees) == 0 or (i<len(W) and W[i] <= trees[0][0]):
+            right = [W[i]]
+            i += 1
+            signature = signature + "E"
+        else:
+            right = trees[0]
+            trees = trees[1:]
+            signature = signature + "I"
+        parent = [left[0] + right[0], left,right]
+        trees.append(parent)
+    signature = signature + "I"
+    return signature
+
+class EISignature(unittest.TestCase):
+    def test_empty(self):
+        """Empty input."""
+        self.assertEqual(EISignature([]),[])
+    def test_singleton(self):
+        """Singleton input."""
+        self.assertEqual(EISignature([1]),"E")
+    def test_twoWeights(self):
+        """Two Weights."""
+        self.assertEqual(EISignature([1,1]),"EEI")
+    def test_threeWeights(self):
+        """Three Weights."""
+        self.assertEqual(EISignature([1,1,4]),"EEIEI")
+
+
 def gdm(frequencies):
     """Implementation in Python of the "Group Dock and Merge" algorithm.
 
