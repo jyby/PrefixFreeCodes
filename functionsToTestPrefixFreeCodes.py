@@ -1,5 +1,19 @@
 import unittest, doctest, math
 
+def expandRunLengths(R):
+    """Given an unsorted list R of pairs (i,j), 
+    returns a list of integer where each pair (i,j) is represented by a sequence of j copies of i.
+
+    >>> expandRunLengths([(2,3),(3,4),(1,2)])
+    [2, 2, 2, 3, 3, 3, 3, 1, 1]
+
+    """
+    L = []
+    for (i,j) in R:
+        for k in range(0,j):
+            L.append(i)
+    return L
+
 def compressByRunLengths(L):
     """Given an unsorted list $L$ of integers, compress it into a list
     of pairs (x,n) such that $x$ occurs $n$ times in $L$.
@@ -38,7 +52,6 @@ class TestCompressByRunLengths(unittest.TestCase):
         """Three Runs"""
         self.assertEqual(compressByRunLengths([3,2,2,2,1]),[(3,1),(2,3),(1,1)])
         
-
 
 def testPFCAlgorithm(prefixFreeCodeAlgorithm, nameAlgorithm=""):
     for name, W, answers in examplesOfWeights:
