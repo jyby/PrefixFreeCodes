@@ -1,23 +1,24 @@
 import unittest, doctest, math
 
 def expandRunLengths(R):
-    """Given an unsorted list R of pairs (i,j), 
-    returns a list of integer where each pair (i,j) is represented by a sequence of j copies of i.
+    """Given an unsorted list R of pairs (x,n), 
+    returns a list of integer where each pair (x,n) is represented by a sequence of n copies of x.
 
     >>> expandRunLengths([(2,3),(3,4),(1,2)])
     [2, 2, 2, 3, 3, 3, 3, 1, 1]
 
     """
     L = []
-    for (i,j) in R:
-        for k in range(0,j):
-            L.append(i)
+    for (x,n) in R:
+        for i in range(0,n):
+            L.append(x)
     return L
 
 def compressByRunLengths(L):
     """Given an unsorted list $L$ of integers, compress it into a list
     of pairs (x,n) such that $x$ occurs $n$ times in $L$.
-    Makes test much easier to write.
+    Makes tests much easier to write.
+
     """
     if L == []:
         return []
