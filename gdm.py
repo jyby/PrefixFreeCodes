@@ -155,9 +155,12 @@ class GDMTest(unittest.TestCase):
     def test(self):
         """Generic test"""
         testPFCAlgorithm(gdm, "GDM")
-    # def testSixWeights(self):
-    #     """Six Weights"""
-    #     self.assertEqual(compressByRunLengths(gdm([1,1,1,1,1,1])),[(3,4),(2,2)])
+    def testFourEqualWeights(self):
+        """Four Equal Weights"""
+        self.assertEqual(gdm([1]*4),[2]^4)
+    def testEightEqualWeights(self):
+        """Eight Equal Weights"""
+        self.assertEqual(gdm([1]*8),[3]^8)
     
 def main():
     unittest.main()
