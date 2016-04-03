@@ -72,6 +72,8 @@ class PartiallySortedArray():
         return self.selectAndPartitionInRange(r,0,len(self.values))
     def selectAndPartition(self,r):
         return self.selectAndPartitionInRange(r,0,len(self.values))
+    def __getitem__(self,r):
+        return self.selectAndPartition(r)
     def selectAndPartitionInRange(self,r,left,right):
         """Returns the $r$-th smallest element of $self.values$, and
         partition this array so that the $r-1$ smallest element are in
