@@ -102,15 +102,6 @@ class PartiallySortedArray():
         else:
             return equal[0]
 
-    def partialSum(self,right):
-        self.selectAndPartition(right)
-        return self.partialSums[right-1]
-
-    def rangeSum(self,left,right):
-        self.selectAndPartition(left)
-        self.selectAndPartition(right)
-        return self.partialSums[right-1]-self.partialSums[left-1]
-
     def updatePartialSum(self,left,right):
         """Updates the partial sum vector between left and right.
 
@@ -125,34 +116,53 @@ class PartiallySortedArray():
         for i in range(left,right):
             partialSum +=  self.values[i]      
             self.partialSums[i] = partialSum
+    def partialSum(self,right):
+        self.selectAndPartition(right)
+        self.updatePartialSum(0,right)
+        return self.partialSums[right-1]
+    def rangeSum(self,left,right):
+        self.selectAndPartition(left)
+        self.selectAndPartition(right)
+        self.updatePartialSum(left,right)
+        return self.partialSums[right-1]-self.partialSums[left-1]
             
 class PartiallySortedArrayTest(unittest.TestCase):
     """Basic tests for algorithms computing prefix free codes.
     """
         
-
-    def testUpdatePartialSum(self):
-        W = [1]*8
+    def testUpdatePartialSumWithEightSortedDistinctWeights(self):
+        W = [10,20,30,40,50,60,70,80]
         A = PartiallySortedArray(W)
         A.updatePartialSum(0,len(W))
-        self.assertEqual(A.partialSums,[1,2,3,4,5,6,7,8])
-        
-    def testRangeSum(self):
-        W = [1]*8
+        self.assertEqual(A.partialSums,[10,30,60,100,150,210,280,360])
+
+    def testUpdatePartialSumWithFourUnSortedDistinctWeights(self):
+        W = [40,30,20,10]
         A = PartiallySortedArray(W)
-        self.assertEqual(A.rangeSum(1,4),3)
+        A.updatePartialSum(0,len(W))
+        self.assertEqual(A.partialSums,[40,70,90,100])
+
+    def testUpdatePartialSumWithEightEqualWeights(self):
+        W = [10]*8
+        A = PartiallySortedArray(W)
+        A.updatePartialSum(0,len(W))
+        self.assertEqual(A.partialSums,[10,20,30,40,50,60,70,80])
+        
+    def testRangeSumOnEightSameWeights(self):
+        W = [10]*8
+        A = PartiallySortedArray(W)
+        self.assertEqual(A.rangeSum(1,4),30)
 
     def testPartialSumOnOrderedArray(self):
-        W = [1]*8
+        W = [10]*8
         A = PartiallySortedArray(W)
-        self.assertEqual(A.partialSum(1),1)
+        self.assertEqual(A.partialSum(4),40)
 
-    # def testPartialSumOnDisorderedArray(self):
-    #     W = [9,8,7,6,5,4,3,2,1]
-    #     A = PartiallySortedArray(W)
-    #     self.assertEqual(A.partialSum(2),3)
-    #     print A.partialSums
-    #     # self.assertEqual(A.rangeSum(4,5),9)
+    def testPartialSumOnDisorderedArray(self):
+        W = [90,80,70,60,50,40,30,20,10]
+        A = PartiallySortedArray(W)
+        weightSum = A.partialSum(2)
+        self.assertEqual(weightSum,30)
 
     # def testSelectOnFirstValue(self):
     #     T = PartiallySortedArray([70,60,50,40,30,30,30,20,10,1])
