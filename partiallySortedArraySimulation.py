@@ -1,7 +1,7 @@
 import unittest, doctest, copy
 
 class PartiallySortedArray(): 
-    """A class receiving an unsorted array, supporting rank, select and partialSum operators on it in the most greedy way.
+    """A class receiving an unsorted array, supporting rank, select and partialSum operators on it in the second most greedy way (the partial sums are computed only once). 
 
     """
 
@@ -10,7 +10,12 @@ class PartiallySortedArray():
 
         """
         self.values = sorted(A)
-
+        self.partialSums = [0]*(len(self.values))
+        partialSum = 0 
+        for i in range(len(self.values)):
+            partialSum +=  self.values[i]      
+            self.partialSums[i] = partialSum
+        
     def __len__(self):
         """Number of Elements in the Partially Sorted Array.
 
@@ -59,10 +64,10 @@ class PartiallySortedArray():
 >>> print(S.partialSum(0))
 0
 """
-        partialSum = 0 
-        for i in range(r):
-            partialSum += self.values[i]
-        return partialSum
+        if r <= 0:
+            return 0
+        else:
+            return self.partialSums[r-1]
 
     def rangeSum(self,left,right):
         """Sum of the elements which would be in range(left,right) in the sorted array.
@@ -73,10 +78,7 @@ class PartiallySortedArray():
 >>> print(S.rangeSum(0,0))
 0
 """
-        partialSum = 0 
-        for i in range(left,right):
-            partialSum += self.values[i]
-        return partialSum
+        return self.partialSum(right)-self.partialSum(left)
         
         
 def main():
