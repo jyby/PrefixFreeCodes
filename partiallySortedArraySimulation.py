@@ -36,6 +36,23 @@ class PartiallySortedArray():
 """
         return(self.values[r])
 
+    
+    def rank(self,x):
+        """Number of Elements in the set which are smaller than x.
+
+>>> S = PartiallySortedArray([50,40,30,20,10])
+>>> print(S.rank(40))
+3
+>>> print(S.rank(100))
+5
+>>> print(S.rank(-10))
+0
+"""
+        rank = 0
+        for i in range(len(self.values)):
+            if self.values[i] < x:
+                rank += 1                       
+        return rank
 
 def main():
     unittest.main()
