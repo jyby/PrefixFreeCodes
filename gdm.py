@@ -1,6 +1,6 @@
 import unittest, doctest, copy
 from functionsToTestPrefixFreeCodes import testPFCAlgorithm, compressByRunLengths
-from partiallySortedArraySimulation import PartiallySortedArray
+from partiallySortedArrayWithJustASortedArray import PartiallySortedArray
 # from partiallySortedArrayGreedyImplementation import PartiallySortedArray
 from depths import depths
 
