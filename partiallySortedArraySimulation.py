@@ -22,9 +22,19 @@ class PartiallySortedArray():
 >>> S = PartiallySortedArray([50,40,30,20,10])
 >>> len(S)
 5
-        """
+"""
         return(len(self.values))
 
+    def select(self,r):
+        """Element of the set such that r elements are smaller.
+
+>>> S = PartiallySortedArray([50,40,30,20,10])
+>>> print(S.select(2))
+30
+>>> print(S.select(0))
+10
+"""
+        return(self.values[r])
 
 
 def main():
