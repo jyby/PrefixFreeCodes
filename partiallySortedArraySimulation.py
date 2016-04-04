@@ -10,11 +10,6 @@ class PartiallySortedArray():
 
         """
         self.values = sorted(A)
-        self.partialSums = [0]*(len(self.values)) 
-        sumSoFar = 0
-        for i in range(len(self.values)):
-            sumSoFar +=  self.values[i]      
-            self.partialSums[i] = sumSoFar
 
     def __len__(self):
         """Number of Elements in the Partially Sorted Array.
@@ -53,6 +48,21 @@ class PartiallySortedArray():
             if self.values[i] < x:
                 rank += 1                       
         return rank
+
+    
+    def partialSum(self,r):
+        """Sum of the r smallest elements in the set.
+
+>>> S = PartiallySortedArray([50,40,30,20,10])
+>>> print(S.partialSum(2))
+30
+>>> print(S.partialSum(0))
+0
+"""
+        partialSum = 0 
+        for i in range(r):
+            partialSum += self.values[i]
+        return partialSum
 
 def main():
     unittest.main()
