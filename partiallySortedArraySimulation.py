@@ -64,6 +64,21 @@ class PartiallySortedArray():
             partialSum += self.values[i]
         return partialSum
 
+    def rangeSum(self,left,right):
+        """Sum of the elements which would be in range(left,right) in the sorted array.
+
+>>> S = PartiallySortedArray([50,40,30,20,10])
+>>> print(S.rangeSum(0,2))
+30
+>>> print(S.rangeSum(0,0))
+0
+"""
+        partialSum = 0 
+        for i in range(left,right):
+            partialSum += self.values[i]
+        return partialSum
+        
+        
 def main():
     unittest.main()
 if __name__ == '__main__':
