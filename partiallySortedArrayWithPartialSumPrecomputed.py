@@ -1,4 +1,4 @@
-import unittest, doctest, copy
+import unittest, doctest, copy, bisect
 
 class PartiallySortedArray(): 
     """A class receiving an unsorted array, supporting rank, select and partialSum operators on it in the second most greedy way (the partial sums are computed only once). 
@@ -48,11 +48,7 @@ class PartiallySortedArray():
 >>> print(S.rank(-10))
 0
 """
-        rank = 0
-        for i in range(len(self.values)):
-            if self.values[i] < x:
-                rank += 1                       
-        return rank
+        return bisect.bisect_left(self.values, x)
 
     
     def partialSum(self,r):
