@@ -13,13 +13,35 @@ but its weight can be computed if needed.
 >>> x = ExternalNode(W,3)
 >>> print(x.weight())
 40
+
 """
     def __init__(self,partiallySortedArray,position):
         self.position = position
         self.partiallySortedArray = partiallySortedArray
     def weight(self):
         return self.partiallySortedArray.select(self.position)
-    
+
+class PureInternalNode:
+    """Given a partially sorted array W, and two indicators left and right describing a range in W,
+    represent a pure internal node, which leaves have for weights exactly the range [left,right[ in sorted(W).
+    The weight is computed only at request.
+
+>>> W = PartiallySortedArray([150,140,130,120,110,32,16,10,10,10,10])
+>>> x = PureInternalNode(W,0,4)
+>>> print(x.weight())
+40
+"""
+    def __init__(self, partiallySortedArray, leftRange, rightRange):
+        self.leftRange = leftRange
+        self.rightRange = rightRange
+        self.partiallySortedArray = partiallySortedArray
+        self.CachedValueOfWeight = None
+    def weight(self):
+        if self.CachedValueOfWeight == None:
+            self.CachedValueOfWeight =   self.partiallySortedArray.rangeSum(self.leftRange,self.rightRange)
+        return self.CachedValueOfWeight
+
+
 class MixedInternalNode:
     """Internal Node which leaves are separated by a pivot.
 
@@ -39,7 +61,8 @@ I left it as it is so that the measures of the number of queries performed corre
 32
 >>> print(z.weight())
 48
-    """
+
+"""
     def __init__(self, left, right):
         self.left = left
         self.right = right
@@ -49,39 +72,7 @@ I left it as it is so that the measures of the number of queries performed corre
         # if self.CachedValueOfWeight == None:
         #     self.CachedValueOfWeight =   (self.left).weight() + (self.right).weight()
         return self.CachedValueOfWeight
-
     
-class ConcretePureInternalNode:
-    """Pure Internal Node which weight has already been computed.
-    """
-    def __init__(self, weight, partiallySortedArray, leftRange, rightRange):
-        self.weight = weight
-        self.leftRange = leftRange
-        self.rightRange = rightRange
-        self.partiallySortedArray = partiallySortedArray
-    def weight(self):
-        return self.weight
-        
-class VirtualPureInternalNode:
-    """Pure Internal Node which leaves are all consecutive in the sorted array of weights, which weight has not been computed yet.
-Its weight can be computed any time by a rangeSum operation, at the cost of two select operations and further partial sorting.
-    """
-    def __init__(self, partiallySortedArray, leftRange,rightRange):
-        self.leftRange = leftRange
-        self.rightRange = rightRange
-        self.partiallySortedArray = partiallySortedArray
-    def weight(self):
-        return self.partiallySortedArray.rangeSum(self.leftRange,self.rightRange)
-    def concretize(self):
-        return ConcretePureInternalNode(self.weight(), self.partiallySortedArray, self.leftRange, self.rightRange)
-class PureMixedNodeStructureTest(unittest.TestCase):
-    def test_simpleCreationOfNodes(self):
-        """Simple Creation Of Nodes."""
-        frequencies = [1,5,4,3,2,1,2,1,1]
-        w = PartiallySortedArray(frequencies)
-        virtualPureInternalNode = VirtualPureInternalNode(w,0,4)
-        self.assertEqual(virtualPureInternalNode.weight(),4)
-
         
     
 # def gdmCodeTree(frequencies):
