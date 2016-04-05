@@ -4,23 +4,52 @@ from partiallySortedArrayWithPartialSumPrecomputed import PartiallySortedArray
 from depths import depths
 
 class ExternalNode:
+    """External Node of the Code Tree. 
+
+Does NOT contain the weight, just the indice of the weight in the array if it was sorted,
+but its weight can be computed if needed.
+
+>>> W = PartiallySortedArray([50,40,30,20,10])
+>>> x = ExternalNode(W,3)
+>>> print(x.weight())
+40
+"""
     def __init__(self,partiallySortedArray,position):
         self.position = position
         self.partiallySortedArray = partiallySortedArray
     def weight(self):
-        return partiallySortedArray.select(position)
+        return self.partiallySortedArray.select(self.position)
     
 class MixedInternalNode:
     """Internal Node which leaves are separated by a pivot.
+
 Its weight is computed at construction (mostly to simplify the complexity of analysis of the GDM algorithm),
 but it could equally be computed recursively in a lazy variant of the algorithm (future work). 
+
+Note: the implementation could be optimized (a lot) by computing the weight only when it is required (as in the commented code), but I don't know how to analize the resulting computing time yet.
+I left it as it is so that the measures of the number of queries performed correspond to the state of the complexity analysis in the CPM 2016 paper.
+
+>>> W = PartiallySortedArray([150,140,130,120,110,32,16])
+>>> x = ExternalNode(W,0)
+>>> y = ExternalNode(W,1)
+>>> z = MixedInternalNode(x,y)
+>>> print(x.weight())
+16
+>>> print(y.weight())
+32
+>>> print(z.weight())
+48
     """
-    def __init__(self, weight, left, right):
-        self.weight = weight
+    def __init__(self, left, right):
         self.left = left
         self.right = right
+        self.CachedValueOfWeight =  left.weight() + right.weight()
+        # self.CachedValueOfWeight =  None
     def weight(self):
-        return self.weight
+        # if self.CachedValueOfWeight == None:
+        #     self.CachedValueOfWeight =   (self.left).weight() + (self.right).weight()
+        return self.CachedValueOfWeight
+
     
 class ConcretePureInternalNode:
     """Pure Internal Node which weight has already been computed.
@@ -30,6 +59,8 @@ class ConcretePureInternalNode:
         self.leftRange = leftRange
         self.rightRange = rightRange
         self.partiallySortedArray = partiallySortedArray
+    def weight(self):
+        return self.weight
         
 class VirtualPureInternalNode:
     """Pure Internal Node which leaves are all consecutive in the sorted array of weights, which weight has not been computed yet.
