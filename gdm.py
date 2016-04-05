@@ -3,46 +3,49 @@ from functionsToTestPrefixFreeCodes import testPFCAlgorithm, compressByRunLength
 from partiallySortedArrayWithPartialSumPrecomputed import PartiallySortedArray
 from depths import depths
 
-class ExternalNode:
-    """External Node of the Code Tree. 
-
-Does NOT contain the weight, just the indice of the weight in the array if it was sorted,
-but its weight can be computed if needed.
-
->>> W = PartiallySortedArray([50,40,30,20,10])
->>> x = ExternalNode(W,3)
->>> print(x.weight())
-40
-
-"""
-    def __init__(self,partiallySortedArray,position):
-        self.position = position
-        self.partiallySortedArray = partiallySortedArray
-    def weight(self):
-        return self.partiallySortedArray.select(self.position)
-
-class PureInternalNode:
+class PureNode:
     """Given a partially sorted array W, and two indicators left and right describing a range in W,
-    represent a pure internal node, which leaves have for weights exactly the range [left,right[ in sorted(W).
+    represent a pure node, which leaves have for weights exactly the range [left,right[ in sorted(W).
     The weight is computed only at request.
 
 >>> W = PartiallySortedArray([150,140,130,120,110,32,16,10,10,10,10])
->>> x = PureInternalNode(W,0,4)
+>>> x = PureNode(W,0,4)
+>>> y = PureNode(W,4)
 >>> print(x.weight())
 40
+>>> print(y.weight())
+16
 """
-    def __init__(self, partiallySortedArray, leftRange, rightRange):
+    def __init__(self, partiallySortedArray, leftRange, rightRange=None):
+        if rightRange == None:
+            rightRange = leftRange+1
         self.leftRange = leftRange
         self.rightRange = rightRange
         self.partiallySortedArray = partiallySortedArray
         self.CachedValueOfWeight = None
+    # def __init__(self, left, right):
+    #     assert(left.partiallySortedArray == right.partiallySortedArray)
+    #     if left.rightRange + 1 == right.leftRange:
+    #         self.leftRange = left.leftRange
+    #         self.rightRange = right.rightRange
+    #         self.partiallySortedArray = left.partiallySortedArray
+    #         if left.CachedValueOfWeight == None or right.CachedValueOfWeight == None:
+    #             self.CachedValueOfWeight = None
+    #         else:
+    #             self.CachedValueOfWeight = left.CachedValueOfWeight + righ.CachedValueOfWeight
+    #     else:
+    #         self.leftRange = None
+    #         self.rightRange = None
+    #         self.left = left
+    #         self.right = right
+    #         self.CachedValueOfWeight = left.weight() + right.weight()
     def weight(self):
         if self.CachedValueOfWeight == None:
-            self.CachedValueOfWeight =   self.partiallySortedArray.rangeSum(self.leftRange,self.rightRange)
+            self.CachedValueOfWeight = self.partiallySortedArray.rangeSum(self.leftRange,self.rightRange)
         return self.CachedValueOfWeight
 
 
-class MixedInternalNode:
+class MixedNode:
     """Internal Node which leaves are separated by a pivot.
 
 Its weight is computed at construction (mostly to simplify the complexity of analysis of the GDM algorithm),
@@ -52,9 +55,9 @@ Note: the implementation could be optimized (a lot) by computing the weight only
 I left it as it is so that the measures of the number of queries performed correspond to the state of the complexity analysis in the CPM 2016 paper.
 
 >>> W = PartiallySortedArray([150,140,130,120,110,32,16])
->>> x = ExternalNode(W,0)
->>> y = ExternalNode(W,1)
->>> z = MixedInternalNode(x,y)
+>>> x = PureNode(W,0)
+>>> y = PureNode(W,1)
+>>> z = MixedNode(x,y)
 >>> print(x.weight())
 16
 >>> print(y.weight())
