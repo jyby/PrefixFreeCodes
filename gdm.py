@@ -3,42 +3,47 @@ from functionsToTestPrefixFreeCodes import testPFCAlgorithm, compressByRunLength
 from partiallySortedArrayWithPartialSumPrecomputed import PartiallySortedArray
 from depths import depths
 
+class ExternalNode:
+    def __init__(self, partiallySortedArray, position):
+        self.partiallySortedArray = partiallySortedArray
+        self.leftRange = position
+        self.rightRange = position+1
+        self.CachedValueOfWeight = None
+    def weight(self):
+        if self.CachedValueOfWeight == None:
+            self.CachedValueOfWeight = self.partiallySortedArray.select(self.leftRange)
+        return self.CachedValueOfWeight
+
 class PureNode:
     """Given a partially sorted array W, and two indicators left and right describing a range in W,
     represent a pure node, which leaves have for weights exactly the range [left,right[ in sorted(W).
     The weight is computed only at request.
 
 >>> W = PartiallySortedArray([150,140,130,120,110,32,16,10,10,10,10])
->>> x = PureNode(W,0,4)
->>> y = PureNode(W,4)
+>>> x = ExternalNode(W,0)
+>>> y = ExternalNode(W,1)
+>>> z = PureNode(W,x,y)
+>>> print(z.weight())
+20
 >>> print(x.weight())
-40
+10
 >>> print(y.weight())
-16
+10
 """
-    def __init__(self, partiallySortedArray, leftRange, rightRange=None):
-        if rightRange == None:
-            rightRange = leftRange+1
-        self.leftRange = leftRange
-        self.rightRange = rightRange
+    def __init__(self, partiallySortedArray, position):
         self.partiallySortedArray = partiallySortedArray
+        self.leftRange = position
+        self.rightRange = position+1
         self.CachedValueOfWeight = None
-    # def __init__(self, left, right):
-    #     assert(left.partiallySortedArray == right.partiallySortedArray)
-    #     if left.rightRange + 1 == right.leftRange:
-    #         self.leftRange = left.leftRange
-    #         self.rightRange = right.rightRange
-    #         self.partiallySortedArray = left.partiallySortedArray
-    #         if left.CachedValueOfWeight == None or right.CachedValueOfWeight == None:
-    #             self.CachedValueOfWeight = None
-    #         else:
-    #             self.CachedValueOfWeight = left.CachedValueOfWeight + righ.CachedValueOfWeight
-    #     else:
-    #         self.leftRange = None
-    #         self.rightRange = None
-    #         self.left = left
-    #         self.right = right
-    #         self.CachedValueOfWeight = left.weight() + right.weight()
+    def __init__(self, partiallySortedArray, left, right):
+        self.partiallySortedArray = partiallySortedArray
+        assert(left.rightRange == right.leftRange)
+        self.leftRange = left.leftRange
+        self.rightRange = right.rightRange
+        if left.CachedValueOfWeight == None or right.CachedValueOfWeight == None:
+            self.CachedValueOfWeight = None
+        else:
+            self.CachedValueOfWeight = left.CachedValueOfWeight + righ.CachedValueOfWeight
     def weight(self):
         if self.CachedValueOfWeight == None:
             self.CachedValueOfWeight = self.partiallySortedArray.rangeSum(self.leftRange,self.rightRange)
@@ -55,8 +60,8 @@ Note: the implementation could be optimized (a lot) by computing the weight only
 I left it as it is so that the measures of the number of queries performed correspond to the state of the complexity analysis in the CPM 2016 paper.
 
 >>> W = PartiallySortedArray([150,140,130,120,110,32,16])
->>> x = PureNode(W,0)
->>> y = PureNode(W,1)
+>>> x = ExternalNode(W,0)
+>>> y = ExternalNode(W,1)
 >>> z = MixedNode(x,y)
 >>> print(x.weight())
 16
