@@ -15,7 +15,10 @@ class PartiallySortedArray():
         for i in range(len(self.values)):
             partialSum +=  self.values[i]      
             self.partialSums[i] = partialSum
-        
+        self.nbRankQueriesProcessed = 0 
+        self.nbSelectQueriesProcessed = 0 
+        self.nbPartialSumQueriesProcessed = 0 
+            
     def __len__(self):
         """Number of Elements in the Partially Sorted Array.
 
@@ -34,6 +37,7 @@ class PartiallySortedArray():
 >>> print(S.select(0))
 10
 """
+        self.nbSelectQueriesProcessed += 1
         return(self.values[r])
 
     
@@ -48,6 +52,7 @@ class PartiallySortedArray():
 >>> print(S.rank(-10))
 0
 """
+        self.nbRankQueriesProcessed += 1
         return bisect.bisect_left(self.values, x)
 
     
@@ -63,6 +68,7 @@ class PartiallySortedArray():
         if r <= 0:
             return 0
         else:
+            self.nbPartialSumQueriesProcessed += 1
             return self.partialSums[r-1]
 
     def rangeSum(self,left,right):
@@ -75,7 +81,12 @@ class PartiallySortedArray():
 0
 """
         return self.partialSum(right)-self.partialSum(left)
-        
+
+    def totalNbOfQueriesPerformed():
+        """Returns the total number of queries performed on the Partially Sorted Array.
+
+"""
+        return(nbRankQueriesProcessed+nbSelectQueriesProcessed+nbPartialSumQueriesProcessed)
         
 def main():
     unittest.main()
