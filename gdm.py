@@ -126,11 +126,11 @@ def gdmCodeTree(frequencies):
 
     """
     if len(frequencies) == 0 :
-        return []
+        return None
     elif len(frequencies)==1:
         return ExternalNode(frequencies,0)
     elif len(frequencies)==2:
-        return [frequencies[0]+frequencies[1],0,1]
+        return PureNode(frequencies,ExternalNode(frequencies,0),ExternalNode(frequencies,1))
     # Phase "Initialization" 
     externals = PartiallySortedArray(frequencies)
     internals = []
@@ -155,14 +155,16 @@ def gdmCodeTree(frequencies):
 class gdmCodeTreeTest(unittest.TestCase):
     def test_empty(self):
         """Empty input."""
+        frequencies = []
+        self.assertEqual(gdmCodeTree(frequencies),None)
+    def test_singleton(self):
+        """Singleton input."""
         frequencies = [10]
         self.assertEqual(gdmCodeTree(frequencies),ExternalNode(frequencies,0))
-    # def test_singleton(self):
-    #     """Singleton input."""
-    #     self.assertEqual(gdmCodeTree([10]),[0])
-    # def test_twoWeights(self):
-    #     """Two Weights."""
-    #     self.assertEqual(gdmCodeTree([10,10]),[20,0,1])
+    def test_twoWeights(self):
+        """Two Weights."""
+        W = [10,10]
+        self.assertEqual(gdmCodeTree(W),PureNode(W,ExternalNode(W,0),ExternalNode(W,1)))
     # def test_fourEqualWeights(self):
     #     """Four Equal Weights."""
     #     self.assertEqual(gdmCodeTree([10,10,10,10]),[40,[20,0,1],[20,2,3]])
