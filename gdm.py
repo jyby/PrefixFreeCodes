@@ -40,21 +40,21 @@ class PureNode:
 >>> x = ExternalNode(W,0)
 >>> y = ExternalNode(W,1)
 >>> z = PureNode(W,x,y)
+>>> z2 = PureNode(W,x,y)
+>>> print(z == z2)
+True
+>>> x3 = ExternalNode(W,0)
+>>> y3 = ExternalNode(W,1)
+>>> z3 = PureNode(W,x3,y3)
+>>> print(z == z3)
+True
 >>> print(z.weight())
 20
 >>> print(x.weight())
 10
 >>> print(y.weight())
 10
->>> z2 = PureNode(W,x,y)
->>> print(z == z2)
-True
 """
-# >>> x3 = ExternalNode(W,0)
-# >>> y3 = ExternalNode(W,1)
-# >>> z3 = PureNode(W,x3,y3)
-# >>> print(z == z3)
-# True
     def __init__(self, partiallySortedArray, left, right):
         self.partiallySortedArray = partiallySortedArray
         self.left = left
@@ -95,7 +95,14 @@ I left it as it is so that the measures of the number of queries performed corre
 32
 >>> print(z.weight())
 48
-
+>>> z2 = MixedNode(x,y) 
+>>> print(z == z2)
+True
+>>> x3 = ExternalNode(W,0)
+>>> y3 = ExternalNode(W,1)
+>>> z3 = MixedNode(x3,y3)
+>>> print(z==z3)
+True
 """
     def __init__(self, left, right):
         self.left = left
@@ -106,6 +113,10 @@ I left it as it is so that the measures of the number of queries performed corre
         # if self.CachedValueOfWeight == None:
         #     self.CachedValueOfWeight =   (self.left).weight() + (self.right).weight()
         return self.CachedValueOfWeight
+    def __cmp__(self,other):
+        return self.left == other.left and self.right == other.right and self.CachedValueOfWeight == other.CachedValueOfWeight
+    def __eq__(self,other):
+        return self.__cmp__(other)
     
         
     
