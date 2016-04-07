@@ -117,11 +117,12 @@ True
         return self.left == other.left and self.right == other.right and self.CachedValueOfWeight == other.CachedValueOfWeight
     def __eq__(self,other):
         return self.__cmp__(other)
-    
+    def height(self):
+        return max(left.height(),right.height())
         
     
 def gdmCodeTree(frequencies):
-    """Given a sorted list of weights, return a code tree of minimal
+    """Given a partially sorted list of weights, return a code tree of minimal
     redundancy according to the GDM algorithm.
 
     """
@@ -131,43 +132,49 @@ def gdmCodeTree(frequencies):
         return ExternalNode(frequencies,0)
     elif len(frequencies)==2:
         return PureNode(frequencies,ExternalNode(frequencies,0),ExternalNode(frequencies,1))
-    # Phase "Initialization" 
-    externals = PartiallySortedArray(frequencies)
-    internals = []
-    currentMinExternal = externals.select(2)
-    currentMinInternal = externals.rangeSum(0,1)
-    internals.append([externals.rangeSum(0,1),0,1])
-    nbExternalsPaired = 2
-    # Phase "Group" 
-    r = externals.rank(currentMinInternal)
-    # Phase "Dock"
-    while nbExternalsPaired < len(externals):
-        internals.append([externals.rangeSum(nbExternalsPaired,nbExternalsPaired+1),nbExternalsPaired,nbExternalsPaired+1])
-        nbExternalsPaired += 2
-    # Phase "Conclusion" 
-    while len(internals) > 1:
-        left = internals[0]
-        right = internals[1]
-        internals= internals[2:]
-        parent = [left[0] + right[0], left,right]
-        internals.append(parent)
-    return internals[0]
+    # Phase "Initialization"
+    currentMinInternal = PureNode(frequencies,ExternalNode(frequencies,0),ExternalNode(frequencies,1))
+    nbFrequenciesProcessed = 2
+    nodes = [] 
+    while nbFrequenciesProcessed < len(frequencies):
+        # GROUP weights of similar weights: 
+        r = frequencies.rank(currentMinInternal.weight())
+        for i in range(nbFrequenciesProcessed,r):
+            nodes.append(ExternalNode(frequencies,i))
+        nbFrequenciesProcessed += r
+        # DOCK those weights to the level of the next External node
+        # while nodes[-1].weight() < frequencies.select(nbFrequenciesProcessed):
+        #     for i in range(len(nodes)//2):
+        #         nodes.append(PureNode(frequencies,nodes[i],nodes[i+1]))
+        # MERGE the internal nodes with the external nodes of similar weights
+        # (to be implemented later by a binary search in the list of nodes)
+    while len(nodes) > 1:
+        print(len(nodes))
+        if len(nodes)%2 == 1:
+            nodes[-1].weight()
+        for i in range( len(nodes) // 2):
+            nodes.append(MixedNode(nodes[i],nodes[i+1]))
+            nodes = nodes[2:]
+        return nodes[0]
 class gdmCodeTreeTest(unittest.TestCase):
     def test_empty(self):
         """Empty input."""
-        frequencies = []
+        frequencies = PartiallySortedArray([])
         self.assertEqual(gdmCodeTree(frequencies),None)
     def test_singleton(self):
         """Singleton input."""
-        frequencies = [10]
+        frequencies = PartiallySortedArray([10])
         self.assertEqual(gdmCodeTree(frequencies),ExternalNode(frequencies,0))
     def test_twoWeights(self):
         """Two Weights."""
-        W = [10,10]
+        W = PartiallySortedArray([10,10])
         self.assertEqual(gdmCodeTree(W),PureNode(W,ExternalNode(W,0),ExternalNode(W,1)))
-    # def test_fourEqualWeights(self):
-    #     """Four Equal Weights."""
-    #     self.assertEqual(gdmCodeTree([10,10,10,10]),[40,[20,0,1],[20,2,3]])
+    def test_fourEqualWeights(self):
+        """Four Equal Weights."""
+        W = PartiallySortedArray([10,10,10,10])
+        # T = PureNode(W,PureNode(W,ExternalNode(W,0),ExternalNode(W,1)),PureNode(W,ExternalNode(W,2),ExternalNode(W,3)))
+        # self.assertEqual(gdmCodeTree(W),T)
+        self.assertEqual(gdmCodeTree(W).weight(),40)
     # def test_threeWeights(self):
     #     """Three Weights."""
     #     self.assertEqual(gdmCodeTree([10,10,40]),[60,[20,0,1],[30,2]])
