@@ -4,6 +4,19 @@ from partiallySortedArrayWithPartialSumPrecomputed import PartiallySortedArray
 from depths import depths
 
 class ExternalNode:
+    """Given a partially sorted array W, and a poition in it, create the corresponding External node.
+    The weight is computed only at request by performing a select query in the partiallySortedArray.
+
+>>> W = PartiallySortedArray([150,140,130,120,110,32,16,10,10,10,10])
+>>> x = ExternalNode(W,0)
+>>> y = ExternalNode(W,0)
+>>> z = ExternalNode(W,1)
+>>> print(x == y)
+True
+>>> print(x == z)
+False
+
+"""
     def __init__(self, partiallySortedArray, position):
         self.partiallySortedArray = partiallySortedArray
         self.leftRange = position
@@ -33,25 +46,34 @@ class PureNode:
 10
 >>> print(y.weight())
 10
-
+>>> z2 = PureNode(W,x,y)
+>>> print(z == z2)
+True
 """
+# >>> x3 = ExternalNode(W,0)
+# >>> y3 = ExternalNode(W,1)
+# >>> z3 = PureNode(W,x3,y3)
+# >>> print(z == z3)
+# True
     def __init__(self, partiallySortedArray, left, right):
         self.partiallySortedArray = partiallySortedArray
         self.left = left
         self.right = right
-        if left.rightRange == right.leftRange:
-            self.leftRange = left.leftRange
-            self.rightRange = right.rightRange
-            if left.CachedValueOfWeight == None or right.CachedValueOfWeight == None:
-                self.CachedValueOfWeight = None
-            else:
-                self.CachedValueOfWeight = left.CachedValueOfWeight + right.CachedValueOfWeight
+        assert left.rightRange == right.leftRange, "Error: The leaves of those nodes are not consecutive in the codeTree."
+        self.leftRange = left.leftRange
+        self.rightRange = right.rightRange
+        if left.CachedValueOfWeight == None or right.CachedValueOfWeight == None:
+            self.CachedValueOfWeight = None
         else:
-            raise(Exception, "Error: The leaves of those nodes are not consecutive in the codeTree.")
+            self.CachedValueOfWeight = left.CachedValueOfWeight + right.CachedValueOfWeight
     def weight(self):
         if self.CachedValueOfWeight == None:
             self.CachedValueOfWeight = self.partiallySortedArray.rangeSum(self.leftRange,self.rightRange)
         return self.CachedValueOfWeight
+    def __cmp__(self,other):
+        return self.partiallySortedArray == other.partiallySortedArray and self.leftRange == other.leftRange and self.rightRange == other.rightRange and self.left == other.left and self.right == other.right and self.CachedValueOfWeight == other.CachedValueOfWeight
+    def __eq__(self,other):
+        return self.__cmp__(other)
 
 
 class MixedNode:
