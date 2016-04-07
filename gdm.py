@@ -13,6 +13,10 @@ class ExternalNode:
         if self.CachedValueOfWeight == None:
             self.CachedValueOfWeight = self.partiallySortedArray.select(self.leftRange)
         return self.CachedValueOfWeight
+    def __cmp__(self,other):
+        return self.partiallySortedArray == other.partiallySortedArray and self.leftRange == other.leftRange and self.rightRange == other.rightRange and self.CachedValueOfWeight == other.CachedValueOfWeight
+    def __eq__(self,other):
+        return self.__cmp__(other)
 
 class PureNode:
     """Given a partially sorted array W, and two indicators left and right describing a range in W,
@@ -91,7 +95,7 @@ def gdmCodeTree(frequencies):
     if len(frequencies) == 0 :
         return []
     elif len(frequencies)==1:
-        return [0]
+        return ExternalNode(frequencies,0)
     elif len(frequencies)==2:
         return [frequencies[0]+frequencies[1],0,1]
     # Phase "Initialization" 
@@ -115,10 +119,11 @@ def gdmCodeTree(frequencies):
         parent = [left[0] + right[0], left,right]
         internals.append(parent)
     return internals[0]
-# class gdmCodeTreeTest(unittest.TestCase):
-#     def test_empty(self):
-#         """Empty input."""
-#         self.assertEqual(gdmCodeTree([]),[])
+class gdmCodeTreeTest(unittest.TestCase):
+    def test_empty(self):
+        """Empty input."""
+        frequencies = [10]
+        self.assertEqual(gdmCodeTree(frequencies),ExternalNode(frequencies,0))
     # def test_singleton(self):
     #     """Singleton input."""
     #     self.assertEqual(gdmCodeTree([10]),[0])
