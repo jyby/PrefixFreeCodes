@@ -35,19 +35,13 @@ class PureNode:
         self.partiallySortedArray = partiallySortedArray
         self.left = left
         self.right = right
-        if (type(left) == PureNode or type(left)==ExternalNode) and (type(right) == PureNode or type(right)==ExternalNode) and  left.rightRange == right.leftRange :
-            self.leftRange = left.leftRange
-            self.rightRange = right.rightRange
-            if left.CachedValueOfWeight == None or right.CachedValueOfWeight == None:
-                self.CachedValueOfWeight = None
-            else:
-                self.CachedValueOfWeight = left.CachedValueOfWeight + right.CachedValueOfWeight
+        assert( (type(left) == PureNode or type(left)==ExternalNode) and (type(right) == PureNode or type(right)==ExternalNode) and  left.rightRange == right.leftRange)
+        self.leftRange = left.leftRange
+        self.rightRange = right.rightRange
+        if left.CachedValueOfWeight == None or right.CachedValueOfWeight == None:
+            self.CachedValueOfWeight = None
         else:
-            self.leftRange = None
-            self.rightRange = None
-            self.left = left
-            self.right = right
-            self.CachedValueOfWeight = left.weight() + right.weight()
+            self.CachedValueOfWeight = left.CachedValueOfWeight + right.CachedValueOfWeight
     def weight(self):
         if self.CachedValueOfWeight == None:
             self.CachedValueOfWeight = self.partiallySortedArray.rangeSum(self.leftRange,self.rightRange)
