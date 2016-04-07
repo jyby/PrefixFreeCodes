@@ -30,6 +30,8 @@ False
         return self.partiallySortedArray == other.partiallySortedArray and self.leftRange == other.leftRange and self.rightRange == other.rightRange and self.CachedValueOfWeight == other.CachedValueOfWeight
     def __eq__(self,other):
         return self.__cmp__(other)
+    def __str__(self):
+        return "["+str(self.CachedValueOfWeight)+"]"
 
 class PureNode:
     """Given a partially sorted array W, and two indicators left and right describing a range in W,
@@ -74,6 +76,8 @@ True
         return self.partiallySortedArray == other.partiallySortedArray and self.leftRange == other.leftRange and self.rightRange == other.rightRange and self.left == other.left and self.right == other.right and self.CachedValueOfWeight == other.CachedValueOfWeight
     def __eq__(self,other):
         return self.__cmp__(other)
+    def __str__(self):
+        return "("+str(self.CachedValueOfWeight)+","+str(self.left)+","+str(self.right)+")"
 
 
 class MixedNode:
@@ -117,6 +121,8 @@ True
         return self.left == other.left and self.right == other.right and self.CachedValueOfWeight == other.CachedValueOfWeight
     def __eq__(self,other):
         return self.__cmp__(other)
+    def __str__(self):
+        return "{"+str(self.CachedValueOfWeight)+","+str(self.left)+","+str(self.right)+"}"
     def height(self):
         return max(left.height(),right.height())
         
@@ -149,12 +155,12 @@ def gdmCodeTree(frequencies):
         # MERGE the internal nodes with the external nodes of similar weights
         # (to be implemented later by a binary search in the list of nodes)
     while len(nodes) > 1:
-        print(len(nodes))
         if len(nodes)%2 == 1:
             nodes[-1].weight()
         for i in range( len(nodes) // 2):
             nodes.append(MixedNode(nodes[i],nodes[i+1]))
             nodes = nodes[2:]
+        print(nodes[0])
         return nodes[0]
 class gdmCodeTreeTest(unittest.TestCase):
     def test_empty(self):
