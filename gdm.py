@@ -35,13 +35,15 @@ class PureNode:
         self.partiallySortedArray = partiallySortedArray
         self.left = left
         self.right = right
-        assert( (type(left) == PureNode or type(left)==ExternalNode) and (type(right) == PureNode or type(right)==ExternalNode) and  left.rightRange == right.leftRange)
-        self.leftRange = left.leftRange
-        self.rightRange = right.rightRange
-        if left.CachedValueOfWeight == None or right.CachedValueOfWeight == None:
-            self.CachedValueOfWeight = None
+        if left.rightRange == right.leftRange:
+            self.leftRange = left.leftRange
+            self.rightRange = right.rightRange
+            if left.CachedValueOfWeight == None or right.CachedValueOfWeight == None:
+                self.CachedValueOfWeight = None
+            else:
+                self.CachedValueOfWeight = left.CachedValueOfWeight + right.CachedValueOfWeight
         else:
-            self.CachedValueOfWeight = left.CachedValueOfWeight + right.CachedValueOfWeight
+            raise(Exception, "Error: The leaves of those nodes are not consecutive in the codeTree.")
     def weight(self):
         if self.CachedValueOfWeight == None:
             self.CachedValueOfWeight = self.partiallySortedArray.rangeSum(self.leftRange,self.rightRange)
@@ -81,54 +83,54 @@ I left it as it is so that the measures of the number of queries performed corre
     
         
     
-# def gdmCodeTree(frequencies):
-#     """Given a sorted list of weights, return a code tree of minimal
-#     redundancy according to the GDM algorithm.
+def gdmCodeTree(frequencies):
+    """Given a sorted list of weights, return a code tree of minimal
+    redundancy according to the GDM algorithm.
 
-#     """
-#     if len(frequencies) == 0 :
-#         return []
-#     elif len(frequencies)==1:
-#         return [0]
-#     elif len(frequencies)==2:
-#         return [frequencies[0]+frequencies[1],0,1]
-#     # Phase "Initialization" 
-#     externals = PartiallySortedArray(frequencies)
-#     internals = []
-#     currentMinExternal = externals.select(2)
-#     currentMinInternal = externals.rangeSum(0,1)
-#     internals.append([externals.rangeSum(0,1),0,1])
-#     nbExternalsPaired = 2
-#     # Phase "Group" 
-#     r = externals.rank(currentMinInternal)
-#     # Phase "Dock"
-#     while nbExternalsPaired < len(externals):
-#         internals.append([externals.rangeSum(nbExternalsPaired,nbExternalsPaired+1),nbExternalsPaired,nbExternalsPaired+1])
-#         nbExternalsPaired += 2
-#     # Phase "Conclusion" 
-#     while len(internals) > 1:
-#         left = internals[0]
-#         right = internals[1]
-#         internals= internals[2:]
-#         parent = [left[0] + right[0], left,right]
-#         internals.append(parent)
-#     return internals[0]
+    """
+    if len(frequencies) == 0 :
+        return []
+    elif len(frequencies)==1:
+        return [0]
+    elif len(frequencies)==2:
+        return [frequencies[0]+frequencies[1],0,1]
+    # Phase "Initialization" 
+    externals = PartiallySortedArray(frequencies)
+    internals = []
+    currentMinExternal = externals.select(2)
+    currentMinInternal = externals.rangeSum(0,1)
+    internals.append([externals.rangeSum(0,1),0,1])
+    nbExternalsPaired = 2
+    # Phase "Group" 
+    r = externals.rank(currentMinInternal)
+    # Phase "Dock"
+    while nbExternalsPaired < len(externals):
+        internals.append([externals.rangeSum(nbExternalsPaired,nbExternalsPaired+1),nbExternalsPaired,nbExternalsPaired+1])
+        nbExternalsPaired += 2
+    # Phase "Conclusion" 
+    while len(internals) > 1:
+        left = internals[0]
+        right = internals[1]
+        internals= internals[2:]
+        parent = [left[0] + right[0], left,right]
+        internals.append(parent)
+    return internals[0]
 # class gdmCodeTreeTest(unittest.TestCase):
 #     def test_empty(self):
 #         """Empty input."""
 #         self.assertEqual(gdmCodeTree([]),[])
-#     def test_singleton(self):
-#         """Singleton input."""
-#         self.assertEqual(gdmCodeTree([10]),[0])
-#     def test_twoWeights(self):
-#         """Two Weights."""
-#         self.assertEqual(gdmCodeTree([10,10]),[20,0,1])
-#     def test_fourEqualWeights(self):
-#         """Four Equal Weights."""
-#         self.assertEqual(gdmCodeTree([10,10,10,10]),[40,[20,0,1],[20,2,3]])
-#     def test_threeWeights(self):
-#         """Three Weights."""
-#         self.assertEqual(gdmCodeTree([10,10,40]),[60,[20,0,1],[30,2]])
+    # def test_singleton(self):
+    #     """Singleton input."""
+    #     self.assertEqual(gdmCodeTree([10]),[0])
+    # def test_twoWeights(self):
+    #     """Two Weights."""
+    #     self.assertEqual(gdmCodeTree([10,10]),[20,0,1])
+    # def test_fourEqualWeights(self):
+    #     """Four Equal Weights."""
+    #     self.assertEqual(gdmCodeTree([10,10,10,10]),[40,[20,0,1],[20,2,3]])
+    # def test_threeWeights(self):
+    #     """Three Weights."""
+    #     self.assertEqual(gdmCodeTree([10,10,40]),[60,[20,0,1],[30,2]])
     
     
 # def gdm(frequencies):
