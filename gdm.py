@@ -33,6 +33,60 @@ False
     def __str__(self):
         return "["+str(self.CachedValueOfWeight)+"]"
 
+
+class InternalNode:
+    """Given a partially sorted array W and two pointers, builds a node of the codeTree for the GDM algorithm.  The weight is computed only at request.
+
+>>> W = PartiallySortedArray([100,100,50,10,10])
+>>> x = ExternalNode(W,0)
+>>> y = ExternalNode(W,1)
+>>> z = InternalNode(W,x,y)
+>>> print(W.totalNbOfQueriesPerformed())
+0
+>>> print(x.weight())
+10
+>>> print(y.weight())
+10
+>>> print(z.weight())
+20
+>>> x2 = ExternalNode(W,3)
+>>> y2 = ExternalNode(W,4)
+>>> z2 = InternalNode(W,x2,y2)
+>>> print(z2.weight())
+200
+>>> z3 = InternalNode(W,z,z2)
+>>> print(z3.weight())
+220
+
+"""
+    def __init__(self, partiallySortedArray, left, right):
+        self.partiallySortedArray = partiallySortedArray
+        self.left = left
+        self.right = right
+        if(left.rightRange == right.leftRange and left.leftRange != None):
+            self.leftRange = left.leftRange
+            self.rightRange = right.rightRange
+        else:
+            self.leftRange = None
+            self.rightRange = None
+        if left.CachedValueOfWeight == None or right.CachedValueOfWeight == None:
+            self.CachedValueOfWeight = None
+        else:
+            self.CachedValueOfWeight = left.CachedValueOfWeight + right.CachedValueOfWeight
+    def weight(self):
+        if self.CachedValueOfWeight == None:
+            if self.leftRange != None and self.rightRange != None:
+                self.CachedValueOfWeight = self.partiallySortedArray.rangeSum(self.leftRange,self.rightRange)
+            else:
+                self.CachedValueOfWeight = self.left.weight() + self.right.weight()
+        return self.CachedValueOfWeight
+    def __cmp__(self,other):
+        return self.partiallySortedArray == other.partiallySortedArray and self.leftRange == other.leftRange and self.rightRange == other.rightRange and self.left == other.left and self.right == other.right and self.CachedValueOfWeight == other.CachedValueOfWeight
+    def __eq__(self,other):
+        return self.__cmp__(other)
+    def __str__(self):
+        return "("+str(self.CachedValueOfWeight)+","+str(self.left)+","+str(self.right)+")"
+
 class PureNode:
     """Given a partially sorted array W, and two indicators left and right describing a range in W,
     represent a pure node, which leaves have for weights exactly the range [left,right[ in sorted(W).
