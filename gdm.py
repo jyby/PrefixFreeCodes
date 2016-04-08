@@ -25,6 +25,10 @@ False
         if self.CachedValueOfWeight == None:
             self.CachedValueOfWeight = self.partiallySortedArray.select(self.leftRange)
         return self.CachedValueOfWeight
+    def depths(self, depth=0):
+        """Given a code tree, return the (unsorted) list of the depths of its leaves.
+        """
+        return [depth]
     def __cmp__(self,other):
         return self.partiallySortedArray == other.partiallySortedArray and self.leftRange == other.leftRange and self.rightRange == other.rightRange and self.CachedValueOfWeight == other.CachedValueOfWeight
     def __eq__(self,other):
@@ -56,7 +60,8 @@ class InternalNode:
 >>> z3 = InternalNode(W,z,z2)
 >>> print(z3.weight())
 220
-
+>>> print(z3.depths())
+[2, 2, 2, 2]
 """
     def __init__(self, partiallySortedArray, left, right):
         self.partiallySortedArray = partiallySortedArray
@@ -79,13 +84,19 @@ class InternalNode:
             else:
                 self.CachedValueOfWeight = self.left.weight() + self.right.weight()
         return self.CachedValueOfWeight
+    def depths(self, depth=0):
+        """Given a code tree, return the (unsorted) list of the depths of its leaves.
+        """
+        depthsOnLeft =  self.left.depths(depth+1)
+        depthsOnRight = self.right.depths(depth+1)
+        return depthsOnLeft+depthsOnRight
     def __cmp__(self,other):
         return self.partiallySortedArray == other.partiallySortedArray and self.leftRange == other.leftRange and self.rightRange == other.rightRange and self.left == other.left and self.right == other.right and self.CachedValueOfWeight == other.CachedValueOfWeight
     def __eq__(self,other):
         return self.__cmp__(other)
     def __str__(self):
         return "("+str(self.CachedValueOfWeight)+","+str(self.left)+","+str(self.right)+")"
-
+    
 def gdmCodeTree(frequencies):
     """Given a partially sorted list of weights, return a code tree of minimal
     redundancy according to the GDM algorithm.
