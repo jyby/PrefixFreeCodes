@@ -82,11 +82,24 @@ class PartiallySortedArray():
 """
         return self.partialSum(right)-self.partialSum(left)
 
-    def totalNbOfQueriesPerformed():
+    def totalNbOfQueriesPerformed(self):
         """Returns the total number of queries performed on the Partially Sorted Array.
 
+
+>>> S = PartiallySortedArray([50,40,30,20,10])
+>>> print(S.select(2))
+30
+>>> print(S.nbSelectQueriesProcessed)
+1
+>>> print(S.totalNbOfQueriesPerformed())
+1
+>>> print(S.select(0))
+10
+>>> print(S.totalNbOfQueriesPerformed())
+2
+
 """
-        return(nbRankQueriesProcessed+nbSelectQueriesProcessed+nbPartialSumQueriesProcessed)
+        return(self.nbRankQueriesProcessed+self.nbSelectQueriesProcessed+self.nbPartialSumQueriesProcessed)
         
 def main():
     unittest.main()
