@@ -1,7 +1,6 @@
 import unittest, doctest, copy
 from functionsToTestPrefixFreeCodes import testPFCAlgorithm, compressByRunLengths
 from partiallySortedArrayWithPartialSumPrecomputed import PartiallySortedArray
-from depths import depths
 
 class ExternalNode:
     """Given a partially sorted array W, and a position in it, create the corresponding External node.
@@ -87,100 +86,6 @@ class InternalNode:
     def __str__(self):
         return "("+str(self.CachedValueOfWeight)+","+str(self.left)+","+str(self.right)+")"
 
-class PureNode:
-    """Given a partially sorted array W, and two indicators left and right describing a range in W,
-    represent a pure node, which leaves have for weights exactly the range [left,right[ in sorted(W).
-    The weight is computed only at request.
-
->>> W = PartiallySortedArray([150,140,130,120,110,32,16,10,10,10,10])
->>> x = ExternalNode(W,0)
->>> y = ExternalNode(W,1)
->>> z = PureNode(W,x,y)
->>> z2 = PureNode(W,x,y)
->>> print(z == z2)
-True
->>> x3 = ExternalNode(W,0)
->>> y3 = ExternalNode(W,1)
->>> z3 = PureNode(W,x3,y3)
->>> print(z == z3)
-True
->>> print(z.weight())
-20
->>> print(x.weight())
-10
->>> print(y.weight())
-10
-"""
-    def __init__(self, partiallySortedArray, left, right):
-        self.partiallySortedArray = partiallySortedArray
-        self.left = left
-        self.right = right
-        assert left.rightRange == right.leftRange, "Error: The leaves of those nodes are not consecutive in the codeTree."
-        self.leftRange = left.leftRange
-        self.rightRange = right.rightRange
-        if left.CachedValueOfWeight == None or right.CachedValueOfWeight == None:
-            self.CachedValueOfWeight = None
-        else:
-            self.CachedValueOfWeight = left.CachedValueOfWeight + right.CachedValueOfWeight
-    def weight(self):
-        if self.CachedValueOfWeight == None:
-            self.CachedValueOfWeight = self.partiallySortedArray.rangeSum(self.leftRange,self.rightRange)
-        return self.CachedValueOfWeight
-    def __cmp__(self,other):
-        return self.partiallySortedArray == other.partiallySortedArray and self.leftRange == other.leftRange and self.rightRange == other.rightRange and self.left == other.left and self.right == other.right and self.CachedValueOfWeight == other.CachedValueOfWeight
-    def __eq__(self,other):
-        return self.__cmp__(other)
-    def __str__(self):
-        return "("+str(self.CachedValueOfWeight)+","+str(self.left)+","+str(self.right)+")"
-
-
-class MixedNode:
-    """Internal Node which leaves are separated by a pivot.
-
-Its weight is computed at construction (mostly to simplify the complexity of analysis of the GDM algorithm),
-but it could equally be computed recursively in a lazy variant of the algorithm (future work). 
-
-Note: the implementation could be optimized (a lot) by computing the weight only when it is required (as in the commented code), but I don't know how to analize the resulting computing time yet.
-I left it as it is so that the measures of the number of queries performed correspond to the state of the complexity analysis in the CPM 2016 paper.
-
->>> W = PartiallySortedArray([150,140,130,120,110,32,16])
->>> x = ExternalNode(W,0)
->>> y = ExternalNode(W,1)
->>> z = MixedNode(x,y)
->>> print(x.weight())
-16
->>> print(y.weight())
-32
->>> print(z.weight())
-48
->>> z2 = MixedNode(x,y) 
->>> print(z == z2)
-True
->>> x3 = ExternalNode(W,0)
->>> y3 = ExternalNode(W,1)
->>> z3 = MixedNode(x3,y3)
->>> print(z==z3)
-True
-"""
-    def __init__(self, left, right):
-        self.left = left
-        self.right = right
-        self.CachedValueOfWeight =  left.weight() + right.weight()
-        # self.CachedValueOfWeight =  None
-    def weight(self):
-        # if self.CachedValueOfWeight == None:
-        #     self.CachedValueOfWeight =   (self.left).weight() + (self.right).weight()
-        return self.CachedValueOfWeight
-    def __cmp__(self,other):
-        return self.left == other.left and self.right == other.right and self.CachedValueOfWeight == other.CachedValueOfWeight
-    def __eq__(self,other):
-        return self.__cmp__(other)
-    def __str__(self):
-        return "{"+str(self.CachedValueOfWeight)+","+str(self.left)+","+str(self.right)+"}"
-    def height(self):
-        return max(left.height(),right.height())
-        
-    
 def gdmCodeTree(frequencies):
     """Given a partially sorted list of weights, return a code tree of minimal
     redundancy according to the GDM algorithm.
@@ -191,9 +96,9 @@ def gdmCodeTree(frequencies):
     elif len(frequencies)==1:
         return ExternalNode(frequencies,0)
     elif len(frequencies)==2:
-        return PureNode(frequencies,ExternalNode(frequencies,0),ExternalNode(frequencies,1))
+        return InternalNode(frequencies,ExternalNode(frequencies,0),ExternalNode(frequencies,1))
     # Phase "Initialization"
-    nodes = [PureNode(frequencies,ExternalNode(frequencies,0),ExternalNode(frequencies,1))] 
+    nodes = [InternalNode(frequencies,ExternalNode(frequencies,0),ExternalNode(frequencies,1))] 
     nbFrequenciesProcessed = 2
     # while nbFrequenciesProcessed < len(frequencies):
     # GROUP weights of similar weights: 
@@ -203,12 +108,12 @@ def gdmCodeTree(frequencies):
     for i in range((r-nbFrequenciesProcessed)//2):
         left = ExternalNode(frequencies,nbFrequenciesProcessed+2*i)
         right = ExternalNode(frequencies,nbFrequenciesProcessed+2*i+1)        
-        nodes.append(PureNode(frequencies,left,right))
+        nodes.append(InternalNode(frequencies,left,right))
     nbFrequenciesProcessed += r
     # DOCK those weights to the level of the next External node
     # while nodes[-1].weight() < frequencies.select(nbFrequenciesProcessed):
     #     for i in range(len(nodes)//2):
-    #         nodes.append(PureNode(frequencies,nodes[i],nodes[i+1]))
+    #         nodes.append(InternalNode(frequencies,nodes[i],nodes[i+1]))
     # MERGE the internal nodes with the external nodes of similar weights
     # (to be implemented later by a binary search in the list of nodes)
     # WRAP-UP when there are only internal nodes left.
@@ -216,8 +121,9 @@ def gdmCodeTree(frequencies):
         if len(nodes) % 2 == 1:
             nodes[-1].weight()
         for i in range( len(nodes) // 2):
-            nodes.append(MixedNode(nodes[0],nodes[1]))
+            nodes.append(InternalNode(frequencies,nodes[0],nodes[1]))
             nodes = nodes[2:]
+    nodes[0].weight()
     return nodes[0]
 class gdmCodeTreeTest(unittest.TestCase):
     def test_empty(self):
@@ -231,12 +137,12 @@ class gdmCodeTreeTest(unittest.TestCase):
     def test_twoWeights(self):
         """Two Weights."""
         W = PartiallySortedArray([10,10])
-        self.assertEqual(gdmCodeTree(W),PureNode(W,ExternalNode(W,0),ExternalNode(W,1)))
+        self.assertEqual(gdmCodeTree(W),InternalNode(W,ExternalNode(W,0),ExternalNode(W,1)))
     def test_fourEqualWeights(self):
         """Four Equal Weights."""
         W = PartiallySortedArray([10]*4)
         T = gdmCodeTree(W)
-        self.assertEqual(str(T),"{40,(20,[None],[None]),(20,[None],[None])}")
+        self.assertEqual(str(T),"(40,(20,[None],[None]),(None,[None],[None]))")
     def test_sixteenEqualWeights(self):
         """Four Equal Weights."""
         W = PartiallySortedArray([10]*16)
@@ -246,17 +152,17 @@ class gdmCodeTreeTest(unittest.TestCase):
         """Eight Similar Weights."""
         W = PartiallySortedArray([10,11,12,13,14,15,16,17])
         T = gdmCodeTree(W)
-        self.assertEqual(str(T),"{108,{46,(21,[None],[None]),(25,[None],[None])},{62,(29,[None],[None]),(33,[None],[None])}}")
+        self.assertEqual(str(T),"(108,(None,(21,[None],[None]),(None,[None],[None])),(None,(None,[None],[None]),(None,[None],[None])))")
     def test_threeEqualWeights(self):
         """Three Equal Weights."""
         W = PartiallySortedArray([10]*3)
         T = gdmCodeTree(W)
-        self.assertEqual(str(T),"{30,[10],(20,[None],[None])}")
+        self.assertEqual(str(T),"(30,[10],(20,[None],[None]))")
     def test_threeSimilarWeights(self):
         """Three Similar Weights."""
         W = PartiallySortedArray([12,11,10])
         T = gdmCodeTree(W)
-        self.assertEqual(str(T),"{33,[12],(21,[None],[None])}")
+        self.assertEqual(str(T),"(33,[12],(21,[None],[None]))")
     
     
 # def gdm(frequencies):
