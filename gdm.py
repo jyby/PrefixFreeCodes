@@ -145,7 +145,7 @@ def gdmCodeTree(frequencies):
     # GROUP weights of similar weights: 
     r = frequencies.rank(nodes[0].weight())
     if (r-nbFrequenciesProcessed) % 2 == 1:
-        nodes.insert(ExternalNode(frequencies,r),0)
+        nodes = [ExternalNode(frequencies,r-1)]+nodes
     for i in range((r-nbFrequenciesProcessed)//2):
         left = ExternalNode(frequencies,nbFrequenciesProcessed+2*i)
         right = ExternalNode(frequencies,nbFrequenciesProcessed+2*i+1)        
@@ -193,9 +193,11 @@ class gdmCodeTreeTest(unittest.TestCase):
         W = PartiallySortedArray([10,11,12,13,14,15,16,17])
         T = gdmCodeTree(W)
         self.assertEqual(str(T),"{108,{46,(21,[None],[None]),(25,[None],[None])},{62,(29,[None],[None]),(33,[None],[None])}}")
-    # def test_threeWeights(self):
-    #     """Three Weights."""
-    #     self.assertEqual(gdmCodeTree([10,10,40]),[60,[20,0,1],[30,2]])
+    def test_threeWeights(self):
+        """Three Weights."""
+        W = PartiallySortedArray([10]*3)
+        T = gdmCodeTree(W)
+        self.assertEqual(str(T),"{30,[10],(20,[None],[None])}")
     
     
 # def gdm(frequencies):
