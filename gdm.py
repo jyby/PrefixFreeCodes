@@ -148,32 +148,44 @@ class gdmCodeTreeTest(unittest.TestCase):
     def test_twoWeights(self):
         """Two Weights."""
         W = PartiallySortedArray([10,10])
-        self.assertEqual(gdmCodeTree(W),InternalNode(W,ExternalNode(W,0),ExternalNode(W,1)))
+        T = gdmCodeTree(W)
+        self.assertEqual(T,InternalNode(W,ExternalNode(W,0),ExternalNode(W,1)))
+        L = T.depths()
+        self.assertEqual(L,[1]*2)
     def test_fourEqualWeights(self):
         """Four Equal Weights."""
         W = PartiallySortedArray([10]*4)
         T = gdmCodeTree(W)
         self.assertEqual(str(T),"(40,(20,[None],[None]),(None,[None],[None]))")
+        L = T.depths()
+        self.assertEqual(L,[2]*4)
     def test_sixteenEqualWeights(self):
-        """Four Equal Weights."""
+        """Sixteen Equal Weights."""
         W = PartiallySortedArray([10]*16)
         T = gdmCodeTree(W)
         self.assertEqual(T.weight(),W.rangeSum(0,len(W)))        
+        L = T.depths()
+        self.assertEqual(L,[4]*16)
     def test_eightSimilarWeights(self):
         """Eight Similar Weights."""
         W = PartiallySortedArray([10,11,12,13,14,15,16,17])
         T = gdmCodeTree(W)
-        self.assertEqual(str(T),"(108,(None,(21,[None],[None]),(None,[None],[None])),(None,(None,[None],[None]),(None,[None],[None])))")
+        L = T.depths()
+        self.assertEqual(L,[3]*8)
     def test_threeEqualWeights(self):
         """Three Equal Weights."""
         W = PartiallySortedArray([10]*3)
         T = gdmCodeTree(W)
         self.assertEqual(str(T),"(30,[10],(20,[None],[None]))")
+        L = T.depths()
+        self.assertEqual(L,[1,2,2])
     def test_threeSimilarWeights(self):
         """Three Similar Weights."""
         W = PartiallySortedArray([12,11,10])
         T = gdmCodeTree(W)
         self.assertEqual(str(T),"(33,[12],(21,[None],[None]))")
+        L = T.depths()
+        self.assertEqual(L,[1,2,2])
     
     
 # def gdm(frequencies):
