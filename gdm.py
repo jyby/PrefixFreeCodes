@@ -4,7 +4,7 @@ from partiallySortedArrayWithPartialSumPrecomputed import PartiallySortedArray
 from depths import depths
 
 class ExternalNode:
-    """Given a partially sorted array W, and a poition in it, create the corresponding External node.
+    """Given a partially sorted array W, and a position in it, create the corresponding External node.
     The weight is computed only at request by performing a select query in the partiallySortedArray.
 
 >>> W = PartiallySortedArray([150,140,130,120,110,32,16,10,10,10,10])
@@ -139,29 +139,32 @@ def gdmCodeTree(frequencies):
     elif len(frequencies)==2:
         return PureNode(frequencies,ExternalNode(frequencies,0),ExternalNode(frequencies,1))
     # Phase "Initialization"
-    currentMinInternal = PureNode(frequencies,ExternalNode(frequencies,0),ExternalNode(frequencies,1))
+    nodes = [PureNode(frequencies,ExternalNode(frequencies,0),ExternalNode(frequencies,1))] 
     nbFrequenciesProcessed = 2
-    nodes = [] 
-    while nbFrequenciesProcessed < len(frequencies):
-        # GROUP weights of similar weights: 
-        r = frequencies.rank(currentMinInternal.weight())
-        for i in range(nbFrequenciesProcessed,r):
-            nodes.append(ExternalNode(frequencies,i))
-        nbFrequenciesProcessed += r
-        # DOCK those weights to the level of the next External node
-        # while nodes[-1].weight() < frequencies.select(nbFrequenciesProcessed):
-        #     for i in range(len(nodes)//2):
-        #         nodes.append(PureNode(frequencies,nodes[i],nodes[i+1]))
-        # MERGE the internal nodes with the external nodes of similar weights
-        # (to be implemented later by a binary search in the list of nodes)
+    # while nbFrequenciesProcessed < len(frequencies):
+    # GROUP weights of similar weights: 
+    r = frequencies.rank(nodes[0].weight())
+    if (r-nbFrequenciesProcessed) % 2 == 1:
+        nodes.insert(ExternalNode(frequencies,r),0)
+    for i in range((r-nbFrequenciesProcessed)//2):
+        left = ExternalNode(frequencies,nbFrequenciesProcessed+2*i)
+        right = ExternalNode(frequencies,nbFrequenciesProcessed+2*i+1)        
+        nodes.append(PureNode(frequencies,left,right))
+    nbFrequenciesProcessed += r
+    # DOCK those weights to the level of the next External node
+    # while nodes[-1].weight() < frequencies.select(nbFrequenciesProcessed):
+    #     for i in range(len(nodes)//2):
+    #         nodes.append(PureNode(frequencies,nodes[i],nodes[i+1]))
+    # MERGE the internal nodes with the external nodes of similar weights
+    # (to be implemented later by a binary search in the list of nodes)
+    # WRAP-UP when there are only internal nodes left.
     while len(nodes) > 1:
-        if len(nodes)%2 == 1:
+        if len(nodes) % 2 == 1:
             nodes[-1].weight()
         for i in range( len(nodes) // 2):
-            nodes.append(MixedNode(nodes[i],nodes[i+1]))
+            nodes.append(MixedNode(nodes[0],nodes[1]))
             nodes = nodes[2:]
-        print(nodes[0])
-        return nodes[0]
+    return nodes[0]
 class gdmCodeTreeTest(unittest.TestCase):
     def test_empty(self):
         """Empty input."""
@@ -177,10 +180,19 @@ class gdmCodeTreeTest(unittest.TestCase):
         self.assertEqual(gdmCodeTree(W),PureNode(W,ExternalNode(W,0),ExternalNode(W,1)))
     def test_fourEqualWeights(self):
         """Four Equal Weights."""
-        W = PartiallySortedArray([10,10,10,10])
-        # T = PureNode(W,PureNode(W,ExternalNode(W,0),ExternalNode(W,1)),PureNode(W,ExternalNode(W,2),ExternalNode(W,3)))
-        # self.assertEqual(gdmCodeTree(W),T)
-        self.assertEqual(gdmCodeTree(W).weight(),40)
+        W = PartiallySortedArray([10]*4)
+        T = gdmCodeTree(W)
+        self.assertEqual(str(T),"{40,(20,[None],[None]),(20,[None],[None])}")
+    def test_sixteenEqualWeights(self):
+        """Four Equal Weights."""
+        W = PartiallySortedArray([10]*16)
+        T = gdmCodeTree(W)
+        self.assertEqual(T.weight(),W.rangeSum(0,len(W)))        
+    def test_eightSimilarWeights(self):
+        """Eight Similar Weights."""
+        W = PartiallySortedArray([10,11,12,13,14,15,16,17])
+        T = gdmCodeTree(W)
+        self.assertEqual(str(T),"{108,{46,(21,[None],[None]),(25,[None],[None])},{62,(29,[None],[None]),(33,[None],[None])}}")
     # def test_threeWeights(self):
     #     """Three Weights."""
     #     self.assertEqual(gdmCodeTree([10,10,40]),[60,[20,0,1],[30,2]])
