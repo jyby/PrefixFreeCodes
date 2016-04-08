@@ -193,11 +193,16 @@ class gdmCodeTreeTest(unittest.TestCase):
         W = PartiallySortedArray([10,11,12,13,14,15,16,17])
         T = gdmCodeTree(W)
         self.assertEqual(str(T),"{108,{46,(21,[None],[None]),(25,[None],[None])},{62,(29,[None],[None]),(33,[None],[None])}}")
-    def test_threeWeights(self):
-        """Three Weights."""
+    def test_threeEqualWeights(self):
+        """Three Equal Weights."""
         W = PartiallySortedArray([10]*3)
         T = gdmCodeTree(W)
         self.assertEqual(str(T),"{30,[10],(20,[None],[None])}")
+    def test_threeSimilarWeights(self):
+        """Three Similar Weights."""
+        W = PartiallySortedArray([12,11,10])
+        T = gdmCodeTree(W)
+        self.assertEqual(str(T),"{33,[12],(21,[None],[None])}")
     
     
 # def gdm(frequencies):
