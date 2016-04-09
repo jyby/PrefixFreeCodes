@@ -107,27 +107,31 @@ def gdmCodeTree(frequencies):
         return None
     elif len(frequencies)==1:
         return ExternalNode(frequencies,0)
-    elif len(frequencies)==2:
-        return InternalNode(frequencies,ExternalNode(frequencies,0),ExternalNode(frequencies,1))
-    # Phase "Initialization"
+    # INITIALIZATION
     nodes = [InternalNode(frequencies,ExternalNode(frequencies,0),ExternalNode(frequencies,1))] 
     nbFrequenciesProcessed = 2
-    # while nbFrequenciesProcessed < len(frequencies):
-    # GROUP weights of similar weights: 
-    r = frequencies.rank(nodes[0].weight())
-    if (r-nbFrequenciesProcessed) % 2 == 1:
-        nodes = [ExternalNode(frequencies,r-1)]+nodes
-    for i in range((r-nbFrequenciesProcessed)//2):
-        left = ExternalNode(frequencies,nbFrequenciesProcessed+2*i)
-        right = ExternalNode(frequencies,nbFrequenciesProcessed+2*i+1)        
-        nodes.append(InternalNode(frequencies,left,right))
-    nbFrequenciesProcessed += r
-    # DOCK those weights to the level of the next External node
-    # while nodes[-1].weight() < frequencies.select(nbFrequenciesProcessed):
-    #     for i in range(len(nodes)//2):
-    #         nodes.append(InternalNode(frequencies,nodes[i],nodes[i+1]))
-    # MERGE the internal nodes with the external nodes of similar weights
-    # (to be implemented later by a binary search in the list of nodes)
+    while nbFrequenciesProcessed < len(frequencies):
+        # GROUP weights of similar weights: 
+        r = frequencies.rank(nodes[0].weight())
+        if (r-nbFrequenciesProcessed) % 2 == 1:
+            nodes = [ExternalNode(frequencies,r-1)]+nodes
+        for i in range((r-nbFrequenciesProcessed)//2):
+            left = ExternalNode(frequencies,nbFrequenciesProcessed+2*i)
+            right = ExternalNode(frequencies,nbFrequenciesProcessed+2*i+1)        
+            nodes.append(InternalNode(frequencies,left,right))
+        nbFrequenciesProcessed = r
+        if nbFrequenciesProcessed == len(frequencies):
+            break
+        print(str(nbFrequenciesProcessed)+" frequencies processed out of "+str(len(frequencies)))
+        # DOCK current nodes to the level of the next External node
+        while len(nodes)>1 and nodes[-1].weight() <= frequencies.select(nbFrequenciesProcessed):
+            print(str(len(nodes))+" nodes left, of maximal weight "+str(nodes[-1].weight(),))
+            nbPairsToForm = len(nodes)//2
+            for i in range(nbPairsToForm):
+                nodes.append(InternalNode(frequencies,nodes[0],nodes[1]))
+                nodes = nodes[2:]
+        # MERGE the internal nodes with the external nodes of similar weights
+        # (to be implemented later by a binary search in the list of nodes)
     # WRAP-UP when there are only internal nodes left.
     while len(nodes) > 1:
         if len(nodes) % 2 == 1:
@@ -137,86 +141,110 @@ def gdmCodeTree(frequencies):
             nodes = nodes[2:]
     nodes[0].weight()
     return nodes[0]
+
 class gdmCodeTreeTest(unittest.TestCase):
     def test_empty(self):
         """Empty input."""
         frequencies = PartiallySortedArray([])
         self.assertEqual(gdmCodeTree(frequencies),None)
     def test_singleton(self):
-        """Singleton input."""
+        """Alpha Equal One. Singleton input."""
         frequencies = PartiallySortedArray([10])
         self.assertEqual(gdmCodeTree(frequencies),ExternalNode(frequencies,0))
     def test_twoWeights(self):
-        """Two Weights."""
+        """Alpha Equal One. Two Weights."""
         W = PartiallySortedArray([10,10])
         T = gdmCodeTree(W)
-        self.assertEqual(T,InternalNode(W,ExternalNode(W,0),ExternalNode(W,1)))
+        # self.assertEqual(T,InternalNode(W,ExternalNode(W,0),ExternalNode(W,1)))
         L = T.depths()
         self.assertEqual(L,[1]*2)
     def test_fourEqualWeights(self):
-        """Four Equal Weights."""
+        """Alpha Equal One. Four Equal Weights."""
         W = PartiallySortedArray([10]*4)
         T = gdmCodeTree(W)
         self.assertEqual(str(T),"(40,(20,[None],[None]),(None,[None],[None]))")
         L = T.depths()
         self.assertEqual(L,[2]*4)
     def test_sixteenEqualWeights(self):
-        """Sixteen Equal Weights."""
+        """Alpha Equal One. Sixteen Equal Weights."""
         W = PartiallySortedArray([10]*16)
         T = gdmCodeTree(W)
         self.assertEqual(T.weight(),W.rangeSum(0,len(W)))        
         L = T.depths()
         self.assertEqual(L,[4]*16)
     def test_eightSimilarWeights(self):
-        """Eight Similar Weights."""
+        """Alpha Equal One. Eight Similar Weights."""
         W = PartiallySortedArray([10,11,12,13,14,15,16,17])
         T = gdmCodeTree(W)
         L = T.depths()
         self.assertEqual(L,[3]*8)
     def test_threeEqualWeights(self):
-        """Three Equal Weights."""
+        """Alpha Equal One. Three Equal Weights."""
         W = PartiallySortedArray([10]*3)
         T = gdmCodeTree(W)
         self.assertEqual(str(T),"(30,[10],(20,[None],[None]))")
         L = T.depths()
         self.assertEqual(L,[1,2,2])
     def test_threeSimilarWeights(self):
-        """Three Similar Weights."""
+        """Alpha Equal One. Three Similar Weights."""
         W = PartiallySortedArray([12,11,10])
         T = gdmCodeTree(W)
         self.assertEqual(str(T),"(33,[12],(21,[None],[None]))")
         L = T.depths()
         self.assertEqual(L,[1,2,2])
+    def test_AlphaEqualTwoSingleSmallWeight(self):
+        """Alpha Equal Two. Single very small weight"""
+        W = PartiallySortedArray([1]+[8]*3)
+        T = gdmCodeTree(W)
+        L = T.depths()
+        self.assertEqual(L,[2]*4)
+    def test_AlphaEqualWithMinorMixing(self):
+        """Alpha Equal Two. Minor Mixing between Internal Nodes and External Nodes"""
+        W = PartiallySortedArray([1]*8+[7]*3)
+        T = gdmCodeTree(W)
+        L = T.depths()
+        self.assertEqual(sorted(L),[2]*3+[5]*8)
+    # def test_AlphaEqualTwoTightMatch(self):
+    #     """Alpha Equal Two. Tight match between Internal Node and External Node"""
+    #     W = PartiallySortedArray([1]*8+[8]*3)
+    #     T = gdmCodeTree(W)
+    #     L = T.depths()
+    #     self.assertEqual(L,[5]*8+[2]*3)
+    # def test_AlphaEqualTwoLargeGap(self):
+    #     """Alpha Equal Two. Large gab between the weight of the Internal Node and the weights of the largest external nodes."""
+    #     W = PartiallySortedArray([1]*8+[32]*3)
+    #     T = gdmCodeTree(W)
+    #     L = T.depths()
+    #     self.assertEqual(L,[5]*8+[2]*3)
     
     
-# def gdm(frequencies):
-#     """Given a sorted list of weights, return an array with the code lengths of an optimal prefix free code according to the GDM algorithm.
+def gdm(frequencies):
+    """Given a sorted list of weights, return an array with the code lengths of an optimal prefix free code according to the GDM algorithm.
 
-#     """
-#     # Degenerated cases
-#     if len(frequencies) == 0 :
-#         return []
-#     elif len(frequencies)==1:
-#         return [0]
-#     elif len(frequencies)==2:
-#         return [1,1]
-#     codeTree = gdmCodeTree(frequencies)
-#     codeLengths = depths(codeTree)
-#     return codeLengths
-# class GDMTest(unittest.TestCase):
-#     """Basic tests for the GDM algorithm computing optimal prefix free codes.
+    """
+    # Degenerated cases
+    if len(frequencies) == 0 :
+        return []
+    elif len(frequencies)==1:
+        return [0]
+    elif len(frequencies)==2:
+        return [1,1]
+    codeTree = gdmCodeTree(PartiallySortedArray(frequencies))
+    codeLengths = codeTree.depths()
+    return codeLengths
+class GDMTest(unittest.TestCase):
+    """Basic tests for the GDM algorithm computing optimal prefix free codes.
 
-#     """
-        
-#     def test(self):
-#         """Generic test"""
-#         testPFCAlgorithm(gdm, "GDM")
-#     def testFourEqualWeights(self):
-#         """Four Equal Weights"""
-#         self.assertEqual(gdm([1,1,1,1]),[2,2,2,2])
-#     def testEightEqualWeights(self):
-#         """Eight Equal Weights"""
-#         self.assertEqual(gdm([1]*8),[3]*8)
+    """        
+    # def test(self):
+    #     """Generic test"""
+    #     testPFCAlgorithm(gdm, "GDM")
+    def testFourEqualWeights(self):
+        """Four Equal Weights"""
+        self.assertEqual(gdm([1,1,1,1]),[2,2,2,2])
+    # def testEightEqualWeights(self):
+    #     """Eight Equal Weights"""
+    #     self.assertEqual(gdm([1]*8),[3]*8)
 
 def EISignature(W):
     """Given a list of weights, return the EI signature of the instance recording the result of each comparison performed by Huffman's algorithm or van Leeuwen's algorithm.
