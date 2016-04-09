@@ -55,6 +55,18 @@ class PartiallySortedArray():
         self.nbRankQueriesProcessed += 1
         return bisect.bisect_left(self.values, x)
 
+    def rankRight(self,x):
+        """Number of Elements in the set which are smaller than or equal to x.
+
+>>> S = PartiallySortedArray([50,40,40,40,40,30,20,10])
+>>> print(S.rank(40))
+3
+>>> print(S.rankRight(40))
+7
+"""
+        self.nbRankQueriesProcessed += 1
+        return bisect.bisect_right(self.values, x)
+
     
     def partialSum(self,r):
         """Sum of the r smallest elements in the set.
