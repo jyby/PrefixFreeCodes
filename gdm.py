@@ -101,7 +101,6 @@ class InternalNode:
 def gdmCodeTree(frequencies):
     """Given a partially sorted list of weights, return a code tree of minimal
     redundancy according to the GDM algorithm.
-
     """
     if len(frequencies) == 0 :
         return None
@@ -112,7 +111,7 @@ def gdmCodeTree(frequencies):
     nbFrequenciesProcessed = 2
     while nbFrequenciesProcessed < len(frequencies):
         # GROUP weights of similar weights: 
-        r = frequencies.rank(nodes[0].weight())
+        r = frequencies.rankRight(nodes[0].weight()+1)
         if (r-nbFrequenciesProcessed) % 2 == 1:
             nodes = [ExternalNode(frequencies,r-1)]+nodes
         for i in range((r-nbFrequenciesProcessed)//2):
@@ -124,6 +123,7 @@ def gdmCodeTree(frequencies):
             break
         print(str(nbFrequenciesProcessed)+" frequencies processed out of "+str(len(frequencies)))
         # DOCK current nodes to the level of the next External node
+        print("First available external has weight "+str(frequencies.select(nbFrequenciesProcessed))+", while the largest internal node has weight "+str(nodes[-1].weight()))
         while len(nodes)>1 and nodes[-1].weight() <= frequencies.select(nbFrequenciesProcessed):
             print(str(len(nodes))+" nodes left, of maximal weight "+str(nodes[-1].weight(),))
             nbPairsToForm = len(nodes)//2
@@ -204,18 +204,18 @@ class gdmCodeTreeTest(unittest.TestCase):
         T = gdmCodeTree(W)
         L = T.depths()
         self.assertEqual(sorted(L),[2]*3+[5]*8)
-    # def test_AlphaEqualTwoTightMatch(self):
-    #     """Alpha Equal Two. Tight match between Internal Node and External Node"""
-    #     W = PartiallySortedArray([1]*8+[8]*3)
-    #     T = gdmCodeTree(W)
-    #     L = T.depths()
-    #     self.assertEqual(L,[5]*8+[2]*3)
+    def test_AlphaEqualTwoTightMatch(self):
+        """Alpha Equal Two. Tight match between Internal Node and External Node"""
+        W = PartiallySortedArray([1]*8+[8]*3)
+        T = gdmCodeTree(W)
+        L = T.depths()
+        self.assertEqual(L,[2]*3+[5]*8)
     # def test_AlphaEqualTwoLargeGap(self):
     #     """Alpha Equal Two. Large gab between the weight of the Internal Node and the weights of the largest external nodes."""
     #     W = PartiallySortedArray([1]*8+[32]*3)
     #     T = gdmCodeTree(W)
     #     L = T.depths()
-    #     self.assertEqual(L,[5]*8+[2]*3)
+    #     self.assertEqual(L,[2]*3+[5]*8)
     
     
 def gdm(frequencies):
