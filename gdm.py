@@ -111,21 +111,26 @@ def gdmCodeTree(frequencies):
     nbFrequenciesProcessed = 2
     while nbFrequenciesProcessed < len(frequencies):
         # GROUP weights of similar weights: 
-        r = frequencies.rankRight(nodes[0].weight()+1)
-        if (r-nbFrequenciesProcessed) % 2 == 1:
-            nodes = [ExternalNode(frequencies,r-1)]+nodes
-        for i in range((r-nbFrequenciesProcessed)//2):
-            left = ExternalNode(frequencies,nbFrequenciesProcessed+2*i)
-            right = ExternalNode(frequencies,nbFrequenciesProcessed+2*i+1)        
-            nodes.append(InternalNode(frequencies,left,right))
-        nbFrequenciesProcessed = r
+        r = frequencies.rankRight(nodes[0].weight())        
+        if r == nbFrequenciesProcessed:
+            nodes[0].weight()
+            nodes = nodes[1:]+[InternalNode(frequencies,nodes[0],ExternalNode(frequencies,r))]
+            nbFrequenciesProcessed += 1
+        else:
+            if (r-nbFrequenciesProcessed) % 2 == 1:
+                nodes = [ExternalNode(frequencies,r-1)]+nodes
+            for i in range((r-nbFrequenciesProcessed)//2):
+                left = ExternalNode(frequencies,nbFrequenciesProcessed+2*i)
+                right = ExternalNode(frequencies,nbFrequenciesProcessed+2*i+1)        
+                nodes.append(InternalNode(frequencies,left,right))
+            nbFrequenciesProcessed = r
         if nbFrequenciesProcessed == len(frequencies):
             break
-        print(str(nbFrequenciesProcessed)+" frequencies processed out of "+str(len(frequencies)))
+        # print(str(nbFrequenciesProcessed)+" frequencies processed out of "+str(len(frequencies)))
         # DOCK current nodes to the level of the next External node
-        print("First available external has weight "+str(frequencies.select(nbFrequenciesProcessed))+", while the largest internal node has weight "+str(nodes[-1].weight()))
+        # print("First available external has weight "+str(frequencies.select(nbFrequenciesProcessed))+", while the largest internal node has weight "+str(nodes[-1].weight()))
         while len(nodes)>1 and nodes[-1].weight() <= frequencies.select(nbFrequenciesProcessed):
-            print(str(len(nodes))+" nodes left, of maximal weight "+str(nodes[-1].weight(),))
+            # print(str(len(nodes))+" nodes left, of maximal weight "+str(nodes[-1].weight(),))
             nbPairsToForm = len(nodes)//2
             for i in range(nbPairsToForm):
                 nodes.append(InternalNode(frequencies,nodes[0],nodes[1]))
@@ -210,12 +215,12 @@ class gdmCodeTreeTest(unittest.TestCase):
         T = gdmCodeTree(W)
         L = T.depths()
         self.assertEqual(L,[2]*3+[5]*8)
-    # def test_AlphaEqualTwoLargeGap(self):
-    #     """Alpha Equal Two. Large gab between the weight of the Internal Node and the weights of the largest external nodes."""
-    #     W = PartiallySortedArray([1]*8+[32]*3)
-    #     T = gdmCodeTree(W)
-    #     L = T.depths()
-    #     self.assertEqual(L,[2]*3+[5]*8)
+    def test_AlphaEqualTwoLargeGap(self):
+        """Alpha Equal Two. Large gab between the weight of the Internal Node and the weights of the largest external nodes."""
+        W = PartiallySortedArray([1]*8+[32]*3)
+        T = gdmCodeTree(W)
+        L = T.depths()
+        self.assertEqual(sorted(L),[2]*3+[5]*8)
     
     
 def gdm(frequencies):
