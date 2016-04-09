@@ -1,6 +1,9 @@
 import unittest, doctest, copy
 from functionsToTestPrefixFreeCodes import testPFCAlgorithm, compressByRunLengths
 from partiallySortedArrayWithPartialSumPrecomputed import PartiallySortedArray
+from collections import namedtuple
+
+Interval = namedtuple('Interval','left right')
 
 class ExternalNode:
     """Given a partially sorted array W, and a position in it, create the corresponding External node.
@@ -18,7 +21,7 @@ False
 """
     def __init__(self, partiallySortedArray, position):
         self.partiallySortedArray = partiallySortedArray
-        self.interval = (position,position+1)
+        self.interval = Interval(position,position+1)
         self.CachedValueOfWeight = None
     def weight(self):
         if self.CachedValueOfWeight == None:
@@ -66,8 +69,8 @@ class InternalNode:
         self.partiallySortedArray = partiallySortedArray
         self.left = left
         self.right = right
-        if(left.interval != None and right.interval != None and left.interval[1] == right.interval[0]):
-            self.interval = (left.interval[0],right.interval[1])
+        if(left.interval != None and right.interval != None and left.interval.right == right.interval.left):
+            self.interval = Interval(left.interval.left,right.interval.right)
         else:
             self.interval = None
         if left.CachedValueOfWeight == None or right.CachedValueOfWeight == None:
@@ -77,7 +80,7 @@ class InternalNode:
     def weight(self):
         if self.CachedValueOfWeight == None:
             if self.interval != None:
-                self.CachedValueOfWeight = self.partiallySortedArray.rangeSum(self.interval[0],self.interval[1])
+                self.CachedValueOfWeight = self.partiallySortedArray.rangeSum(self.interval.left,self.interval.right)
             else:
                 self.CachedValueOfWeight = self.left.weight() + self.right.weight()
         return self.CachedValueOfWeight
