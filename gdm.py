@@ -221,6 +221,12 @@ class gdmCodeTreeTest(unittest.TestCase):
         T = gdmCodeTree(W)
         L = T.depths()
         self.assertEqual(sorted(L),[2]*3+[5]*8)
+    def test_AlphaEqualThreeWithout Mixing(self):
+        """Alpha Equal Three with no Mixing."""
+        W = PartiallySortedArray([1]*4+[4]*3+[16]*3)
+        T = gdmCodeTree(W)
+        L = T.depths()
+        self.assertEqual(sorted(L),[2]*3+[4]*3+[6]*4)
     
     
 def gdm(frequencies):
