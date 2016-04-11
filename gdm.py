@@ -2,6 +2,7 @@ import unittest, doctest, copy
 from functionsToTestPrefixFreeCodes import testPFCAlgorithm, compressByRunLengths
 from partiallySortedArrayWithPartialSumPrecomputed import PartiallySortedArray
 from collections import namedtuple
+from vanLeeuwen import vanLeeuwen
 
 Interval = namedtuple('Interval','left right')
 
@@ -221,12 +222,19 @@ class gdmCodeTreeTest(unittest.TestCase):
         T = gdmCodeTree(W)
         L = T.depths()
         self.assertEqual(sorted(L),[2]*3+[5]*8)
-    def test_AlphaEqualThreeWithout Mixing(self):
+    def test_AlphaEqualThreeWithoutMixing(self):
         """Alpha Equal Three with no Mixing."""
         W = PartiallySortedArray([1]*4+[4]*3+[16]*3)
         T = gdmCodeTree(W)
         L = T.depths()
         self.assertEqual(sorted(L),[2]*3+[4]*3+[6]*4)
+    def test_ExponentialSequence(self):
+        """Exponential Sequence."""
+        W = [1,2,4,8,16,32,64,128,256]
+        A = PartiallySortedArray(W)
+        T = gdmCodeTree(A)
+        L = T.depths()
+        self.assertEqual(L,vanLeeuwen(W))
     
     
 def gdm(frequencies):
