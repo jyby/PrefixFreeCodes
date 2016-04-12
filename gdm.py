@@ -137,7 +137,18 @@ def gdmCodeTree(frequencies):
                 nodes.append(InternalNode(frequencies,nodes[0],nodes[1]))
                 nodes = nodes[2:]
         # MERGE the internal nodes with the external nodes of similar weights
-        # (to be implemented later by a binary search in the list of nodes)
+        nbInternals = len(nodes)
+        for i in range(nbInternals):
+            r = frequencies.rankRight(nodes[0].weight())
+            nbPairsToForm = (nbFrequenciesProcessed-r) // 2
+            for j in range(nbPairsToForm):
+                nodes.append(InternalNode(frequencies,ExternalNode(frequencies,nbFrequenciesProcessed),ExternalNode(frequencies,nbFrequenciesProcessed+1)))
+                nbFrequenciesProcessed += 2
+            # !!!! Need some code here to combine any quantity of internal nodes if relevant !!!!!!!     
+            nodes.append(InternalNode(frequencies,nodes[0],ExternalNode(frequencies,nbFrequenciesProcessed)))
+            nodes = nodes[1:]
+            nbFrequenciesProcessed += 1
+            
     # WRAP-UP when there are only internal nodes left.
     while len(nodes) > 1:
         if len(nodes) % 2 == 1:
@@ -245,6 +256,13 @@ class gdmCodeTreeTest(unittest.TestCase):
     def test_ExponentialSequenceWithVeryLongSteps(self):
         """Exponential Sequence With Very Long Steps."""
         W = [1,1,1,1,2,2,2,2,4,4,4,4,8,8,8,8,16,16,16,16,32,32,32,32,64,64,64,64,128,128,128,128,256,256,256,256]
+        A = PartiallySortedArray(W)
+        T = gdmCodeTree(A)
+        L = T.depths()
+        self.assertEqual(sorted(L),sorted(vanLeeuwen(W)))
+    def test_SequenceRequiringMixing(self):
+        """Sequence requiring Mixing."""
+        W = [32,33,33,34,34,35,35,36,36,37,37,38,38,39,39,40,40,63,63,64,64,66,68,70,72,74,126]
         A = PartiallySortedArray(W)
         T = gdmCodeTree(A)
         L = T.depths()
