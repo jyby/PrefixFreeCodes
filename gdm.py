@@ -113,6 +113,30 @@ def DOCK(frequencies,nodes,nbFrequenciesProcessed):
             nodes = nodes[2:]
     return frequencies,nodes,nbFrequenciesProcessed
 
+
+def INITIALIZE(frequencies):
+    """Given a partially sorted array, initialize the list of internal nodes.
+"""
+    nodes = [InternalNode(frequencies,ExternalNode(frequencies,0),ExternalNode(frequencies,1))] 
+    nbFrequenciesProcessed = 2
+    return frequencies,nodes,nbFrequenciesProcessed
+
+def GROUP(frequencies,nodes,nbFrequenciesProcessed):
+    r = frequencies.rankRight(nodes[0].weight())        
+    if len(nodes)==1 and r == nbFrequenciesProcessed: # if there is only one internal node and it is smaller than any external node
+        nodes[0].weight()
+        nodes = nodes[1:]+[InternalNode(frequencies,nodes[0],ExternalNode(frequencies,r))]
+        nbFrequenciesProcessed += 1
+    else:
+        if (r-nbFrequenciesProcessed) % 2 == 1: # if there is an odd number of external nodes smaller than the smallest internal node,
+            nodes = [ExternalNode(frequencies,r-1)]+nodes # promote the last external node by adding it directly to the list of nodes.
+        for i in range((r-nbFrequenciesProcessed)//2): # pair the even number of nodes preceding it, andd add them to the list of nodes.
+            left = ExternalNode(frequencies,nbFrequenciesProcessed+2*i)
+            right = ExternalNode(frequencies,nbFrequenciesProcessed+2*i+1)        
+            nodes.append(InternalNode(frequencies,left,right))
+        nbFrequenciesProcessed = r
+    return frequencies,nodes,nbFrequenciesProcessed
+
 def MERGE(frequencies,nodes,nbFrequenciesProcessed):
     """Merge the list of Internal nodes with the external nodes of similar weight.
 
@@ -161,24 +185,10 @@ def gdmCodeTree(frequencies):
         return None
     elif len(frequencies)==1:
         return ExternalNode(frequencies,0)
-    ### INITIALIZATION
-    nodes = [InternalNode(frequencies,ExternalNode(frequencies,0),ExternalNode(frequencies,1))] 
-    nbFrequenciesProcessed = 2
+    frequencies,nodes,nbFrequenciesProcessed = INITIALIZE(frequencies)
     while nbFrequenciesProcessed < len(frequencies):
         ### GROUP weights of similar weights: 
-        r = frequencies.rankRight(nodes[0].weight())        
-        if len(nodes)==1 and r == nbFrequenciesProcessed: # if there is only one internal node and it is smaller than any external node
-            nodes[0].weight()
-            nodes = nodes[1:]+[InternalNode(frequencies,nodes[0],ExternalNode(frequencies,r))]
-            nbFrequenciesProcessed += 1
-        else:
-            if (r-nbFrequenciesProcessed) % 2 == 1: # if there is an odd number of external nodes smaller than the smallest internal node,
-                nodes = [ExternalNode(frequencies,r-1)]+nodes # promote the last external node by adding it directly to the list of nodes.
-            for i in range((r-nbFrequenciesProcessed)//2): # pair the even number of nodes preceding it, andd add them to the list of nodes.
-                left = ExternalNode(frequencies,nbFrequenciesProcessed+2*i)
-                right = ExternalNode(frequencies,nbFrequenciesProcessed+2*i+1)        
-                nodes.append(InternalNode(frequencies,left,right))
-            nbFrequenciesProcessed = r
+        frequencies,nodes,nbFrequenciesProcessed = GROUP(frequencies,nodes,nbFrequenciesProcessed)
         if nbFrequenciesProcessed == len(frequencies):
             break
         frequencies,nodes,nbFrequenciesProcessed = DOCK(frequencies,nodes,nbFrequenciesProcessed)
