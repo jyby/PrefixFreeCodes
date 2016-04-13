@@ -129,35 +129,6 @@ class GDMTest(unittest.TestCase):
     #     """Eight Equal Weights"""
     #     self.assertEqual(gdm([1]*8),[3]*8)
 
-class EISignatureTest(unittest.TestCase):
-    def test_empty(self):
-        """Empty input."""
-        self.assertEqual(EISignature([]),"")
-    def test_singleton(self):
-        """Singleton input."""
-        self.assertEqual(EISignature([1]),"E")
-    def test_twoWeights(self):
-        """Two Weights."""
-        self.assertEqual(EISignature([1,1]),"EEI")
-    def test_threeWeights(self):
-        """Three Weights."""
-        self.assertEqual(EISignature([1,1,4]),"EEIEI")
-
-
-    
-class EIAlternationTest(unittest.TestCase):
-    def test_empty(self):
-        """Empty input."""
-        self.assertEqual(EIAlternation([]),0)
-    def test_singleton(self):
-        """Singleton input."""
-        self.assertEqual(EIAlternation([1]),1)
-    def test_twoWeights(self):
-        """Two Weights."""
-        self.assertEqual(EIAlternation([1,1]),1)
-    def test_threeWeights(self):
-        """Three Weights."""
-        self.assertEqual(EIAlternation([1,1,4]),2)
 
 
         
