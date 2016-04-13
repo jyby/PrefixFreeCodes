@@ -3,7 +3,7 @@ from functionsToTestPrefixFreeCodes import testPFCAlgorithm, compressByRunLength
 from partiallySortedArrayWithPartialSumPrecomputed import PartiallySortedArray
 from collections import namedtuple
 from vanLeeuwen import vanLeeuwen
-from gdm import gdmCodeTree,gdm,EIAlternation,EISignature, ExternalNode, InternalNode
+from gdm import gdmCodeTree,gdm, ExternalNode, InternalNode
 
 
 class gdmCodeTreeTest(unittest.TestCase):
@@ -19,7 +19,7 @@ class gdmCodeTreeTest(unittest.TestCase):
         """Alpha Equal One. Two Weights."""
         W = PartiallySortedArray([10,10])
         T = gdmCodeTree(W)
-        # self.assertEqual(T,InternalNode(W,ExternalNode(W,0),ExternalNode(W,1)))
+        self.assertEqual(str(T),"(20,[None],[None])")
         L = T.depths()
         self.assertEqual(L,[1]*2)
     def test_fourEqualWeights(self):
@@ -86,34 +86,6 @@ class gdmCodeTreeTest(unittest.TestCase):
         T = gdmCodeTree(W)
         L = T.depths()
         self.assertEqual(sorted(L),[2]*3+[4]*3+[6]*4)
-    def test_ExponentialSequence(self):
-        """Exponential Sequence."""
-        W = [1,2,4,8,16,32,64,128,256]
-        A = PartiallySortedArray(W)
-        T = gdmCodeTree(A)
-        L = T.depths()
-        self.assertEqual(L,vanLeeuwen(W))
-    def test_ExponentialSequenceWithLongSteps(self):
-        """Exponential Sequence With Long Steps."""
-        W = [1,1,2,2,4,4,8,8,16,16,32,32,64,64,128,128,256,256]
-        A = PartiallySortedArray(W)
-        T = gdmCodeTree(A)
-        L = T.depths()
-        self.assertEqual(sorted(L),sorted(vanLeeuwen(W)))
-    # def test_ExponentialSequenceWithVeryLongSteps(self):
-    #     """Exponential Sequence With Very Long Steps."""
-    #     W = [1,1,1,1,2,2,2,2,4,4,4,4,8,8,8,8,16,16,16,16,32,32,32,32,64,64,64,64,128,128,128,128,256,256,256,256]
-    #     A = PartiallySortedArray(W)
-    #     T = gdmCodeTree(A)
-    #     L = T.depths()
-    #     self.assertEqual(sorted(L),sorted(vanLeeuwen(W)))
-    # def test_SequenceRequiringMixing(self):
-    #     """Sequence requiring Mixing."""
-    #     W = [32,33,33,34,34,35,35,36,36,37,37,38,38,39,39,40,40,63,63,64,64,66,68,70,72,74,126]
-    #     A = PartiallySortedArray(W)
-    #     T = gdmCodeTree(A)
-    #     L = T.depths()
-    #     self.assertEqual(sorted(L),sorted(vanLeeuwen(W)))
 
 class GDMTest(unittest.TestCase):
     """Basic tests for the GDM algorithm computing optimal prefix free codes.
@@ -125,9 +97,25 @@ class GDMTest(unittest.TestCase):
     def testFourEqualWeights(self):
         """Four Equal Weights"""
         self.assertEqual(gdm([1,1,1,1]),[2,2,2,2])
-    # def testEightEqualWeights(self):
-    #     """Eight Equal Weights"""
-    #     self.assertEqual(gdm([1]*8),[3]*8)
+    def testEightEqualWeights(self):
+        """Eight Equal Weights"""
+        self.assertEqual(gdm([1]*8),[3]*8)
+    def test_ExponentialSequenceWithLongSteps(self):
+        """Exponential Sequence With Long Steps."""
+        W = [1,1,2,2,4,4,8,8,16,16,32,32,64,64,128,128,256,256]
+        self.assertEqual(sorted(gdm(W)),sorted(vanLeeuwen(W)))
+    # def test_ExponentialSequence(self):
+    #     """Exponential Sequence."""
+    #     W = [1,2,4,8,16,32,64,128,256]
+    #     self.assertEqual(sorted(gdm(W)),sorted(vanLeeuwen(W)))
+    # def test_ExponentialSequenceWithVeryLongSteps(self):
+    #     """Exponential Sequence With Very Long Steps."""
+    #     W = [1,1,1,1,2,2,2,2,4,4,4,4,8,8,8,8,16,16,16,16,32,32,32,32,64,64,64,64,128,128,128,128,256,256,256,256]
+    #     self.assertEqual(sorted(gdm(W)),sorted(vanLeeuwen(W)))
+    # def test_SequenceRequiringMixing(self):
+    #     """Sequence requiring Mixing."""
+    #     W = [32,33,33,34,34,35,35,36,36,37,37,38,38,39,39,40,40,63,63,64,64,66,68,70,72,74,126]
+    #     self.assertEqual(sorted(gdm(W)),sorted(vanLeeuwen(W)))
 
 
 
