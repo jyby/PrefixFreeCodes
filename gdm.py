@@ -99,20 +99,6 @@ class InternalNode:
         string = "("+str(self.CachedValueOfWeight)+","+str(self.left)+","+str(self.right)+")"
         return string
 
-def DOCK(frequencies,nodes,nbFrequenciesProcessed):
-    """Given a set of internal nodes, group them two by two until at least one internal node has weight larger than the weight of the next External node (but smaller than twice this weight)
-
-    """
-    # print(str(nbFrequenciesProcessed)+" frequencies processed out of "+str(len(frequencies)))
-    # print("First available external has weight "+str(frequencies.select(nbFrequenciesProcessed))+", while the largest internal node has weight "+str(nodes[-1].weight()))
-    while len(nodes)>1 and nodes[-1].weight() <= frequencies.select(nbFrequenciesProcessed):
-        # print(str(len(nodes))+" nodes left, of maximal weight "+str(nodes[-1].weight(),))
-        nbPairsToForm = len(nodes) // 2
-        for i in range(nbPairsToForm):
-            nodes.append(InternalNode(frequencies,nodes[0],nodes[1]))
-            nodes = nodes[2:]
-    return frequencies,nodes,nbFrequenciesProcessed
-
 
 def INITIALIZE(frequencies):
     """Given a partially sorted array, initialize the list of internal nodes.
@@ -160,6 +146,20 @@ def MERGE(frequencies,nodes,nbFrequenciesProcessed):
     nodes = internalNodesToMerge + externalNodesToMerge + nodes
     return frequencies,nodes,nbFrequenciesProcessed
 
+def DOCK(frequencies,nodes,nbFrequenciesProcessed):
+    """Given a set of internal nodes, group them two by two until at least one internal node has weight larger than the weight of the next External node (but smaller than twice this weight)
+
+    """
+    # print(str(nbFrequenciesProcessed)+" frequencies processed out of "+str(len(frequencies)))
+    # print("First available external has weight "+str(frequencies.select(nbFrequenciesProcessed))+", while the largest internal node has weight "+str(nodes[-1].weight()))
+    while len(nodes)>1 and nodes[-1].weight() <= frequencies.select(nbFrequenciesProcessed):
+        # print(str(len(nodes))+" nodes left, of maximal weight "+str(nodes[-1].weight(),))
+        nbPairsToForm = len(nodes) // 2
+        for i in range(nbPairsToForm):
+            nodes.append(InternalNode(frequencies,nodes[0],nodes[1]))
+            nodes = nodes[2:]
+    return frequencies,nodes,nbFrequenciesProcessed
+
 def WRAPUP(frequencies,nodes):
     """Combine the internal nodes of a list until only one is left.
 """
@@ -195,9 +195,6 @@ def gdmCodeTree(frequencies):
         frequencies,nodes,nbFrequenciesProcessed = MERGE(frequencies,nodes,nbFrequenciesProcessed)
     frequencies,nodes = WRAPUP(frequencies,nodes)
     return nodes[0]
-
-
-
 
 def gdm(frequencies):
     """Given a sorted list of weights, return an array with the code lengths of an optimal prefix free code according to the GDM algorithm.

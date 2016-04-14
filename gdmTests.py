@@ -62,30 +62,30 @@ class gdmCodeTreeTest(unittest.TestCase):
         T = gdmCodeTree(W)
         L = T.depths()
         self.assertEqual(L,[2]*4)
-    def test_AlphaEqualWithMinorMixing(self):
-        """Alpha Equal Two. Minor Mixing between Internal Nodes and External Nodes"""
-        W = PartiallySortedArray([1]*8+[7]*3)
-        T = gdmCodeTree(W)
-        L = T.depths()
-        self.assertEqual(sorted(L),[2]*3+[5]*8)
-    def test_AlphaEqualTwoTightMatch(self):
-        """Alpha Equal Two. Tight match between Internal Node and External Node"""
-        W = PartiallySortedArray([1]*8+[8]*3)
-        T = gdmCodeTree(W)
-        L = T.depths()
-        self.assertEqual(sorted(L),[2]*3+[5]*8)
-    def test_AlphaEqualTwoLargeGap(self):
-        """Alpha Equal Two. Large gab between the weight of the Internal Node and the weights of the largest external nodes."""
-        W = PartiallySortedArray([1]*8+[32]*3)
-        T = gdmCodeTree(W)
-        L = T.depths()
-        self.assertEqual(sorted(L),[2]*3+[5]*8)
-    def test_AlphaEqualThreeWithoutMixing(self):
-        """Alpha Equal Three with no Mixing."""
-        W = PartiallySortedArray([1]*4+[4]*3+[16]*3)
-        T = gdmCodeTree(W)
-        L = T.depths()
-        self.assertEqual(sorted(L),[2]*3+[4]*3+[6]*4)
+    # def test_AlphaEqualTwoWithMinorMixing(self):
+    #     """Alpha Equal Two. Minor Mixing between Internal Nodes and External Nodes"""
+    #     W = PartiallySortedArray([1]*8+[7]*3)
+    #     T = gdmCodeTree(W)
+    #     L = T.depths()
+    #     self.assertEqual(sorted(L),[2]*3+[5]*8)
+    # def test_AlphaEqualTwoTightMatch(self):
+    #     """Alpha Equal Two. Tight match between Internal Node and External Node"""
+    #     W = PartiallySortedArray([1]*8+[8]*3)
+    #     T = gdmCodeTree(W)
+    #     L = T.depths()
+    #     self.assertEqual(sorted(L),[2]*3+[5]*8)
+    # def test_AlphaEqualTwoLargeGap(self):
+    #     """Alpha Equal Two. Large gab between the weight of the Internal Node and the weights of the largest external nodes."""
+    #     W = PartiallySortedArray([1]*8+[32]*3)
+    #     T = gdmCodeTree(W)
+    #     L = T.depths()
+    #     self.assertEqual(sorted(L),[2]*3+[5]*8)
+    # def test_AlphaEqualThreeWithoutMixing(self):
+    #     """Alpha Equal Three with no Mixing."""
+    #     W = PartiallySortedArray([1]*4+[4]*3+[16]*3)
+    #     T = gdmCodeTree(W)
+    #     L = T.depths()
+    #     self.assertEqual(sorted(L),[2]*3+[4]*3+[6]*4)
 
 class GDMTest(unittest.TestCase):
     """Basic tests for the GDM algorithm computing optimal prefix free codes.
@@ -100,13 +100,13 @@ class GDMTest(unittest.TestCase):
     def testEightEqualWeights(self):
         """Eight Equal Weights"""
         self.assertEqual(gdm([1]*8),[3]*8)
-    def test_ExponentialSequenceWithLongSteps(self):
-        """Exponential Sequence With Long Steps."""
-        W = [1,1,2,2,4,4,8,8,16,16,32,32,64,64,128,128,256,256]
+    def test_ExponentialSequence(self):
+        """Exponential Sequence."""
+        W = [1,2,4,8,16,32,64,128,256]
         self.assertEqual(sorted(gdm(W)),sorted(vanLeeuwen(W)))
-    # def test_ExponentialSequence(self):
-    #     """Exponential Sequence."""
-    #     W = [1,2,4,8,16,32,64,128,256]
+    # def test_ExponentialSequenceWithLongSteps(self):
+    #     """Exponential Sequence With Long Steps."""
+    #     W = [1,1,2,2,4,4,8,8,16,16,32,32,64,64,128,128,256,256]
     #     self.assertEqual(sorted(gdm(W)),sorted(vanLeeuwen(W)))
     # def test_ExponentialSequenceWithVeryLongSteps(self):
     #     """Exponential Sequence With Very Long Steps."""
