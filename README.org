@@ -4,10 +4,10 @@
 #+EMAIL: jeremy@barbay.cl
 #+CATEGORY: Programming
 
+
+* INTRODUCTION
+
 This project aims to gather the implementations in python of various algorithms computing an optimal prefix free code given an array of integer frequencies, and an engine to compare those implementations in terms of the number of comparisons performed, of the space used, and of the experimental running time, on various realistic data sets.
-
-
-* Optimal Prefix Free Codes
 
 ** Definition
 Given n positive weights W[1..n] coding for the frequencies of n messages, and a number D of output symbols, an =Optimal Prefix Free Code=~\cite{1952-IRE-AMethodForTheInstructionOfMinimumRedundancyCodes-Huffman} is a set of n code strings on alphabet [1..D], of variable lengths L[1..n] and such that no string is prefix of another, and the average length of a code is minimized (i.e. \sum_{i\in[1..n]
