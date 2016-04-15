@@ -5,7 +5,6 @@ from collections import namedtuple
 from vanLeeuwen import vanLeeuwen
 from gdm import gdmCodeTree,gdm, ExternalNode, InternalNode
 
-
 class gdmCodeTreeTest(unittest.TestCase):
     def test_empty(self):
         """Empty input."""
@@ -57,7 +56,7 @@ class gdmCodeTreeTest(unittest.TestCase):
         L = T.depths()
         self.assertEqual(L,[1,2,2])
     def test_AlphaEqualTwoSingleSmallWeight(self):
-        """Alpha Equal Two. Single very small weight"""
+        """Alpha Equal Two. Single very small weight."""
         W = PartiallySortedArray([1]+[8]*3)
         T = gdmCodeTree(W)
         L = T.depths()

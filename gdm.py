@@ -8,7 +8,7 @@ Interval = namedtuple('Interval','left right')
 
 class ExternalNode:
     """Given a partially sorted array W, and a position in it, create the corresponding External node.
-    The weight is computed only at request by performing a select query in the partiallySortedArray.
+The weight is computed only at request by performing a select query in the partiallySortedArray.
 
 >>> W = PartiallySortedArray([150,140,130,120,110,32,16,10,10,10,10])
 >>> x = ExternalNode(W,0)
@@ -65,6 +65,7 @@ class InternalNode:
 220
 >>> print(z3.depths())
 [2, 2, 2, 2]
+
 """
     def __init__(self, partiallySortedArray, left, right):
         self.partiallySortedArray = partiallySortedArray
@@ -87,7 +88,8 @@ class InternalNode:
         return self.CachedValueOfWeight
     def depths(self, depth=0):
         """Given a code tree, return the (unsorted) list of the depths of its leaves.
-        """
+
+"""
         depthsOnLeft =  self.left.depths(depth+1)
         depthsOnRight = self.right.depths(depth+1)
         return depthsOnLeft+depthsOnRight
@@ -102,6 +104,7 @@ class InternalNode:
 
 def INITIALIZE(frequencies):
     """Given a partially sorted array, initialize the list of internal nodes.
+
 """
     nodes = [InternalNode(frequencies,ExternalNode(frequencies,0),ExternalNode(frequencies,1))] 
     nbFrequenciesProcessed = 2
@@ -149,7 +152,7 @@ def MERGE(frequencies,nodes,nbFrequenciesProcessed):
 def DOCK(frequencies,nodes,nbFrequenciesProcessed):
     """Given a set of internal nodes, group them two by two until at least one internal node has weight larger than the weight of the next External node (but smaller than twice this weight)
 
-    """
+"""
     # print(str(nbFrequenciesProcessed)+" frequencies processed out of "+str(len(frequencies)))
     # print("First available external has weight "+str(frequencies.select(nbFrequenciesProcessed))+", while the largest internal node has weight "+str(nodes[-1].weight()))
     while len(nodes)>1 and nodes[-1].weight() <= frequencies.select(nbFrequenciesProcessed):
@@ -162,6 +165,7 @@ def DOCK(frequencies,nodes,nbFrequenciesProcessed):
 
 def WRAPUP(frequencies,nodes):
     """Combine the internal nodes of a list until only one is left.
+
 """
     while len(nodes) > 1:
         if len(nodes) % 2 == 1:
@@ -174,13 +178,14 @@ def WRAPUP(frequencies,nodes):
 
 def gdmCodeTree(frequencies):
     """Given a partially sorted list of weights, return a code tree of minimal
-    redundancy according to the GDM algorithm.
+redundancy according to the GDM algorithm.
 
-    >>> print(gdmCodeTree(PartiallySortedArray([1,1,1,1])))
-    (4,(2,[None],[None]),(None,[None],[None]))
-    >>> print(gdmCodeTree(PartiallySortedArray([1,2,4,8,16,32,64,128,256])))
-    (511,(255,(127,(63,(31,(15,(7,(3,[None],[None]),[None]),[None]),[None]),[None]),[None]),[None]),[None])
-    """
+>>> print(gdmCodeTree(PartiallySortedArray([1,1,1,1])))
+(4,(2,[None],[None]),(None,[None],[None]))
+>>> print(gdmCodeTree(PartiallySortedArray([1,2,4,8,16,32,64,128,256])))
+(511,(255,(127,(63,(31,(15,(7,(3,[None],[None]),[None]),[None]),[None]),[None]),[None]),[None]),[None])
+
+"""
     if len(frequencies) == 0 :
         return None
     elif len(frequencies)==1:
@@ -199,11 +204,12 @@ def gdmCodeTree(frequencies):
 def gdm(frequencies):
     """Given a sorted list of weights, return an array with the code lengths of an optimal prefix free code according to the GDM algorithm.
 
-    >>> print(gdm([1,1,1,1]))
-    [2, 2, 2, 2]
-    >>> print(gdm([1,2,4,8,16,32,64,128,256]))
-    [8, 8, 7, 6, 5, 4, 3, 2, 1]
-    """
+>>> print(gdm([1,1,1,1]))
+[2, 2, 2, 2]
+>>> print(gdm([1,2,4,8,16,32,64,128,256]))
+[8, 8, 7, 6, 5, 4, 3, 2, 1]
+
+"""
     # Degenerated cases
     if len(frequencies) == 0 :
         return []
