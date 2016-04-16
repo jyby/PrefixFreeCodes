@@ -103,12 +103,42 @@ class InternalNode:
 
 
 def INITIALIZE(frequencies):
-    """Given a partially sorted array, initialize the list of internal nodes.
+    """Given a partially sorted array, initialize the list of internal nodes with the lowest level of leaves.
 
+>>> frequencies = PartiallySortedArray([10]*8)
+>>> frequencies,nodes,nbFrequenciesProcessed = INITIALIZE(frequencies)
+>>> print(len(nodes))
+4
 """
-    nodes = [InternalNode(frequencies,ExternalNode(frequencies,0),ExternalNode(frequencies,1))] 
-    nbFrequenciesProcessed = 2
+    assert(len(frequencies)>1)
+    firstInternalNode = InternalNode(frequencies,ExternalNode(frequencies,0),ExternalNode(frequencies,1))
+    r = frequencies.rankRight(firstInternalNode.weight())        
+    if r % 2 == 1: 
+        nodes = [ExternalNode(frequencies,r-1),firstInternalNode]
+    else:
+        nodes = [firstInternalNode]
+    for i in range(1,r//2): 
+        left = ExternalNode(frequencies,2*i)
+        right = ExternalNode(frequencies,2*i+1)        
+        nodes.append(InternalNode(frequencies,left,right))
+    nbFrequenciesProcessed = r
     return frequencies,nodes,nbFrequenciesProcessed
+
+def DOCK(frequencies,nodes,nbFrequenciesProcessed):
+    """Given a set of internal nodes whose weight is all within a factor of two, group them two by two until at least one internal node has weight larger than the weight of the next External node (but smaller than twice this weight)
+
+>>> frequencies = PartiallySortedArray([8]*4+32)
+>>> frequencies,nodes,nbFrequenciesProcessed = INITIALIZE(frequencies)
+>>> print(len(nodes))
+1
+"""
+    while len(nodes)>1 and nodes[-1].weight() <= frequencies.select(nbFrequenciesProcessed):
+        nbPairsToForm = len(nodes) // 2
+        for i in range(nbPairsToForm):
+            nodes.append(InternalNode(frequencies,nodes[0],nodes[1]))
+            nodes = nodes[2:]
+    return frequencies,nodes,nbFrequenciesProcessed
+
 
 def GROUP(frequencies,nodes,nbFrequenciesProcessed):
     r = frequencies.rankRight(nodes[0].weight())        
@@ -149,19 +179,6 @@ def MERGE(frequencies,nodes,nbFrequenciesProcessed):
     nodes = internalNodesToMerge + externalNodesToMerge + nodes
     return frequencies,nodes,nbFrequenciesProcessed
 
-def DOCK(frequencies,nodes,nbFrequenciesProcessed):
-    """Given a set of internal nodes, group them two by two until at least one internal node has weight larger than the weight of the next External node (but smaller than twice this weight)
-
-"""
-    # print(str(nbFrequenciesProcessed)+" frequencies processed out of "+str(len(frequencies)))
-    # print("First available external has weight "+str(frequencies.select(nbFrequenciesProcessed))+", while the largest internal node has weight "+str(nodes[-1].weight()))
-    while len(nodes)>1 and nodes[-1].weight() <= frequencies.select(nbFrequenciesProcessed):
-        # print(str(len(nodes))+" nodes left, of maximal weight "+str(nodes[-1].weight(),))
-        nbPairsToForm = len(nodes) // 2
-        for i in range(nbPairsToForm):
-            nodes.append(InternalNode(frequencies,nodes[0],nodes[1]))
-            nodes = nodes[2:]
-    return frequencies,nodes,nbFrequenciesProcessed
 
 def WRAPUP(frequencies,nodes):
     """Combine the internal nodes of a list until only one is left.
