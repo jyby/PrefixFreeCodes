@@ -141,6 +141,10 @@ def DOCK(frequencies,nodes,nbFrequenciesProcessed):
 
 
 def GROUP(frequencies,nodes,nbFrequenciesProcessed):
+    """Computes the weight of the smallest (first) node in nodes, 
+rank it among the frequencies, and create the corresponding external nodes.         
+
+"""
     r = frequencies.rankRight(nodes[0].weight())        
     if len(nodes)==1 and r == nbFrequenciesProcessed: # if there is only one internal node and it is smaller than any external node
         nodes[0].weight()
@@ -209,10 +213,6 @@ redundancy according to the GDM algorithm.
         return ExternalNode(frequencies,0)
     frequencies,nodes,nbFrequenciesProcessed = INITIALIZE(frequencies)
     while nbFrequenciesProcessed < len(frequencies):
-        ### GROUP weights of similar weights: 
-        frequencies,nodes,nbFrequenciesProcessed = GROUP(frequencies,nodes,nbFrequenciesProcessed)
-        if nbFrequenciesProcessed == len(frequencies):
-            break
         frequencies,nodes,nbFrequenciesProcessed = DOCK(frequencies,nodes,nbFrequenciesProcessed)
         frequencies,nodes,nbFrequenciesProcessed = MERGE(frequencies,nodes,nbFrequenciesProcessed)
     frequencies,nodes = WRAPUP(frequencies,nodes)
