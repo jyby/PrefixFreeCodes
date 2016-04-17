@@ -3,7 +3,7 @@ from functionsToTestPrefixFreeCodes import testPFCAlgorithm, compressByRunLength
 from partiallySortedArrayWithPartialSumPrecomputed import PartiallySortedArray
 from collections import namedtuple
 from vanLeeuwen import vanLeeuwen
-from gdm import gdmCodeTree,gdm, ExternalNode, InternalNode, INITIALIZE, DOCK
+from gdm import gdmCodeTree,gdm, ExternalNode, InternalNode, INITIALIZE, DOCK, MERGE
 
 class INITIALIZETest(unittest.TestCase):
     def test_AlphaEqualOneTwoWeights(self):
@@ -46,6 +46,30 @@ class DOCKTest(unittest.TestCase):
         self.assertEqual(nbFrequenciesProcessed,16)
         self.assertEqual(len(nodes),2)
         
+
+class MERGETest(unittest.TestCase):
+    def test_AlphaEqualTwoConvergingToOneNode(self):
+        """Alpha Equal Two. All last level docking to a single node."""
+        frequencies = PartiallySortedArray([8,9,10,11,12,13,14,15,17,21,25,29])
+        nodes = [
+            InternalNode(frequencies,ExternalNode(frequencies,0),ExternalNode(frequencies,1)),
+            InternalNode(frequencies,ExternalNode(frequencies,2),ExternalNode(frequencies,3)),
+            InternalNode(frequencies,ExternalNode(frequencies,4),ExternalNode(frequencies,5)),
+            InternalNode(frequencies,ExternalNode(frequencies,6),ExternalNode(frequencies,7))
+        ]
+        nbFrequenciesProcessed = 8
+        frequencies,nodes,nbFrequenciesProcessed = MERGE(frequencies,nodes,nbFrequenciesProcessed)
+        self.assertEqual(nbFrequenciesProcessed,12)
+        self.assertEqual(len(nodes),4)
+        # Check weights of nodes
+        nodeWeightsAfterMerging = [8+9+17,10+11+21,12+13+25,14+15+29]
+        for i in range(len(nodes)):
+            self.assertEqual(nodes[i].weight(),nodeWeightsAfterMerging[i])
+        # Check total Sum
+        totalSum = 0
+        for i in range(len(nodes)):
+            totalSum += nodes[i].weight()
+        self.assertEqual(totalSum,frequencies.rangeSum(0,len(frequencies)))
 
 # class gdmCodeTreeTest(unittest.TestCase):
     # def test_empty(self):
