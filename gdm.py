@@ -125,9 +125,9 @@ def INITIALIZE(frequencies):
     return frequencies,nodes,nbFrequenciesProcessed
 
 def DOCK(frequencies,nodes,nbFrequenciesProcessed):
-    """Given a set of internal nodes whose weight is all within a factor of two, group them two by two until at least one internal node has weight larger than the weight of the next External node (but smaller than twice this weight)
+    """Given a set of internal nodes whose weight is all within a factor of two, group them two by two until at least one internal node has weight larger than the weight of the next External node (but smaller than twice this weight).
 
->>> frequencies = PartiallySortedArray([8]*4+32)
+>>> frequencies = PartiallySortedArray([8]*4+[32])
 >>> frequencies,nodes,nbFrequenciesProcessed = INITIALIZE(frequencies)
 >>> print(len(nodes))
 1
@@ -142,13 +142,13 @@ def DOCK(frequencies,nodes,nbFrequenciesProcessed):
 
 def GROUP(frequencies,nodes,nbFrequenciesProcessed):
     """Computes the weight of the smallest (first) node in nodes, 
-rank it among the frequencies, and create the corresponding external nodes.         
+ranks it among the frequencies, and creates the corresponding external nodes.         
 
 """
     r = frequencies.rankRight(nodes[0].weight())        
     if len(nodes)==1 and r == nbFrequenciesProcessed: # if there is only one internal node and it is smaller than any external node
         nodes[0].weight()
-        nodes = nodes[1:]+[InternalNode(frequencies,nodes[0],ExternalNode(frequencies,r))]
+        nodes = [InternalNode(frequencies,nodes[0],ExternalNode(frequencies,r))]
         nbFrequenciesProcessed += 1
     else:
         if (r-nbFrequenciesProcessed) % 2 == 1: # if there is an odd number of external nodes smaller than the smallest internal node,
@@ -161,19 +161,20 @@ rank it among the frequencies, and create the corresponding external nodes.
     return frequencies,nodes,nbFrequenciesProcessed
 
 def MERGE(frequencies,nodes,nbFrequenciesProcessed):
-    """Merge the list of Internal nodes with the external nodes of similar weight.
+    """Merge the list of Internal nodes with the external nodes of weights within a factor of two of it.
 
 """
+    r = frequencies.rank( 2 * nodes[0].weight() )
     internalNodesToMerge = nodes
     externalNodesToMerge = []
-    for p in range(nbFrequenciesProcessed,frequencies.rankRight(nodes[-1].weight())):
+    for p in range(nbFrequenciesProcessed,r):
         externalNodesToMerge.append(ExternalNode(frequencies,p))
-        nbFrequenciesProcessed += 1
+    nbFrequenciesProcessed = r
     nodes = []
-    while(len(internalNodesToMerge)>0 and len(externalNodesToMerge)>0):
+    while( len(internalNodesToMerge)>0 and len(externalNodesToMerge)>0 ):
         children = []
         for i in range(2):
-            if len(externalNodesToMerge)==0 or internalNodesToMerge[0].weight() < externalNodesToMerge[0].weight() :
+            if len(externalNodesToMerge)==0 or ( len(internalNodesToMerge)>0  and internalNodesToMerge[0].weight() < externalNodesToMerge[0].weight() ) :
                 children.append(internalNodesToMerge[0])
                 internalNodesToMerge = internalNodesToMerge[1:]
             else:
