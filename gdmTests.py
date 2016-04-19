@@ -29,6 +29,12 @@ class INITIALIZETest(unittest.TestCase):
         frequencies,nodes,nbFrequenciesProcessed = INITIALIZE(frequencies)
         self.assertEqual(len(nodes),2)
         self.assertEqual(nbFrequenciesProcessed,4)
+    def test_ExponentialSequence(self):
+        """Exponential Sequence."""
+        frequencies = PartiallySortedArray([1,2,4,8,16,32,64,128,256])
+        frequencies,nodes,nbFrequenciesProcessed = INITIALIZE(frequencies)
+        self.assertEqual(len(nodes),1)
+        self.assertEqual(nbFrequenciesProcessed,2)
 
 class DOCKTest(unittest.TestCase):
     def test_AlphaEqualTwoConvergingToOneNode(self):
@@ -45,6 +51,13 @@ class DOCKTest(unittest.TestCase):
         frequencies,nodes,nbFrequenciesProcessed = DOCK(frequencies,nodes,nbFrequenciesProcessed)
         self.assertEqual(nbFrequenciesProcessed,16)
         self.assertEqual(len(nodes),2)
+    def test_ExponentialSequence(self):
+        """Exponential Sequence."""
+        frequencies = PartiallySortedArray([1,2,4,8,16,32,64,128,256])
+        frequencies,nodes,nbFrequenciesProcessed = INITIALIZE(frequencies)
+        frequencies,nodes,nbFrequenciesProcessed = DOCK(frequencies,nodes,nbFrequenciesProcessed)
+        self.assertEqual(len(nodes),1)
+        self.assertEqual(nbFrequenciesProcessed,2)
         
 
 class MERGETest(unittest.TestCase):
@@ -70,6 +83,54 @@ class MERGETest(unittest.TestCase):
         for i in range(len(nodes)):
             totalSum += nodes[i].weight()
         self.assertEqual(totalSum,frequencies.rangeSum(0,len(frequencies)))
+    def test_ExponentialSequence(self):
+        """Exponential Sequence. (No need to dock ever.)"""
+        frequencies = PartiallySortedArray([1,2,4,8,16,32,64,128,256])
+        frequencies,nodes,nbFrequenciesProcessed = INITIALIZE(frequencies)
+        self.assertEqual(len(nodes),1)
+        self.assertEqual(nbFrequenciesProcessed,2)
+        self.assertEqual(nodes[0].weight(),3)
+        self.assertEqual(frequencies.select(2),4)        
+        frequencies,nodes,nbFrequenciesProcessed = MERGE(frequencies,nodes,nbFrequenciesProcessed)
+        self.assertEqual(len(nodes),1)
+        self.assertEqual(nodes[0].weight(),7)
+        self.assertEqual(nbFrequenciesProcessed,3)
+        frequencies,nodes,nbFrequenciesProcessed = MERGE(frequencies,nodes,nbFrequenciesProcessed)
+        self.assertEqual(len(nodes),1)
+        self.assertEqual(nbFrequenciesProcessed,4)
+        frequencies,nodes,nbFrequenciesProcessed = MERGE(frequencies,nodes,nbFrequenciesProcessed)
+        self.assertEqual(len(nodes),1)
+        self.assertEqual(nbFrequenciesProcessed,5)
+        frequencies,nodes,nbFrequenciesProcessed = MERGE(frequencies,nodes,nbFrequenciesProcessed)
+        self.assertEqual(len(nodes),1)
+        self.assertEqual(nbFrequenciesProcessed,6)
+        frequencies,nodes,nbFrequenciesProcessed = MERGE(frequencies,nodes,nbFrequenciesProcessed)
+        self.assertEqual(len(nodes),1)
+        self.assertEqual(nbFrequenciesProcessed,7)
+        frequencies,nodes,nbFrequenciesProcessed = MERGE(frequencies,nodes,nbFrequenciesProcessed)
+        self.assertEqual(len(nodes),1)
+        self.assertEqual(nbFrequenciesProcessed,8)
+        frequencies,nodes,nbFrequenciesProcessed = MERGE(frequencies,nodes,nbFrequenciesProcessed)
+        self.assertEqual(len(nodes),1)
+        self.assertEqual(nbFrequenciesProcessed,9)
+    # def test_SuperExponentialSequence(self):
+    #     """Super Exponential Sequence. (Still no need to dock?)"""
+    #     frequencies = PartiallySortedArray([1,4,16,64,256])
+    #     frequencies,nodes,nbFrequenciesProcessed = INITIALIZE(frequencies)
+    #     self.assertEqual(len(nodes),1)
+    #     self.assertEqual(nbFrequenciesProcessed,2)
+    #     self.assertEqual(nodes[0].weight(),5)
+    #     self.assertEqual(frequencies.select(2),16)        
+    #     frequencies,nodes,nbFrequenciesProcessed = MERGE(frequencies,nodes,nbFrequenciesProcessed)
+    #     self.assertEqual(len(nodes),1)
+    #     self.assertEqual(nodes[0].weight(),21)
+    #     self.assertEqual(nbFrequenciesProcessed,3)
+    #     frequencies,nodes,nbFrequenciesProcessed = MERGE(frequencies,nodes,nbFrequenciesProcessed)
+    #     self.assertEqual(len(nodes),1)
+    #     self.assertEqual(nbFrequenciesProcessed,4)
+    #     frequencies,nodes,nbFrequenciesProcessed = MERGE(frequencies,nodes,nbFrequenciesProcessed)
+    #     self.assertEqual(len(nodes),1)
+    #     self.assertEqual(nbFrequenciesProcessed,5)
 
 class gdmCodeTreeTest(unittest.TestCase):
     def test_empty(self):
@@ -141,9 +202,13 @@ class GDMTest(unittest.TestCase):
     def testEightEqualWeights(self):
         """Eight Equal Weights"""
         self.assertEqual(gdm([1]*8),[3]*8)
+    def test_ExponentialSequence(self):
+        """Exponential Sequence. (No docking required ever)"""
+        W = [1,2,4,8,16,32,64,128,256]
+        self.assertEqual(sorted(gdm(W)),sorted(vanLeeuwen(W)))
     # def test_ExponentialSequence(self):
-    #     """Exponential Sequence."""
-    #     W = [1,2,4,8,16,32,64,128,256]
+    #     """Super Exponential Sequence. (Still no docking required ever)"""
+    #     W = [1,4,16,64,256]
     #     self.assertEqual(sorted(gdm(W)),sorted(vanLeeuwen(W)))
     # def test_ExponentialSequenceWithLongSteps(self):
     #     """Exponential Sequence With Long Steps."""
