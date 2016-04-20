@@ -223,6 +223,7 @@ redundancy according to the GDM algorithm.
         return ExternalNode(frequencies,0)
     frequencies,nodes,nbFrequenciesProcessed = INITIALIZE(frequencies)
     while nbFrequenciesProcessed < len(frequencies):
+        frequencies,nodes,nbFrequenciesProcessed = GROUP(frequencies,nodes,nbFrequenciesProcessed)
         frequencies,nodes,nbFrequenciesProcessed = DOCK(frequencies,nodes,nbFrequenciesProcessed)
         frequencies,nodes,nbFrequenciesProcessed = MERGE(frequencies,nodes,nbFrequenciesProcessed)
     frequencies,nodes = WRAPUP(frequencies,nodes)

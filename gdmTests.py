@@ -212,10 +212,10 @@ class GDMTest(unittest.TestCase):
         """Exponential Sequence. (No docking required ever)"""
         W = [1,2,4,8,16,32,64,128,256]
         self.assertEqual(sorted(gdm(W)),sorted(vanLeeuwen(W)))
-    # def test_ExponentialSequence(self):
-    #     """Super Exponential Sequence. (Still no docking required ever)"""
-    #     W = [1,4,16,64,256]
-    #     self.assertEqual(sorted(gdm(W)),sorted(vanLeeuwen(W)))
+    def test_SuperExponentialSequence(self):
+        """Super Exponential Sequence. (Still no docking required ever)"""
+        W = [1,4,16,64,256]
+        self.assertEqual(sorted(gdm(W)),sorted(vanLeeuwen(W)))
     # def test_ExponentialSequenceWithLongSteps(self):
     #     """Exponential Sequence With Long Steps."""
     #     W = [1,1,2,2,4,4,8,8,16,16,32,32,64,64,128,128,256,256]
