@@ -141,6 +141,15 @@ def DOCK(frequencies,nodes,nbFrequenciesProcessed):
 
 
 def GROUP(frequencies,nodes,nbFrequenciesProcessed):
+    """Group the two smallest nodes into one.
+"""
+    if len(nodes)==1:
+        nodes[0].weight()
+        nodes = [InternalNode(frequencies,nodes[0],ExternalNode(frequencies,nbFrequenciesProcessed))]
+        nbFrequenciesProcessed += 1
+    return frequencies,nodes,nbFrequenciesProcessed
+
+def oldGROUP(frequencies,nodes,nbFrequenciesProcessed):
     """Computes the weight of the smallest (first) node in nodes, 
 ranks it among the frequencies, and creates the corresponding external nodes.         
 

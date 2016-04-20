@@ -3,7 +3,7 @@ from functionsToTestPrefixFreeCodes import testPFCAlgorithm, compressByRunLength
 from partiallySortedArrayWithPartialSumPrecomputed import PartiallySortedArray
 from collections import namedtuple
 from vanLeeuwen import vanLeeuwen
-from gdm import gdmCodeTree,gdm, ExternalNode, InternalNode, INITIALIZE, DOCK, MERGE
+from gdm import gdmCodeTree,gdm, ExternalNode, InternalNode, INITIALIZE, DOCK, MERGE, GROUP
 
 class INITIALIZETest(unittest.TestCase):
     def test_AlphaEqualOneTwoWeights(self):
@@ -113,24 +113,30 @@ class MERGETest(unittest.TestCase):
         frequencies,nodes,nbFrequenciesProcessed = MERGE(frequencies,nodes,nbFrequenciesProcessed)
         self.assertEqual(len(nodes),1)
         self.assertEqual(nbFrequenciesProcessed,9)
-    # def test_SuperExponentialSequence(self):
-    #     """Super Exponential Sequence. (Still no need to dock?)"""
-    #     frequencies = PartiallySortedArray([1,4,16,64,256])
-    #     frequencies,nodes,nbFrequenciesProcessed = INITIALIZE(frequencies)
-    #     self.assertEqual(len(nodes),1)
-    #     self.assertEqual(nbFrequenciesProcessed,2)
-    #     self.assertEqual(nodes[0].weight(),5)
-    #     self.assertEqual(frequencies.select(2),16)        
-    #     frequencies,nodes,nbFrequenciesProcessed = MERGE(frequencies,nodes,nbFrequenciesProcessed)
-    #     self.assertEqual(len(nodes),1)
-    #     self.assertEqual(nodes[0].weight(),21)
-    #     self.assertEqual(nbFrequenciesProcessed,3)
-    #     frequencies,nodes,nbFrequenciesProcessed = MERGE(frequencies,nodes,nbFrequenciesProcessed)
-    #     self.assertEqual(len(nodes),1)
-    #     self.assertEqual(nbFrequenciesProcessed,4)
-    #     frequencies,nodes,nbFrequenciesProcessed = MERGE(frequencies,nodes,nbFrequenciesProcessed)
-    #     self.assertEqual(len(nodes),1)
-    #     self.assertEqual(nbFrequenciesProcessed,5)
+    def test_SuperExponentialSequence(self):
+        """Super Exponential Sequence. (Still no need to dock?)"""
+        frequencies = PartiallySortedArray([1,4,16,64,256])
+        frequencies,nodes,nbFrequenciesProcessed = INITIALIZE(frequencies)
+        self.assertEqual(len(nodes),1)
+        self.assertEqual(nbFrequenciesProcessed,2)
+        self.assertEqual(nodes[0].weight(),5)
+        self.assertEqual(frequencies.select(2),16)        
+        frequencies,nodes,nbFrequenciesProcessed = DOCK(frequencies,nodes,nbFrequenciesProcessed)
+        frequencies,nodes,nbFrequenciesProcessed = GROUP(frequencies,nodes,nbFrequenciesProcessed)
+        frequencies,nodes,nbFrequenciesProcessed = MERGE(frequencies,nodes,nbFrequenciesProcessed)
+        self.assertEqual(len(nodes),1)
+        self.assertEqual(nbFrequenciesProcessed,3)
+        self.assertEqual(nodes[0].weight(),21)
+        frequencies,nodes,nbFrequenciesProcessed = DOCK(frequencies,nodes,nbFrequenciesProcessed)
+        frequencies,nodes,nbFrequenciesProcessed = GROUP(frequencies,nodes,nbFrequenciesProcessed)
+        frequencies,nodes,nbFrequenciesProcessed = MERGE(frequencies,nodes,nbFrequenciesProcessed)
+        self.assertEqual(len(nodes),1)
+        self.assertEqual(nbFrequenciesProcessed,4)
+        frequencies,nodes,nbFrequenciesProcessed = DOCK(frequencies,nodes,nbFrequenciesProcessed)
+        frequencies,nodes,nbFrequenciesProcessed = GROUP(frequencies,nodes,nbFrequenciesProcessed)
+        frequencies,nodes,nbFrequenciesProcessed = MERGE(frequencies,nodes,nbFrequenciesProcessed)
+        self.assertEqual(len(nodes),1)
+        self.assertEqual(nbFrequenciesProcessed,5)
 
 class gdmCodeTreeTest(unittest.TestCase):
     def test_empty(self):
