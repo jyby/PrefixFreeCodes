@@ -1,5 +1,5 @@
 import unittest, doctest, copy
-from functionsToTestPrefixFreeCodes import testPFCAlgorithm, compressByRunLengths
+# from functionsToTestPrefixFreeCodes import testPFCAlgorithm, compressByRunLengths
 from partiallySortedArrayWithPartialSumPrecomputed import PartiallySortedArray
 from collections import namedtuple
 from vanLeeuwen import vanLeeuwen
@@ -137,7 +137,29 @@ class MERGETest(unittest.TestCase):
         frequencies,nodes,nbFrequenciesProcessed = MERGE(frequencies,nodes,nbFrequenciesProcessed)
         self.assertEqual(len(nodes),1)
         self.assertEqual(nbFrequenciesProcessed,5)
-
+    def test_ExponentialSequenceWithLargeSteps(self):
+        """Exponential Sequence with large steps."""
+        frequencies = PartiallySortedArray([1,1,2,2,4,4,8,8,16,16,32,32,64,64,128,128,256,256])
+        frequencies,nodes,nbFrequenciesProcessed = INITIALIZE(frequencies)
+        self.assertEqual(len(nodes),2)
+        self.assertEqual(nbFrequenciesProcessed,4)
+        self.assertEqual(nodes[0].weight(),2)
+        self.assertEqual(nodes[1].weight(),4)
+        frequencies,nodes,nbFrequenciesProcessed = DOCK(frequencies,nodes,nbFrequenciesProcessed)
+        self.assertEqual(len(nodes),2)
+        self.assertEqual(nbFrequenciesProcessed,4)
+        self.assertEqual(nodes[0].weight(),2)
+        self.assertEqual(nodes[1].weight(),4)
+        frequencies,nodes,nbFrequenciesProcessed = GROUP(frequencies,nodes,nbFrequenciesProcessed)
+        self.assertEqual(len(nodes),2)
+        self.assertEqual(nbFrequenciesProcessed,4)
+        self.assertEqual(nodes[0].weight(),2)
+        self.assertEqual(nodes[1].weight(),4)
+        frequencies,nodes,nbFrequenciesProcessed = MERGE(frequencies,nodes,nbFrequenciesProcessed)
+        self.assertEqual(len(nodes),1)
+        self.assertEqual(nbFrequenciesProcessed,10)
+        self.assertEqual(nodes[0].weight(),14)
+        
 class gdmCodeTreeTest(unittest.TestCase):
     def test_empty(self):
         """Empty input."""

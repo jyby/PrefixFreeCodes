@@ -1,5 +1,5 @@
 import unittest,doctest
-from functionsToTestPrefixFreeCodes import testPFCAlgorithm, compressByRunLengths
+# from functionsToTestPrefixFreeCodes import testPFCAlgorithm, compressByRunLengths
 from partiallySortedArrayWithPartialSumPrecomputed import PartiallySortedArray
 from collections import namedtuple
 from vanLeeuwen import vanLeeuwen
