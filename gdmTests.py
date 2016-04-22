@@ -216,6 +216,12 @@ class gdmCodeTreeTest(unittest.TestCase):
         T = gdmCodeTree(W)
         L = T.depths()
         self.assertEqual(L,[2]*4)
+    def test_AlphaEqualTwoSingleSmallWeight(self):
+        """Alpha Equal Three. Single very small weight."""
+        W = PartiallySortedArray([1]+[8]*3+[32]*3)
+        T = gdmCodeTree(W)
+        L = T.depths()
+        self.assertEqual(L,[4]*4+[2]*3)
 
 class GDMTest(unittest.TestCase):
     """Basic tests for the GDM algorithm computing optimal prefix free codes.
