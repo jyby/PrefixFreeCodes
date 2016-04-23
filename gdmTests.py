@@ -271,11 +271,16 @@ class GDMTest(unittest.TestCase):
     #     W = [1]*8+[32]*3
     #     L = gdm(W)
     #     self.assertEqual(sorted(L),[2]*3+[5]*8)
-    # def test_AlphaEqualThreeWithoutMixing(self):
-    #     """Alpha Equal Three with no Mixing."""
-    #     W = [1]*4+[4]*3+[16]*3
-    #     L = gdm(W)
-    #     self.assertEqual(sorted(L),[2]*3+[4]*3+[6]*4)
+    def test_AlphaEqualThreeWithoutMixing(self):
+        """Alpha Equal Three with no Mixing."""
+        W = [1]*4+[4]*3+[16]*3
+        L = gdm(W)
+        self.assertEqual(sorted(L),[2]*3+[4]*3+[6]*4)
+    def test_AlphaEqualFourWithoutMixing(self):
+        """Alpha Equal Three with no Mixing."""
+        W = [1]*4+[4]*3+[16]*3+[128]*3
+        L = gdm(W)
+        self.assertEqual(sorted(L),sorted(vanLeeuwen(W)))
 
 
 
