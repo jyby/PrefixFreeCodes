@@ -102,6 +102,27 @@ class InternalNode:
         return string
 
 
+def nodeListToString(nodes):
+    """Given a list of nodes, returns a string listing the trees in the list.
+
+>>> w = PartiallySortedArray([1,2,3,4])
+>>> x = ExternalNode(w,0)
+>>> y = InternalNode(w,ExternalNode(w,1),ExternalNode(w,2))
+>>> z = ExternalNode(w,3)
+>>> print(x.weight(),y.weight())
+(1, 5)
+>>> l = [x,y,z]
+>>> print(nodeListToString(l))
+[[1], (5,[None],[None]), [None]]
+"""
+    output = "["
+    for i in range(len(nodes)-1):
+        output += str(nodes[i])+", "
+    output += str(nodes[-1])
+    output += "]"
+    return output
+
+
 def INITIALIZE(frequencies):
     """Given a partially sorted array, initialize the list of internal nodes with the lowest level of leaves.
 
@@ -130,7 +151,7 @@ def DOCK(frequencies,nodes,nbFrequenciesProcessed):
 >>> frequencies = PartiallySortedArray([8]*4+[32])
 >>> frequencies,nodes,nbFrequenciesProcessed = INITIALIZE(frequencies)
 >>> print(len(nodes))
-1
+2
 """
     while len(nodes)>1 and nodes[-1].weight() <= frequencies.select(nbFrequenciesProcessed):
         nbPairsToForm = len(nodes) // 2
@@ -214,7 +235,7 @@ redundancy according to the GDM algorithm.
 >>> print(gdmCodeTree(PartiallySortedArray([1,1,1,1])))
 (4,(2,[None],[None]),(None,[None],[None]))
 >>> print(gdmCodeTree(PartiallySortedArray([1,2,4,8,16,32,64,128,256])))
-(511,(255,(127,(63,(31,(15,(7,(3,[None],[None]),[None]),[None]),[None]),[None]),[None]),[None]),[None])
+(511,(255,(127,(63,(31,(15,(7,(3,[None],[None]),[None]),[8]),[None]),[32]),[None]),[128]),[None])
 
 """
     if len(frequencies) == 0 :
