@@ -122,6 +122,22 @@ def nodeListToString(nodes):
     output += "]"
     return output
 
+def nodeListToStringOfWeights(nodes):
+    """Given a list of nodes, returns a string listing the weights of the nodes in the list.
+
+>>> w = PartiallySortedArray([10,20,30,40])
+>>> l = [ExternalNode(w,0),InternalNode(w,ExternalNode(w,1),ExternalNode(w,2)),ExternalNode(w,3)]
+>>> print(nodeListToStringOfWeights(l))
+[10, 50, 40]
+"""
+    output = "["
+    for i in range(len(nodes)-1):
+        output += str(nodes[i].weight())+", "
+    output += str(nodes[-1].weight())
+    output += "]"
+    return output
+
+
 
 def INITIALIZE(frequencies):
     """Given a partially sorted array, initialize the list of internal nodes with the lowest level of leaves.
