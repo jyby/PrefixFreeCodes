@@ -137,6 +137,19 @@ def nodeListToStringOfWeights(nodes):
     output += "]"
     return output
 
+def nodeListToWeightList(nodes):
+    """Given a list of nodes, returns the list of the weights of the nodes in the list.
+
+>>> w = PartiallySortedArray([10,20,30,40])
+>>> l = [ExternalNode(w,0),InternalNode(w,ExternalNode(w,1),ExternalNode(w,2)),ExternalNode(w,3)]
+>>> print(nodeListToWeightList(l))
+[10, 50, 40]
+"""
+    l = []
+    for i in range(len(nodes)):
+        l.append(nodes[i].weight())
+    return l
+
 
 
 def INITIALIZE(frequencies):
