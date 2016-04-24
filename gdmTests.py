@@ -3,7 +3,8 @@ import unittest, doctest, copy
 from partiallySortedArrayWithPartialSumPrecomputed import PartiallySortedArray
 from collections import namedtuple
 from vanLeeuwen import vanLeeuwen
-from gdm import gdmCodeTree,gdm, ExternalNode, InternalNode, INITIALIZE, DOCK, MERGE, GROUP
+from gdm import gdmCodeTree,gdm, ExternalNode, InternalNode, INITIALIZE, DOCK, MERGE, GROUP, nodeListToStringOfWeights, nodeListToString, nodeListToWeightList
+
 
 class INITIALIZETest(unittest.TestCase):
     def test_AlphaEqualOneTwoWeights(self):
@@ -83,6 +84,18 @@ class MERGETest(unittest.TestCase):
         for i in range(len(nodes)):
             totalSum += nodes[i].weight()
         self.assertEqual(totalSum,frequencies.rangeSum(0,len(frequencies)))
+    def test_ThreeCodeLengths(self):
+        """ThreeCodeLengths."""
+        frequencies = PartiallySortedArray([1]+[8]*3+[32]*3)
+        frequencies,nodes,nbFrequenciesProcessed = INITIALIZE(frequencies)
+        self.assertEqual(nodeListToString(nodes),"[(9,[None],[None]), (None,[None],[None])]")
+        self.assertEqual(nodeListToWeightList(nodes),[9, 16])
+        self.assertEqual(nodeListToString(nodes),"[(9,[None],[None]), (16,[None],[None])]")
+        frequencies,nodes,nbFrequenciesProcessed = DOCK(frequencies,nodes,nbFrequenciesProcessed)
+        self.assertEqual(nodeListToWeightList(nodes),[25])
+        self.assertEqual(nodeListToString(nodes),"[(25,(9,[None],[None]),(16,[None],[None]))]")
+
+        
     def test_ExponentialSequence(self):
         """Exponential Sequence. (No need to dock ever.)"""
         frequencies = PartiallySortedArray([1,2,4,8,16,32,64,128,256])
@@ -137,28 +150,28 @@ class MERGETest(unittest.TestCase):
         frequencies,nodes,nbFrequenciesProcessed = MERGE(frequencies,nodes,nbFrequenciesProcessed)
         self.assertEqual(len(nodes),1)
         self.assertEqual(nbFrequenciesProcessed,5)
-    def test_ExponentialSequenceWithLargeSteps(self):
-        """Exponential Sequence with large steps."""
-        frequencies = PartiallySortedArray([1,1,2,2,4,4,8,8,16,16,32,32,64,64,128,128,256,256])
-        frequencies,nodes,nbFrequenciesProcessed = INITIALIZE(frequencies)
-        self.assertEqual(len(nodes),2)
-        self.assertEqual(nbFrequenciesProcessed,4)
-        self.assertEqual(nodes[0].weight(),2)
-        self.assertEqual(nodes[1].weight(),4)
-        frequencies,nodes,nbFrequenciesProcessed = DOCK(frequencies,nodes,nbFrequenciesProcessed)
-        self.assertEqual(len(nodes),2)
-        self.assertEqual(nbFrequenciesProcessed,4)
-        self.assertEqual(nodes[0].weight(),2)
-        self.assertEqual(nodes[1].weight(),4)
-        frequencies,nodes,nbFrequenciesProcessed = GROUP(frequencies,nodes,nbFrequenciesProcessed)
-        self.assertEqual(len(nodes),2)
-        self.assertEqual(nbFrequenciesProcessed,4)
-        self.assertEqual(nodes[0].weight(),2)
-        self.assertEqual(nodes[1].weight(),4)
-        frequencies,nodes,nbFrequenciesProcessed = MERGE(frequencies,nodes,nbFrequenciesProcessed)
-        self.assertEqual(len(nodes),1)
-        self.assertEqual(nbFrequenciesProcessed,10)
-        self.assertEqual(nodes[0].weight(),14)
+    # def test_ExponentialSequenceWithLargeSteps(self):
+    #     """Exponential Sequence with large steps."""
+    #     frequencies = PartiallySortedArray([1,1,2,2,4,4,8,8,16,16,32,32,64,64,128,128,256,256])
+    #     frequencies,nodes,nbFrequenciesProcessed = INITIALIZE(frequencies)
+    #     self.assertEqual(len(nodes),2)
+    #     self.assertEqual(nbFrequenciesProcessed,4)
+    #     self.assertEqual(nodes[0].weight(),2)
+    #     self.assertEqual(nodes[1].weight(),4)
+    #     frequencies,nodes,nbFrequenciesProcessed = DOCK(frequencies,nodes,nbFrequenciesProcessed)
+    #     self.assertEqual(len(nodes),2)
+    #     self.assertEqual(nbFrequenciesProcessed,4)
+    #     self.assertEqual(nodes[0].weight(),2)
+    #     self.assertEqual(nodes[1].weight(),4)
+    #     frequencies,nodes,nbFrequenciesProcessed = GROUP(frequencies,nodes,nbFrequenciesProcessed)
+    #     self.assertEqual(len(nodes),2)
+    #     self.assertEqual(nbFrequenciesProcessed,4)
+    #     self.assertEqual(nodes[0].weight(),2)
+    #     self.assertEqual(nodes[1].weight(),4)
+    #     frequencies,nodes,nbFrequenciesProcessed = MERGE(frequencies,nodes,nbFrequenciesProcessed)
+    #     self.assertEqual(len(nodes),1)
+    #     self.assertEqual(nbFrequenciesProcessed,10)
+    #     self.assertEqual(nodes[0].weight(),14)
         
 class gdmCodeTreeTest(unittest.TestCase):
     def test_empty(self):
@@ -216,12 +229,13 @@ class gdmCodeTreeTest(unittest.TestCase):
         T = gdmCodeTree(W)
         L = T.depths()
         self.assertEqual(L,[2]*4)
-    def test_AlphaEqualTwoSingleSmallWeight(self):
-        """Alpha Equal Three. Single very small weight."""
-        W = PartiallySortedArray([1]+[8]*3+[32]*3)
-        T = gdmCodeTree(W)
-        L = T.depths()
-        self.assertEqual(L,[4]*4+[2]*3)
+    # def test_AlphaEqualThreeSingleSmallWeight(self):
+    #     """Alpha Equal Three. Single very small weight."""
+    #     frequencies = [1]+[8]*3+[32]*3
+    #     W = PartiallySortedArray(frequencies)
+    #     T = gdmCodeTree(W)
+    #     L = T.depths()
+    #     self.assertEqual(sorted(L),sorted(vanLeeuwen(frequencies)))
 
 class GDMTest(unittest.TestCase):
     """Basic tests for the GDM algorithm computing optimal prefix free codes.
@@ -271,16 +285,16 @@ class GDMTest(unittest.TestCase):
     #     W = [1]*8+[32]*3
     #     L = gdm(W)
     #     self.assertEqual(sorted(L),[2]*3+[5]*8)
-    def test_AlphaEqualThreeWithoutMixing(self):
-        """Alpha Equal Three with no Mixing."""
-        W = [1]*4+[4]*3+[16]*3
-        L = gdm(W)
-        self.assertEqual(sorted(L),[2]*3+[4]*3+[6]*4)
-    def test_AlphaEqualFourWithoutMixing(self):
-        """Alpha Equal Three with no Mixing."""
-        W = [1]*4+[4]*3+[16]*3+[128]*3
-        L = gdm(W)
-        self.assertEqual(sorted(L),sorted(vanLeeuwen(W)))
+    # def test_AlphaEqualThreeWithoutMixing(self):
+    #     """Alpha Equal Three with no Mixing."""
+    #     W = [1]*4+[4]*3+[16]*3
+    #     L = gdm(W)
+    #     self.assertEqual(sorted(L),[2]*3+[4]*3+[6]*4)
+    # def test_AlphaEqualFourWithoutMixing(self):
+    #     """Alpha Equal Three with no Mixing."""
+    #     W = [1]*4+[4]*3+[16]*3+[128]*3
+    #     L = gdm(W)
+    #     self.assertEqual(sorted(L),sorted(vanLeeuwen(W)))
 
 
 
