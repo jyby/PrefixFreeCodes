@@ -3,7 +3,7 @@ import unittest, doctest, copy
 from partiallySortedArrayWithPartialSumPrecomputed import PartiallySortedArray
 from collections import namedtuple
 from vanLeeuwen import vanLeeuwen
-from gdm import gdmCodeTree,gdm, INITIALIZE, DOCK, MERGE, GROUP
+from gdm import gdmCodeTree,gdm, INITIALIZE, DOCK, MERGE, GROUP, WRAPUP
 from codeTree import ExternalNode, InternalNode,  nodeListToStringOfWeights, nodeListToString, nodeListToWeightList
 
 
@@ -184,13 +184,22 @@ class gdmCodeTreeTest(unittest.TestCase):
         self.assertEqual(nodeListToString(nodes),"[(5,[select(0)],[select(1)])]")
         frequencies,nodes,nbFrequenciesProcessed = GROUP(frequencies,nodes,nbFrequenciesProcessed)
         self.assertEqual(nodeListToString(nodes),"[(21,(5,[select(0)],[select(1)]),[16])]")
-        # frequencies,nodes,nbFrequenciesProcessed = MERGE(frequencies,nodes,nbFrequenciesProcessed)
-        # frequencies,nodes,nbFrequenciesProcessed = DOCK(frequencies,nodes,nbFrequenciesProcessed)
-        # frequencies,nodes,nbFrequenciesProcessed = GROUP(frequencies,nodes,nbFrequenciesProcessed)
-        # frequencies,nodes,nbFrequenciesProcessed = MERGE(frequencies,nodes,nbFrequenciesProcessed)
-        # frequencies,nodes,nbFrequenciesProcessed = DOCK(frequencies,nodes,nbFrequenciesProcessed)
-        # frequencies,nodes,nbFrequenciesProcessed = GROUP(frequencies,nodes,nbFrequenciesProcessed)
-        # frequencies,nodes,nbFrequenciesProcessed = MERGE(frequencies,nodes,nbFrequenciesProcessed)
+        frequencies,nodes,nbFrequenciesProcessed = MERGE(frequencies,nodes,nbFrequenciesProcessed)
+        self.assertEqual(nodeListToString(nodes),"[(21,(5,[select(0)],[select(1)]),[16])]")
+        frequencies,nodes,nbFrequenciesProcessed = DOCK(frequencies,nodes,nbFrequenciesProcessed)
+        self.assertEqual(nodeListToString(nodes),"[(21,(5,[select(0)],[select(1)]),[16])]")
+        frequencies,nodes,nbFrequenciesProcessed = GROUP(frequencies,nodes,nbFrequenciesProcessed)
+        self.assertEqual(nodeListToString(nodes),"[(85,(21,(5,[select(0)],[select(1)]),[16]),[64])]")
+        frequencies,nodes,nbFrequenciesProcessed = MERGE(frequencies,nodes,nbFrequenciesProcessed)
+        self.assertEqual(nodeListToString(nodes),"[(85,(21,(5,[select(0)],[select(1)]),[16]),[64])]")
+        frequencies,nodes,nbFrequenciesProcessed = DOCK(frequencies,nodes,nbFrequenciesProcessed)
+        self.assertEqual(nodeListToString(nodes),"[(85,(21,(5,[select(0)],[select(1)]),[16]),[64])]")
+        frequencies,nodes,nbFrequenciesProcessed = GROUP(frequencies,nodes,nbFrequenciesProcessed)
+        self.assertEqual(nodeListToString(nodes),"[(341,(85,(21,(5,[select(0)],[select(1)]),[16]),[64]),[256])]")
+        frequencies,nodes,nbFrequenciesProcessed = MERGE(frequencies,nodes,nbFrequenciesProcessed)
+        self.assertEqual(nodeListToString(nodes),"[(341,(85,(21,(5,[select(0)],[select(1)]),[16]),[64]),[256])]")
+        frequencies,nodes = WRAPUP(frequencies,nodes)
+        self.assertEqual(nodeListToString(nodes),"[(341,(85,(21,(5,[select(0)],[select(1)]),[16]),[64]),[256])]")
     # def test_ExponentialSequenceWithLargeSteps(self):
     #     """Exponential Sequence with large steps."""
     #     frequencies = PartiallySortedArray([1,1,2,2,4,4,8,8,16,16,32,32,64,64,128,128,256,256])
