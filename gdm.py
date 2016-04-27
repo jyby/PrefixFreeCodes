@@ -13,7 +13,7 @@ def INITIALIZE(frequencies):
 >>> print(len(nodes))
 4
 >>> print(nodeListToString(nodes))
-[(20,[None],[None]), (None,[None],[None]), (None,[None],[None]), (None,[None],[None])]
+[(20,[select(0)],[select(1)]), (rangeSum(2,4),[select(2)],[select(3)]), (rangeSum(4,6),[select(4)],[select(5)]), (rangeSum(6,8),[select(6)],[select(7)])]
 """
     assert(len(frequencies)>1)
     firstInternalNode = InternalNode(frequencies,ExternalNode(frequencies,0),ExternalNode(frequencies,1))
@@ -117,10 +117,7 @@ def gdmCodeTree(frequencies):
 redundancy according to the GDM algorithm.
 
 >>> print(gdmCodeTree(PartiallySortedArray([1,1,1,1])))
-(4,(2,[None],[None]),(None,[None],[None]))
->>> print(gdmCodeTree(PartiallySortedArray([1,2,4,8,16,32,64,128,256])))
-(511,(255,(127,(63,(31,(15,(7,(3,[None],[None]),[None]),[8]),[None]),[32]),[None]),[128]),[None])
-
+(4,(2,[select(0)],[select(1)]),(rangeSum(2,4),[select(2)],[select(3)]))
 """
     if len(frequencies) == 0 :
         return None

@@ -91,7 +91,7 @@ class MERGETest(unittest.TestCase):
         """ThreeCodeLengths."""
         frequencies = PartiallySortedArray([1]+[8]*3+[32]*3)
         frequencies,nodes,nbFrequenciesProcessed = INITIALIZE(frequencies)
-        self.assertEqual(nodeListToString(nodes),"[(9,[select(0)],[select(1)]), (None,[select(2)],[select(3)])]")
+        self.assertEqual(nodeListToString(nodes),"[(9,[select(0)],[select(1)]), (rangeSum(2,4),[select(2)],[select(3)])]")
         self.assertEqual(nodeListToWeightList(nodes),[9, 16])
         self.assertEqual(nodeListToString(nodes),"[(9,[select(0)],[select(1)]), (16,[select(2)],[select(3)])]")
         frequencies,nodes,nbFrequenciesProcessed = DOCK(frequencies,nodes,nbFrequenciesProcessed)
@@ -120,7 +120,7 @@ class gdmCodeTreeTest(unittest.TestCase):
         """Alpha Equal One. Four Equal Weights."""
         W = PartiallySortedArray([10]*4)
         T = gdmCodeTree(W)
-        self.assertEqual(str(T),"(40,(20,[select(0)],[select(1)]),(None,[select(2)],[select(3)]))")
+        self.assertEqual(str(T),"(40,(20,[select(0)],[select(1)]),(rangeSum(2,4),[select(2)],[select(3)]))")
         L = T.depths()
         self.assertEqual(L,[2]*4)
     def test_sixteenEqualWeights(self):

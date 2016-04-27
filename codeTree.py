@@ -101,7 +101,10 @@ class InternalNode:
     def __eq__(self,other):
         return self.__cmp__(other)
     def __str__(self):
-        string = "("+str(self.CachedValueOfWeight)+","+str(self.left)+","+str(self.right)+")"
+        if self.CachedValueOfWeight == None:
+            string = "(rangeSum("+str(self.interval.left)+","+str(self.interval.right)+"),"+str(self.left)+","+str(self.right)+")"
+        else:
+            string = "("+str(self.CachedValueOfWeight)+","+str(self.left)+","+str(self.right)+")"
         return string
 
 
