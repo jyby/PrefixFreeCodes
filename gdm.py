@@ -12,6 +12,8 @@ def INITIALIZE(frequencies):
 >>> frequencies,nodes,nbFrequenciesProcessed = INITIALIZE(frequencies)
 >>> print(len(nodes))
 4
+>>> print(nodeListToString(nodes))
+[(20,[None],[None]), (None,[None],[None]), (None,[None],[None]), (None,[None],[None])]
 """
     assert(len(frequencies)>1)
     firstInternalNode = InternalNode(frequencies,ExternalNode(frequencies,0),ExternalNode(frequencies,1))

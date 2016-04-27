@@ -19,6 +19,7 @@ False
 
 """
     def __init__(self, partiallySortedArray, position):
+        self.position = position
         self.partiallySortedArray = partiallySortedArray
         self.interval = Interval(position,position+1)
         self.CachedValueOfWeight = None
@@ -35,7 +36,10 @@ False
     def __eq__(self,other):
         return self.__cmp__(other)
     def __str__(self):
-        return "["+str(self.CachedValueOfWeight)+"]"
+        if self.CachedValueOfWeight == None:
+            return "[select("+str(self.position)+")]"
+        else:
+            return "["+str(self.CachedValueOfWeight)+"]"
 
 
 class InternalNode:

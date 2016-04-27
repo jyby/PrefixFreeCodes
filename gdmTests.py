@@ -3,7 +3,8 @@ import unittest, doctest, copy
 from partiallySortedArrayWithPartialSumPrecomputed import PartiallySortedArray
 from collections import namedtuple
 from vanLeeuwen import vanLeeuwen
-from gdm import gdmCodeTree,gdm, ExternalNode, InternalNode, INITIALIZE, DOCK, MERGE, GROUP, nodeListToStringOfWeights, nodeListToString, nodeListToWeightList
+from gdm import gdmCodeTree,gdm, INITIALIZE, DOCK, MERGE, GROUP
+from codeTree import ExternalNode, InternalNode,  nodeListToStringOfWeights, nodeListToString, nodeListToWeightList
 
 
 class INITIALIZETest(unittest.TestCase):
@@ -36,6 +37,8 @@ class INITIALIZETest(unittest.TestCase):
         frequencies,nodes,nbFrequenciesProcessed = INITIALIZE(frequencies)
         self.assertEqual(len(nodes),1)
         self.assertEqual(nbFrequenciesProcessed,2)
+        self.assertEqual(nodeListToWeightList(nodes),[3])
+        self.assertEqual(nodeListToString(nodes),"[(3,[select(0)],[select(1)])]")
 
 class DOCKTest(unittest.TestCase):
     def test_AlphaEqualTwoConvergingToOneNode(self):
@@ -88,14 +91,71 @@ class MERGETest(unittest.TestCase):
         """ThreeCodeLengths."""
         frequencies = PartiallySortedArray([1]+[8]*3+[32]*3)
         frequencies,nodes,nbFrequenciesProcessed = INITIALIZE(frequencies)
-        self.assertEqual(nodeListToString(nodes),"[(9,[None],[None]), (None,[None],[None])]")
+        self.assertEqual(nodeListToString(nodes),"[(9,[select(0)],[select(1)]), (None,[select(2)],[select(3)])]")
         self.assertEqual(nodeListToWeightList(nodes),[9, 16])
-        self.assertEqual(nodeListToString(nodes),"[(9,[None],[None]), (16,[None],[None])]")
+        self.assertEqual(nodeListToString(nodes),"[(9,[select(0)],[select(1)]), (16,[select(2)],[select(3)])]")
         frequencies,nodes,nbFrequenciesProcessed = DOCK(frequencies,nodes,nbFrequenciesProcessed)
         self.assertEqual(nodeListToWeightList(nodes),[25])
-        self.assertEqual(nodeListToString(nodes),"[(25,(9,[None],[None]),(16,[None],[None]))]")
+        self.assertEqual(nodeListToString(nodes),"[(25,(9,[select(0)],[select(1)]),(16,[select(2)],[select(3)]))]")
 
         
+        
+class gdmCodeTreeTest(unittest.TestCase):
+    def test_empty(self):
+        """Empty input."""
+        frequencies = PartiallySortedArray([])
+        self.assertEqual(gdmCodeTree(frequencies),None)
+    def test_singleton(self):
+        """Alpha Equal One. Singleton input."""
+        frequencies = PartiallySortedArray([10])
+        self.assertEqual(gdmCodeTree(frequencies),ExternalNode(frequencies,0))
+    def test_twoWeights(self):
+        """Alpha Equal One. Two Weights."""
+        W = PartiallySortedArray([10,10])
+        T = gdmCodeTree(W)
+        self.assertEqual(str(T),"(20,[select(0)],[select(1)])")
+        L = T.depths()
+        self.assertEqual(L,[1]*2)
+    def test_fourEqualWeights(self):
+        """Alpha Equal One. Four Equal Weights."""
+        W = PartiallySortedArray([10]*4)
+        T = gdmCodeTree(W)
+        self.assertEqual(str(T),"(40,(20,[select(0)],[select(1)]),(None,[select(2)],[select(3)]))")
+        L = T.depths()
+        self.assertEqual(L,[2]*4)
+    def test_sixteenEqualWeights(self):
+        """Alpha Equal One. Sixteen Equal Weights."""
+        W = PartiallySortedArray([10]*16)
+        T = gdmCodeTree(W)
+        self.assertEqual(T.weight(),W.rangeSum(0,len(W)))        
+        L = T.depths()
+        self.assertEqual(L,[4]*16)
+    def test_eightSimilarWeights(self):
+        """Alpha Equal One. Eight Similar Weights."""
+        W = PartiallySortedArray([10,11,12,13,14,15,16,17])
+        T = gdmCodeTree(W)
+        L = T.depths()
+        self.assertEqual(L,[3]*8)
+    def test_threeEqualWeights(self):
+        """Alpha Equal One. Three Equal Weights."""
+        W = PartiallySortedArray([10]*3)
+        T = gdmCodeTree(W)
+        self.assertEqual(str(T),"(30,[10],(20,[select(0)],[select(1)]))")
+        L = T.depths()
+        self.assertEqual(L,[1,2,2])
+    def test_threeSimilarWeights(self):
+        """Alpha Equal One. Three Similar Weights."""
+        W = PartiallySortedArray([12,11,10])
+        T = gdmCodeTree(W)
+        self.assertEqual(str(T),"(33,[12],(21,[select(0)],[select(1)]))")
+        L = T.depths()
+        self.assertEqual(L,[1,2,2])
+    def test_AlphaEqualTwoSingleSmallWeight(self):
+        """Alpha Equal Two. Single very small weight."""
+        W = PartiallySortedArray([1]+[8]*3)
+        T = gdmCodeTree(W)
+        L = T.depths()
+        self.assertEqual(L,[2]*4)
     def test_ExponentialSequence(self):
         """Exponential Sequence. (No need to dock ever.)"""
         frequencies = PartiallySortedArray([1,2,4,8,16,32,64,128,256])
@@ -104,6 +164,8 @@ class MERGETest(unittest.TestCase):
         self.assertEqual(nbFrequenciesProcessed,2)
         self.assertEqual(nodes[0].weight(),3)
         self.assertEqual(frequencies.select(2),4)        
+        self.assertEqual(nodeListToWeightList(nodes),[3])
+        self.assertEqual(nodeListToString(nodes),"[(3,[select(0)],[select(1)])]")
         frequencies,nodes,nbFrequenciesProcessed = MERGE(frequencies,nodes,nbFrequenciesProcessed)
         self.assertEqual(len(nodes),1)
         self.assertEqual(nodes[0].weight(),7)
@@ -172,63 +234,6 @@ class MERGETest(unittest.TestCase):
     #     self.assertEqual(len(nodes),1)
     #     self.assertEqual(nbFrequenciesProcessed,10)
     #     self.assertEqual(nodes[0].weight(),14)
-        
-class gdmCodeTreeTest(unittest.TestCase):
-    def test_empty(self):
-        """Empty input."""
-        frequencies = PartiallySortedArray([])
-        self.assertEqual(gdmCodeTree(frequencies),None)
-    def test_singleton(self):
-        """Alpha Equal One. Singleton input."""
-        frequencies = PartiallySortedArray([10])
-        self.assertEqual(gdmCodeTree(frequencies),ExternalNode(frequencies,0))
-    def test_twoWeights(self):
-        """Alpha Equal One. Two Weights."""
-        W = PartiallySortedArray([10,10])
-        T = gdmCodeTree(W)
-        self.assertEqual(str(T),"(20,[None],[None])")
-        L = T.depths()
-        self.assertEqual(L,[1]*2)
-    def test_fourEqualWeights(self):
-        """Alpha Equal One. Four Equal Weights."""
-        W = PartiallySortedArray([10]*4)
-        T = gdmCodeTree(W)
-        self.assertEqual(str(T),"(40,(20,[None],[None]),(None,[None],[None]))")
-        L = T.depths()
-        self.assertEqual(L,[2]*4)
-    def test_sixteenEqualWeights(self):
-        """Alpha Equal One. Sixteen Equal Weights."""
-        W = PartiallySortedArray([10]*16)
-        T = gdmCodeTree(W)
-        self.assertEqual(T.weight(),W.rangeSum(0,len(W)))        
-        L = T.depths()
-        self.assertEqual(L,[4]*16)
-    def test_eightSimilarWeights(self):
-        """Alpha Equal One. Eight Similar Weights."""
-        W = PartiallySortedArray([10,11,12,13,14,15,16,17])
-        T = gdmCodeTree(W)
-        L = T.depths()
-        self.assertEqual(L,[3]*8)
-    def test_threeEqualWeights(self):
-        """Alpha Equal One. Three Equal Weights."""
-        W = PartiallySortedArray([10]*3)
-        T = gdmCodeTree(W)
-        self.assertEqual(str(T),"(30,[10],(20,[None],[None]))")
-        L = T.depths()
-        self.assertEqual(L,[1,2,2])
-    def test_threeSimilarWeights(self):
-        """Alpha Equal One. Three Similar Weights."""
-        W = PartiallySortedArray([12,11,10])
-        T = gdmCodeTree(W)
-        self.assertEqual(str(T),"(33,[12],(21,[None],[None]))")
-        L = T.depths()
-        self.assertEqual(L,[1,2,2])
-    def test_AlphaEqualTwoSingleSmallWeight(self):
-        """Alpha Equal Two. Single very small weight."""
-        W = PartiallySortedArray([1]+[8]*3)
-        T = gdmCodeTree(W)
-        L = T.depths()
-        self.assertEqual(L,[2]*4)
     # def test_AlphaEqualThreeSingleSmallWeight(self):
     #     """Alpha Equal Three. Single very small weight."""
     #     frequencies = [1]+[8]*3+[32]*3
