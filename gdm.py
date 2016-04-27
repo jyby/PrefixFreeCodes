@@ -49,8 +49,9 @@ def GROUP(frequencies,nodes,nbFrequenciesProcessed):
     """Group the two smallest nodes into one.
 """
     if len(nodes)==1:
-        nodes[0].weight()
-        nodes = [InternalNode(frequencies,nodes[0],ExternalNode(frequencies,nbFrequenciesProcessed))]
+        externalNode = ExternalNode(frequencies,nbFrequenciesProcessed)
+        externalNode.weight() # Insure the external node is the smallest available.
+        nodes = [InternalNode(frequencies,nodes[0],externalNode)]
         nbFrequenciesProcessed += 1
     return frequencies,nodes,nbFrequenciesProcessed
 
