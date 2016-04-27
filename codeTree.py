@@ -16,7 +16,8 @@ The weight is computed only at request by performing a select query in the parti
 True
 >>> print(x == z)
 False
-
+>>> print(str(x))
+[select(0)]
 """
     def __init__(self, partiallySortedArray, position):
         self.position = position
@@ -115,7 +116,7 @@ def nodeListToString(nodes):
 (1, 5)
 >>> l = [x,y,z]
 >>> print(nodeListToString(l))
-[[1], (5,[None],[None]), [None]]
+[[1], (5,[select(1)],[select(2)]), [select(3)]]
 """
     output = "["
     for i in range(len(nodes)-1):
