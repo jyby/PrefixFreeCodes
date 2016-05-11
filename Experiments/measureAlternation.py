@@ -15,3 +15,13 @@ def countFrequenciesInFile(filename):
             words.update(line.split())
     return words.most_common()
 
+def measureAlternationsInFile(filename):
+    """Given a file name, compute the alternation difficulty measure on it.
+
+"""
+    f = countFrequenciesInFile(filename)
+    return EIAlternation(f)
+    
+if __name__ == '__main__':
+    print(measureAlternationsInFile("../DataSets/shakespeare.txt"))
+    doctest.testmod()
