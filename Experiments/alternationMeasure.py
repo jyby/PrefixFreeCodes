@@ -67,10 +67,10 @@ class EISignatureAndAlternationTest(unittest.TestCase):
         self.assertEqual(EISignatureAndAlternation([1,1,4]),("EEIEI",2))
     def test_exponentialSequence(self):
         """ExponentialSequence."""
-        w = [1,2,4,8,16,32,64]
+        w = [1,2,4,8,16,32]
         (s,a) = EISignatureAndAlternation(w)
-        self.assertEqual(s,"EEIEIEIEIEIEI")
-        self.assertEqual(a,6)
+        self.assertEqual(s,"EEIEIEIEIEI")
+        self.assertEqual(a,5)
 
 
 
@@ -143,7 +143,7 @@ def EIAlternation(W):
         return 0
     elif len(W)==1:
         return 1
-        W = sorted(W)
+    W = sorted(W)
     i = 0
     trees = []
     previous = 'E'
@@ -191,9 +191,9 @@ class EIAlternationTest(unittest.TestCase):
         self.assertEqual(EIAlternation([1,1,4]),2)
     def test_exponentialSequence(self):
         """ExponentialSequence."""
-        w = [1,2,4,8,16,32,64]
+        w = [1,2,4,8,16,32]
         a = EIAlternation(w)
-        self.assertEqual(a,6)
+        self.assertEqual(a,5)
     def test_manyEqualWeights(self):
         w = [1]*32
         a = EIAlternation(w)
