@@ -26,24 +26,24 @@ def measureAlternationInFile(filename):
     """Given a file name, compute the alternation difficulty measure on it.
 
 >>> print(measureAlternationInFile("test1.txt"))
-1
+(1, 26)
 >>> print(measureAlternationInFile("test2.txt"))
-5
+(5, 6)
 """
     f = countFrequenciesInFile(filename)
-    return EIAlternation(f)
+    return (EIAlternation(f),len(f))
 
 def measureAlternationInFiles(filenames):
     """Given a list of files, compute the alternation difficulty measure for each txt file in it, and returns it in a vector of pairs (filename,alternation).
 
 >>> print(measureAlternationInFiles(["test1.txt","test2.txt"]))
-[('test1.txt', 1), ('test2.txt', 5)]
+[('test1.txt', 26, 1), ('test2.txt', 6, 5)]
 
 """
     stats = []
     for filename in filenames:
-        alternation = measureAlternationInFile(filename)
-        stats.append((filename,alternation))
+        alternation,size = measureAlternationInFile(filename)
+        stats.append((filename,size,alternation))
     return stats
 
 def outputAlternationsInFilesForLaTeX(filenames):
@@ -51,17 +51,18 @@ def outputAlternationsInFilesForLaTeX(filenames):
 
 >>> outputAlternationsInFilesForLaTeX(["test1.txt", "test2.txt", "test3.txt"])
 \\begin{array}[c|c]
-test1.txt & 1 \\\\ \\hline
-test2.txt & 5 \\\\ \\hline
-test3.txt & 5
+test1.txt & 26 & 1 \\\\ \\hline
+test2.txt & 6 & 5 \\\\ \\hline
+test3.txt & 6 & 5
 \\end{array}
 """
     stats = measureAlternationInFiles(filenames)
-    print("\\begin{array}[c|c]")
-    for (filename,alternation) in stats[0:-1]:
-        print(filename+" & "+str(alternation)+" \\\\ \\hline")
-    (filename,alternation) = stats[-1]
-    print(filename+" & "+str(alternation))
+    print("\\begin{array}[c|c|c]")
+    print("Filename & alphabet size & alternation \\\\ \\hline")
+    for (filename,size,alternation) in stats[0:-1]:
+        print(filename+" & "+str(size)+" & "+str(alternation)+" \\\\ \\hline")
+    (filename,size,alternation) = stats[-1]
+    print(filename+" & "+str(size)+" & "+str(alternation))
     print("\\end{array}")
     
 if __name__ == '__main__':
