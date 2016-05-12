@@ -49,14 +49,20 @@ def measureAlternationInFiles(filenames):
 def outputAlternationsInFilesForLaTeX(filenames):
     """Given a list of files, print a latex formated string representing the alternation difficulty measure for each txt file in it.
 
+>>> outputAlternationsInFilesForLaTeX(["test1.txt", "test2.txt", "test3.txt"])
+\\begin{array}[c|c]
+test1.txt & 1 \\\\ \\hline
+test2.txt & 5 \\\\ \\hline
+test3.txt & 5
+\\end{array}
 """
-    stats = measureAlternationsInFolder(filenames)
-    print("\begin{array}[c|c]")
-    for (filename,alternation) in stats[0:-2]:
-        print(filename+" & "+str(alternation)+" \\ \hline")
-    print("\end{array}")
+    stats = measureAlternationInFiles(filenames)
+    print("\\begin{array}[c|c]")
+    for (filename,alternation) in stats[0:-1]:
+        print(filename+" & "+str(alternation)+" \\\\ \\hline")
     (filename,alternation) = stats[-1]
     print(filename+" & "+str(alternation))
+    print("\\end{array}")
     
 if __name__ == '__main__':
     doctest.testmod()
