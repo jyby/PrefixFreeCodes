@@ -66,3 +66,6 @@ test3.txt & 5
     
 if __name__ == '__main__':
     doctest.testmod()
+
+    filenames = ["../DataSets/14529-0.txt", "../DataSets/32575-0.txt", "../DataSets/pg12944.txt", "../DataSets/pg24742.txt", "../DataSets/pg25373.txt", "../DataSets/pg31471.txt", "../DataSets/pg4545.txt", "../DataSets/pg7925.txt", "../DataSets/shakespeare.txt"]
+    outputAlternationsInFilesForLaTeX(filenames)
