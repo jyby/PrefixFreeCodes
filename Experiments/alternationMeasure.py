@@ -52,8 +52,11 @@ class EISignatureTest(unittest.TestCase):
     def test_threeWeights(self):
         """Three Weights."""
         self.assertEqual(EISignature([1,1,4]),"EEIEI")
-
-
+    def test_exponentialSequence(self):
+        """ExponentialSequence."""
+        w = [1,2,4,8,16,32,64]
+        s = EISignature(w)
+        self.assertEqual(s,"EEIEIEIEIEIEI")
 
 
 def EIAlternation(W):
@@ -113,6 +116,15 @@ class EIAlternationTest(unittest.TestCase):
     def test_threeWeights(self):
         """Three Weights."""
         self.assertEqual(EIAlternation([1,1,4]),2)
+    def test_exponentialSequence(self):
+        """ExponentialSequence."""
+        w = [1,2,4,8,16,32,64]
+        a = EIAlternation(w)
+        self.assertEqual(a,6)
+    def test_manyEqualWeights(self):
+        w = [1]*32
+        a = EIAlternation(w)
+        self.assertEqual(a,1)
 
 
 def main():
