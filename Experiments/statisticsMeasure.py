@@ -8,7 +8,7 @@ def statistics(W):
 - the vector of codelengths.
  
 >>> statistics([1,1,4])
-('EEIEI', 2, [2,2,1])
+('EEIEI', 2, [2, 2, 1])
 """
 
     if W==[]:
@@ -63,19 +63,17 @@ class statisticsTest(unittest.TestCase):
         self.assertEqual(statistics([1]),("E",1,[0]))
     def test_twoWeights(self):
         """Two Weights."""
-        self.assertEqual(statistics([1,1]),("EEI",1))
+        self.assertEqual(statistics([1,1]),("EEI",1,[1,1]))
     def test_threeWeights(self):
         """Three Weights."""
-        self.assertEqual(statistics([1,1,4]),("EEIEI",2))
+        self.assertEqual(statistics([1,1,4]),("EEIEI",2,[2,2,1]))
     def test_exponentialSequence(self):
         """ExponentialSequence."""
         w = [1,2,4,8,16,32]
-        (s,a) = statistics(w)
+        (s,a,codelengths) = statistics(w)
         self.assertEqual(s,"EEIEIEIEIEI")
         self.assertEqual(a,5)
-
-
-
+        self.assertEqual(codelengths,[5,5,4,3,2,1])
 
 
 def main():
