@@ -26,16 +26,17 @@ def statistics(W):
     """Given a list of weights, return 
 - the EI signature, 
 - the Alternation,
-- the vector of codelengths.
+- the maximal codelength, and 
+- the number of distinct codelenghts.
  
 >>> statistics([1,1,4])
-('EEIEI', 2, [2, 2, 1])
+('EEIEI', 2, 2, 2)
 """
 
     if W==[]:
-        return ("",0,[])
+        return ("",0,0,0)
     elif len(W)==1:
-        return ("E",1,[0])
+        return ("E",1,0,1)
     W = sorted(W)
     i = 0
     trees = []
@@ -73,28 +74,32 @@ def statistics(W):
     if previous == 'E':
         alternation += 1
     codeLengths = depths(trees[0])
-    return (signature,alternation,codeLengths)
+    maximalCodeLength = max(codeLengths)
+    numberOfDistinctCodeLengths = len( codeLengthDistribution(codeLengths))
+    return (signature,alternation,maximalCodeLength,numberOfDistinctCodeLengths)
 
 class statisticsTest(unittest.TestCase):
     def test_empty(self):
         """Empty input."""
-        self.assertEqual(statistics([]),("",0,[]))
+        self.assertEqual(statistics([]),("",0,0,0))
     def test_singleton(self):
         """Singleton input."""
-        self.assertEqual(statistics([1]),("E",1,[0]))
+        self.assertEqual(statistics([1]),("E",1,0,1))
     def test_twoWeights(self):
         """Two Weights."""
-        self.assertEqual(statistics([1,1]),("EEI",1,[1,1]))
+        self.assertEqual(statistics([1,1]),("EEI",1,1,1))
     def test_threeWeights(self):
         """Three Weights."""
-        self.assertEqual(statistics([1,1,4]),("EEIEI",2,[2,2,1]))
+        self.assertEqual(statistics([1,1,4]),("EEIEI",2,2,2))
     def test_exponentialSequence(self):
         """ExponentialSequence."""
         w = [1,2,4,8,16,32]
-        (s,a,codelengths) = statistics(w)
+        (s,a,maxCodelength,nbDistinctCodeLengths) = statistics(w)
         self.assertEqual(s,"EEIEIEIEIEI")
         self.assertEqual(a,5)
-        self.assertEqual(codelengths,[5,5,4,3,2,1])
+        # self.assertEqual(codelengths,[5,5,4,3,2,1])
+        self.assertEqual(maxCodelength,5)
+        self.assertEqual(nbDistinctCodeLengths,5)
 
 
 def main():
