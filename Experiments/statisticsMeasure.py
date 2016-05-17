@@ -12,9 +12,9 @@ def statistics(W):
 """
 
     if W==[]:
-        return ("",0)
+        return ("",0,[])
     elif len(W)==1:
-        return ("E",1)
+        return ("E",1,[0])
     W = sorted(W)
     i = 0
     trees = []
@@ -51,16 +51,16 @@ def statistics(W):
     signature = signature + "I"
     if previous == 'E':
         alternation += 1
-    codeLengths = trees.depth()
+    codeLengths = depths(trees[0])
     return (signature,alternation,codeLengths)
 
 class statisticsTest(unittest.TestCase):
     def test_empty(self):
         """Empty input."""
-        self.assertEqual(statistics([]),("",0))
+        self.assertEqual(statistics([]),("",0,[]))
     def test_singleton(self):
         """Singleton input."""
-        self.assertEqual(statistics([1]),("E",1))
+        self.assertEqual(statistics([1]),("E",1,[0]))
     def test_twoWeights(self):
         """Two Weights."""
         self.assertEqual(statistics([1,1]),("EEI",1))
