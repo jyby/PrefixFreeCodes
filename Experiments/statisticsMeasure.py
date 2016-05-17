@@ -1,5 +1,26 @@
 import unittest,doctest
 from depths import depths
+from collections import Counter
+
+def codeLengthDistribution(codelengths):
+    """Given a vector of codelengths, return the number of distinct codelengths.
+
+>>> codeLengthDistribution([1,1,2,2,3,3])
+[(1, 2), (2, 2), (3, 2)]
+"""
+    cnt = Counter()
+    for c in codelengths:
+        cnt[c] += 1 
+    return cnt.most_common()
+
+class codeLengthDistributionTest(unittest.TestCase):
+    def test_empty(self):
+        """Empty input."""
+        self.assertEqual(codeLengthDistribution([]),[])
+    def test_simpleVector(self):
+        """Simple Vector."""
+        self.assertEquals(codeLengthDistribution([1,1,2,2,3,3]),[(1,2),(2,2),(3,2)])
+
 
 def statistics(W):
     """Given a list of weights, return 
