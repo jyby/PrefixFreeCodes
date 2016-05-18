@@ -94,9 +94,9 @@ class statisticsTest(unittest.TestCase):
     def test_exponentialSequence(self):
         """ExponentialSequence."""
         w = [1,2,4,8,16,32]
-        (s,a,maxCodelength,nbDistinctCodeLengths) = statistics(w)
-        self.assertEqual(s,"EEIEIEIEIEI")
-        self.assertEqual(a,5)
+        (signature,alternation,maxCodelength,nbDistinctCodeLengths) = statistics(w)
+        self.assertEqual(signature,"EEIEIEIEIEI")
+        self.assertEqual(alternation,5)
         # self.assertEqual(codelengths,[5,5,4,3,2,1])
         self.assertEqual(maxCodelength,5)
         self.assertEqual(nbDistinctCodeLengths,5)
