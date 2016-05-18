@@ -26,26 +26,26 @@ def measureStatisticsInFile(filename):
     """Given a file name, compute the statistics on it.
 
 >>> print(measureStatisticsInFile("test1.txt"))
-(26, 'EEEEEEEEEEEEEEEEEEEEEEEEEEIIIIIIIIIIIIIIIIIIIIIIIII', 1, 5, 2)
+(26, 26, 'EEEEEEEEEEEEEEEEEEEEEEEEEEIIIIIIIIIIIIIIIIIIIIIIIII', 1, 5, 2)
 >>> print(measureStatisticsInFile("test2.txt"))
-(6, 'EEIEIEIEIEI', 5, 5, 5)
+(63, 6, 'EEIEIEIEIEI', 5, 5, 5)
 """
     f = countFrequenciesInFile(filename)
     (signature,alternation,maxCodelength,nbDistinctCodeLengths) = statistics(f)
-    return (len(f),signature,alternation,maxCodelength,nbDistinctCodeLengths)
+    return (sum(f),len(f),signature,alternation,maxCodelength,nbDistinctCodeLengths)
 
 def measureStatisticsInFiles(filenames):
     """Given a list of files, compute the statistics for each txt file in it, and returns it in a vector of tuples (filename,statistics).
 
 >>> print(measureStatisticsInFiles(["test1.txt","test2.txt"]))
-[('test1.txt', 26, 'EEEEEEEEEEEEEEEEEEEEEEEEEEIIIIIIIIIIIIIIIIIIIIIIIII', 1, 5, 2), ('test2.txt', 6, 'EEIEIEIEIEI', 5, 5, 5)]
+[('test1.txt', 26, 26, 'EEEEEEEEEEEEEEEEEEEEEEEEEEIIIIIIIIIIIIIIIIIIIIIIIII', 1, 5, 2), ('test2.txt', 63, 6, 'EEIEIEIEIEI', 5, 5, 5)]
 
 
 """
     stats = []
     for filename in filenames:
-        (size,signature,alternation,maxCodelength,nbDistinctCodeLengths) = measureStatisticsInFile(filename)
-        stats.append((filename,size,signature,alternation,maxCodelength,nbDistinctCodeLengths))
+        (documentSize,alphabetSize,signature,alternation,maxCodelength,nbDistinctCodeLengths) = measureStatisticsInFile(filename)
+        stats.append((filename,documentSize,alphabetSize,signature,alternation,maxCodelength,nbDistinctCodeLengths))
     return stats
 
 def outputStatisticsInFilesForLaTeX(filenames):
@@ -53,11 +53,11 @@ def outputStatisticsInFilesForLaTeX(filenames):
 """
     stats = measureStatisticsInFiles(filenames)
     print("\\begin{array}[c|c|c|c|c]")
-    print("Filename & alphabet size & alternation & maxCodeLength & nbDistinctCodeLengths \\\\ \\hline")
-    for (filename,size,signature,alternation,maxCodelength,nbDistinctCodeLengths) in stats[0:-1]:
-        print(filename+" & "+str(size)+" & "+str(alternation)+" & "+str(maxCodelength)+" & "+str(nbDistinctCodeLengths)+" \\\\ \\hline")
-    (filename,size,signature,alternation,maxCodelength,nbDistinctCodeLengths) = stats[-1]
-    print(filename+" & "+str(size)+" & "+str(alternation)+" & "+str(maxCodelength)+" & "+str(nbDistinctCodeLengths))
+    print("Filename & document size & alphabet size & alternation & maxCodeLength & nbDistinctCodeLengths \\\\ \\hline")
+    for (filename,documentSize,alphabetSize,signature,alternation,maxCodelength,nbDistinctCodeLengths) in stats[0:-1]:
+        print(filename+" & "+str(documentSize)+" & "+str(alphabetSize)+" & "+str(alternation)+" & "+str(maxCodelength)+" & "+str(nbDistinctCodeLengths)+" \\\\ \\hline")
+    (filename,documentSize,alphabetSize,signature,alternation,maxCodelength,nbDistinctCodeLengths) = stats[-1]
+    print(filename+" & "+str(documentSize)+" & "+str(alphabetSize)+" & "+str(alternation)+" & "+str(maxCodelength)+" & "+str(nbDistinctCodeLengths))
     print("\\end{array}")
     
 if __name__ == '__main__':
