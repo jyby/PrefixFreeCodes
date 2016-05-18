@@ -50,14 +50,6 @@ def measureStatisticsInFiles(filenames):
 
 def outputStatisticsInFilesForLaTeX(filenames):
     """Given a list of files, print a latex formated string representing the statistics for each txt file in it.
-
->>> outputStatisticsInFilesForLaTeX(["test1.txt", "test2.txt", "test3.txt"])
-\\begin{array}[c|c|c|c|c]
-Filename & alphabet size & alternation & maxCodeLength & nbDistinctCodeLengths \\\\ \\hline
-test1.txt & 26 & 1 \\\\ \\hline
-test2.txt & 6 & 5 \\\\ \\hline
-test3.txt & 6 & 5
-\\end{array}
 """
     stats = measureStatisticsInFiles(filenames)
     print("\\begin{array}[c|c|c|c|c]")
@@ -72,4 +64,5 @@ if __name__ == '__main__':
     doctest.testmod()
 
     filenames = ["../DataSets/14529-0.txt", "../DataSets/32575-0.txt", "../DataSets/pg12944.txt", "../DataSets/pg24742.txt", "../DataSets/pg25373.txt", "../DataSets/pg31471.txt", "../DataSets/pg4545.txt", "../DataSets/pg7925.txt", "../DataSets/shakespeare.txt"]
+    print("Computing the statistics on "+str(filenames)+":")
     outputStatisticsInFilesForLaTeX(filenames)
