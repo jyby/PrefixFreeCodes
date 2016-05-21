@@ -39,6 +39,11 @@ def GROUP(frequencies,nodes,nbFrequenciesProcessed):
 >>> frequencies,nodes,nbFrequenciesProcessed = GROUP(frequencies,nodes,nbFrequenciesProcessed)
 >>> print(nodeListToString(nodes))
 [[select(2)], [select(3)], [select(4)], [select(5)], [select(6)], (20,[select(0)],[select(1)])]
+
+At the end of the process (as before it), all the nodes are within a factor of two of each other:
+
+>>> nodeListToWeightList(nodes)
+[11, 13, 14, 15, 20, 20]
 """
     if len(nodes)==1:
         externalNode = ExternalNode(frequencies,nbFrequenciesProcessed)
@@ -47,11 +52,12 @@ def GROUP(frequencies,nodes,nbFrequenciesProcessed):
         nbFrequenciesProcessed += 1
     elif len(nodes)>=2:
         internalNode = InternalNode(frequencies,nodes[0],nodes[1])
-        nodes = nodes[2:]
+        nodes = nodes[2:]+[internalNode]
         r = frequencies.rankRight(internalNode.weight())
+        newNodes = [] 
         for i in range(nbFrequenciesProcessed,r):
-            nodes.append(ExternalNode(frequencies,i))
-        nodes.append(internalNode)
+            newNodes.append(ExternalNode(frequencies,i))
+        nodes = newNodes + nodes
     return frequencies,nodes,nbFrequenciesProcessed
 
 # def oldGROUP(frequencies,nodes,nbFrequenciesProcessed):
