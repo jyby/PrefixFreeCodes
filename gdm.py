@@ -29,31 +29,30 @@ Beware: don't base yourself on the content of the list when printed (print(nodeL
     nbFrequenciesProcessed = 2
     return frequencies,nodes,nbFrequenciesProcessed
 
-# def DOCK(frequencies,nodes,nbFrequenciesProcessed):
-#     """Given a set of internal nodes whose weight is all within a factor of two, group them two by two until at least one internal node has weight larger than the weight of the next External node (but smaller than twice this weight).
 
-# >>> frequencies = PartiallySortedArray([8]*4+[32])
-# >>> frequencies,nodes,nbFrequenciesProcessed = INITIALIZE(frequencies)
-# >>> print(len(nodes))
-# 2
-# """
-#     while len(nodes)>1 and nodes[-1].weight() <= frequencies.select(nbFrequenciesProcessed):
-#         nbPairsToForm = len(nodes) // 2
-#         for i in range(nbPairsToForm):
-#             nodes.append(InternalNode(frequencies,nodes[0],nodes[1]))
-#             nodes = nodes[2:]
-#     return frequencies,nodes,nbFrequenciesProcessed
+def GROUP(frequencies,nodes,nbFrequenciesProcessed):
+    """Given an partially sorted array of frequencies, a vector of nodes, and the number of frequencies already transformed into nodes, combines the two nodes of least weights into a new node, and all the frequencies of  weight smaller than or equal to the later into External Nodes.
 
-
-# def GROUP(frequencies,nodes,nbFrequenciesProcessed):
-#     """Group the two smallest nodes into one.
-# """
-#     if len(nodes)==1:
-#         externalNode = ExternalNode(frequencies,nbFrequenciesProcessed)
-#         externalNode.weight() # Insure the external node is the smallest available.
-#         nodes = [InternalNode(frequencies,nodes[0],externalNode)]
-#         nbFrequenciesProcessed += 1
-#     return frequencies,nodes,nbFrequenciesProcessed
+>>> frequencies = PartiallySortedArray([10,10,11,13,14,15,20,30])
+>>> nodes = [ExternalNode(frequencies,0),ExternalNode(frequencies,1)]
+>>> nbFrequenciesProcessed = 2
+>>> frequencies,nodes,nbFrequenciesProcessed = GROUP(frequencies,nodes,nbFrequenciesProcessed)
+>>> print(nodeListToString(nodes))
+[[select(2)], [select(3)], [select(4)], [select(5)], [select(6)], (20,[select(0)],[select(1)])]
+"""
+    if len(nodes)==1:
+        externalNode = ExternalNode(frequencies,nbFrequenciesProcessed)
+        externalNode.weight() # Insure the external node is the smallest available.
+        nodes = [InternalNode(frequencies,nodes[0],externalNode)]
+        nbFrequenciesProcessed += 1
+    elif len(nodes)>=2:
+        internalNode = InternalNode(frequencies,nodes[0],nodes[1])
+        nodes = nodes[2:]
+        r = frequencies.rankRight(internalNode.weight())
+        for i in range(nbFrequenciesProcessed,r):
+            nodes.append(ExternalNode(frequencies,i))
+        nodes.append(internalNode)
+    return frequencies,nodes,nbFrequenciesProcessed
 
 # def oldGROUP(frequencies,nodes,nbFrequenciesProcessed):
 #     """Computes the weight of the smallest (first) node in nodes, 
@@ -74,6 +73,24 @@ Beware: don't base yourself on the content of the list when printed (print(nodeL
 #             nodes.append(InternalNode(frequencies,left,right))
 #         nbFrequenciesProcessed = r
 #     return frequencies,nodes,nbFrequenciesProcessed
+
+
+
+# def DOCK(frequencies,nodes,nbFrequenciesProcessed):
+#     """Given a set of internal nodes whose weight is all within a factor of two, group them two by two until at least one internal node has weight larger than the weight of the next External node (but smaller than twice this weight).
+
+# >>> frequencies = PartiallySortedArray([8]*4+[32])
+# >>> frequencies,nodes,nbFrequenciesProcessed = INITIALIZE(frequencies)
+# >>> print(len(nodes))
+# 2
+# """
+#     while len(nodes)>1 and nodes[-1].weight() <= frequencies.select(nbFrequenciesProcessed):
+#         nbPairsToForm = len(nodes) // 2
+#         for i in range(nbPairsToForm):
+#             nodes.append(InternalNode(frequencies,nodes[0],nodes[1]))
+#             nodes = nodes[2:]
+#     return frequencies,nodes,nbFrequenciesProcessed
+
 
 # def MERGE(frequencies,nodes,nbFrequenciesProcessed):
 #     """Merge the list of Internal nodes with the external nodes of weights within a factor of two of it.
