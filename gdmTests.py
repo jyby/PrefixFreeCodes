@@ -12,30 +12,19 @@ class INITIALIZETest(unittest.TestCase):
         """Alpha Equal One. Two Weights."""
         frequencies = PartiallySortedArray([10,10])
         frequencies,nodes,nbFrequenciesProcessed = INITIALIZE(frequencies)
-        self.assertEqual(len(nodes),1)
+        self.assertEqual(len(nodes),2)
+        self.assertEqual(nbFrequenciesProcessed,2)
     def test_AlphaEqualOneEighWeights(self):
         """Alpha Equal One. Various Weights."""
         frequencies = PartiallySortedArray([10]*8)
         frequencies,nodes,nbFrequenciesProcessed = INITIALIZE(frequencies)
-        self.assertEqual(len(nodes),4)
-        self.assertEqual(nbFrequenciesProcessed,8)
-    def test_AlphaEqualOneNineWeights(self):
-        """Alpha Equal One. Various Weights."""
-        frequencies = PartiallySortedArray([10]*9)
-        frequencies,nodes,nbFrequenciesProcessed = INITIALIZE(frequencies)
-        self.assertEqual(len(nodes),5)
-        self.assertEqual(nbFrequenciesProcessed,9)
-    def test_AlphaEqualTwotEightWeights(self):
-        """Alpha Equal One. Various Weights."""
-        frequencies = PartiallySortedArray([10]*4+[21]*4)
-        frequencies,nodes,nbFrequenciesProcessed = INITIALIZE(frequencies)
         self.assertEqual(len(nodes),2)
-        self.assertEqual(nbFrequenciesProcessed,4)
+        self.assertEqual(nbFrequenciesProcessed,2)
     def test_ExponentialSequence(self):
         """Exponential Sequence."""
         frequencies = PartiallySortedArray([1,2,4,8,16,32,64,128,256])
         frequencies,nodes,nbFrequenciesProcessed = INITIALIZE(frequencies)
-        self.assertEqual(len(nodes),1)
+        self.assertEqual(len(nodes),2)
         self.assertEqual(nbFrequenciesProcessed,2)
         self.assertEqual(nodeListToWeightList(nodes),[3])
         self.assertEqual(nodeListToString(nodes),"[(3,[select(0)],[select(1)])]")
