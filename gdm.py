@@ -100,7 +100,7 @@ The current implementation is crude, as a first draft.
 """
     nodes = [] 
     while len(internalNodes)>0 and len(externalNodes)>0:
-        if internalNodes[0].weight() < externalNodes.weight():
+        if internalNodes[0].weight() < externalNodes[0].weight():
             nodes.append(internalNodes[0])
             internalNodes = internalNodes[1:]                                        
         else:

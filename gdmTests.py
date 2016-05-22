@@ -3,7 +3,7 @@ import unittest, doctest, copy
 from partiallySortedArrayWithPartialSumPrecomputed import PartiallySortedArray
 from collections import namedtuple
 from vanLeeuwen import vanLeeuwen
-from gdm import INITIALIZE, GROUP, DOCK #,  MERGE, WRAPUP, gdm, 
+from gdm import INITIALIZE, GROUP, DOCK,  MERGE  #, WRAPUP, gdm, 
 from codeTree import ExternalNode, InternalNode,  nodeListToStringOfWeights, nodeListToString, nodeListToWeightList
 
 
@@ -60,39 +60,22 @@ class DOCKTest(unittest.TestCase):
         self.assertEqual(nodeListToWeightList(nodes),[77])
 
         
-# class MERGETest(unittest.TestCase):
-#     def test_AlphaEqualTwoConvergingToOneNode(self):
-#         """Alpha Equal Two. All last level docking to a single node."""
-#         frequencies = PartiallySortedArray([8,9,10,11,12,13,14,15,17,21,25,29])
-#         nodes = [
-#             InternalNode(frequencies,ExternalNode(frequencies,0),ExternalNode(frequencies,1)),
-#             InternalNode(frequencies,ExternalNode(frequencies,2),ExternalNode(frequencies,3)),
-#             InternalNode(frequencies,ExternalNode(frequencies,4),ExternalNode(frequencies,5)),
-#             InternalNode(frequencies,ExternalNode(frequencies,6),ExternalNode(frequencies,7))
-#         ]
-#         nbFrequenciesProcessed = 8
-#         frequencies,nodes,nbFrequenciesProcessed = MERGE(frequencies,nodes,nbFrequenciesProcessed)
-#         self.assertEqual(nbFrequenciesProcessed,12)
-#         self.assertEqual(len(nodes),4)
-#         # Check weights of nodes
-#         nodeWeightsAfterMerging = [8+9+17,10+11+21,12+13+25,14+15+29]
-#         for i in range(len(nodes)):
-#             self.assertEqual(nodes[i].weight(),nodeWeightsAfterMerging[i])
-#         # Check total Sum
-#         totalSum = 0
-#         for i in range(len(nodes)):
-#             totalSum += nodes[i].weight()
-#         self.assertEqual(totalSum,frequencies.rangeSum(0,len(frequencies)))
-#     def test_ThreeCodeLengths(self):
-#         """ThreeCodeLengths."""
-#         frequencies = PartiallySortedArray([1]+[8]*3+[32]*3)
-#         frequencies,nodes,nbFrequenciesProcessed = INITIALIZE(frequencies)
-#         self.assertEqual(nodeListToString(nodes),"[(9,[select(0)],[select(1)]), (rangeSum(2,4),[select(2)],[select(3)])]")
-#         self.assertEqual(nodeListToWeightList(nodes),[9, 16])
-#         self.assertEqual(nodeListToString(nodes),"[(9,[select(0)],[select(1)]), (16,[select(2)],[select(3)])]")
-#         frequencies,nodes,nbFrequenciesProcessed = DOCK(frequencies,nodes,nbFrequenciesProcessed)
-#         self.assertEqual(nodeListToWeightList(nodes),[25])
-#         self.assertEqual(nodeListToString(nodes),"[(25,(9,[select(0)],[select(1)]),(16,[select(2)],[select(3)]))]")
+class MERGETest(unittest.TestCase):
+    def test_1(self):
+        """Interleaved union of two lists.
+        """
+        frequencies = PartiallySortedArray([8,9,10,11,12,13,14,15,16,18,20,22,24,26,28,30])
+        nbFrequenciesProcessed = 0
+        nbFrequenciesProcessed,externalNodes = GROUP(frequencies,nbFrequenciesProcessed,16)
+        internalNodes = []
+        for i in range(4):
+            internalNodes.append(InternalNode(frequencies,externalNodes[2*i],externalNodes[2*i+1]))
+        self.assertEqual(nodeListToWeightList(internalNodes),[17, 21, 25, 29])
+        nbFrequenciesProcessed,externalNodes = GROUP(frequencies,8,32)
+        self.assertEqual(nodeListToWeightList(externalNodes),[16, 18, 20, 22, 24, 26, 28, 30])
+        nodes = MERGE(internalNodes,externalNodes)
+        self.assertEqual(nodeListToWeightList(nodes),[16, 17, 18, 20, 21, 22, 24, 25, 26, 28, 29, 30])
+        self.assertEqual(nodeListToString(nodes),'[[16], (17,[select(0)],[select(1)]), [18], [20], (21,[select(2)],[select(3)]), [22], [24], (25,[select(4)],[select(5)]), [26], [28], (29,[select(6)],[select(7)]), [30]]')
 
         
 
