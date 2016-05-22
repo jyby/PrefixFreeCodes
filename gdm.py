@@ -30,57 +30,27 @@ Beware: don't base yourself on the content of the list when printed (print(nodeL
     return frequencies,nodes,nbFrequenciesProcessed
 
 
-def GROUP(frequencies,nodes,nbFrequenciesProcessed):
-    """Given an partially sorted array of frequencies, a vector of nodes, and the number of frequencies already transformed into nodes, combines the two nodes of least weights into a new node, and all the frequencies of  weight smaller than or equal to the later into External Nodes.
+def GROUP(frequencies,nbFrequenciesProcessed, maxWeight):
+    """Given a partially sorted array of frequencies,  the number of frequencies already transformed into nodes, and a weight w, 
+       returns the new value of nbFrequenciesProcessed and a vector of new nodes made of the frequencies less than or requal to w.
 
 >>> frequencies = PartiallySortedArray([10,10,11,13,14,15,20,30])
->>> nodes = [ExternalNode(frequencies,0),ExternalNode(frequencies,1)]
+>>> nodes = [InternalNode(frequencies,ExternalNode(frequencies,0),ExternalNode(frequencies,1))]
 >>> nbFrequenciesProcessed = 2
->>> frequencies,nodes,nbFrequenciesProcessed = GROUP(frequencies,nodes,nbFrequenciesProcessed)
->>> print(nodeListToString(nodes))
-[[select(2)], [select(3)], [select(4)], [select(5)], [select(6)], (20,[select(0)],[select(1)])]
+>>> nbFrequenciesProcessed,newNodes = GROUP(frequencies,nbFrequenciesProcessed,nodes[-1].weight())
+>>> print(nodeListToString(newNodes))
+[[select(2)], [select(3)], [select(4)], [select(5)], [select(6)]]
 
 At the end of the process (as before it), all the nodes are within a factor of two of each other:
 
->>> nodeListToWeightList(nodes)
-[11, 13, 14, 15, 20, 20]
+>>> nodeListToWeightList(newNodes)
+[11, 13, 14, 15, 20]
 """
-    if len(nodes)==1:
-        externalNode = ExternalNode(frequencies,nbFrequenciesProcessed)
-        externalNode.weight() # Insure the external node is the smallest available.
-        nodes = [InternalNode(frequencies,nodes[0],externalNode)]
-        nbFrequenciesProcessed += 1
-    elif len(nodes)>=2:
-        internalNode = InternalNode(frequencies,nodes[0],nodes[1])
-        nodes = nodes[2:]+[internalNode]
-        r = frequencies.rankRight(internalNode.weight())
-        newNodes = [] 
-        for i in range(nbFrequenciesProcessed,r):
-            newNodes.append(ExternalNode(frequencies,i))
-        nodes = newNodes + nodes
-    return frequencies,nodes,nbFrequenciesProcessed
-
-# def oldGROUP(frequencies,nodes,nbFrequenciesProcessed):
-#     """Computes the weight of the smallest (first) node in nodes, 
-# ranks it among the frequencies, and creates the corresponding external nodes.         
-
-# """
-#     r = frequencies.rankRight(nodes[0].weight())        
-#     if len(nodes)==1 and r == nbFrequenciesProcessed: # if there is only one internal node and it is smaller than any external node
-#         nodes[0].weight()
-#         nodes = [InternalNode(frequencies,nodes[0],ExternalNode(frequencies,r))]
-#         nbFrequenciesProcessed += 1
-#     else:
-#         if (r-nbFrequenciesProcessed) % 2 == 1: # if there is an odd number of external nodes smaller than the smallest internal node,
-#             nodes = [ExternalNode(frequencies,r-1)]+nodes # promote the last external node by adding it directly to the list of nodes.
-#         for i in range((r-nbFrequenciesProcessed)//2): # pair the even number of nodes preceding it, andd add them to the list of nodes.
-#             left = ExternalNode(frequencies,nbFrequenciesProcessed+2*i)
-#             right = ExternalNode(frequencies,nbFrequenciesProcessed+2*i+1)        
-#             nodes.append(InternalNode(frequencies,left,right))
-#         nbFrequenciesProcessed = r
-#     return frequencies,nodes,nbFrequenciesProcessed
-
-
+    r = frequencies.rankRight(maxWeight)
+    newNodes = [] 
+    for i in range(nbFrequenciesProcessed,r):
+        newNodes.append(ExternalNode(frequencies,i))
+    return nbFrequenciesProcessed,newNodes
 
 # def DOCK(frequencies,nodes,nbFrequenciesProcessed):
 #     """Given a set of internal nodes whose weight is all within a factor of two, group them two by two until at least one internal node has weight larger than the weight of the next External node (but smaller than twice this weight).
