@@ -78,29 +78,39 @@ Note that when the weight of the last node of the list is compute, at each itera
     return nodes
 
 
-# def MERGE(frequencies,nodes,nbFrequenciesProcessed):
-#     """Merge the list of Internal nodes with the external nodes of weights within a factor of two of it.
+def MERGE(internalNodes,externalNodes):
+    """Given two lists of nodes A and B, return a list containing the union of both.
+    
+The current implementation is crude, as a first draft.
 
-# """
-#     r = frequencies.rank( 2 * nodes[0].weight() )
-#     internalNodesToMerge = nodes
-#     externalNodesToMerge = []
-#     for p in range(nbFrequenciesProcessed,r):
-#         externalNodesToMerge.append(ExternalNode(frequencies,p))
-#     nbFrequenciesProcessed = r
-#     nodes = []
-#     while( len(internalNodesToMerge)>0 and len(externalNodesToMerge)>0 ):
-#         children = []
-#         for i in range(2):
-#             if len(externalNodesToMerge)==0 or ( len(internalNodesToMerge)>0  and internalNodesToMerge[0].weight() < externalNodesToMerge[0].weight() ) :
-#                 children.append(internalNodesToMerge[0])
-#                 internalNodesToMerge = internalNodesToMerge[1:]
-#             else:
-#                 children.append(externalNodesToMerge[0])
-#                 externalNodesToMerge = internalNodesToMerge[1:]
-#         nodes.append(InternalNode(frequencies,children[0],children[1]))
-#     nodes = internalNodesToMerge + externalNodesToMerge + nodes
-#     return frequencies,nodes,nbFrequenciesProcessed
+>>> frequencies = PartiallySortedArray([8,9,10,11,12,13,14,15,16,18,20,22,24,26,28,30])
+>>> nbFrequenciesProcessed = 0
+>>> nbFrequenciesProcessed,externalNodes = GROUP(frequencies,nbFrequenciesProcessed,16)
+>>> internalNodes = []
+>>> for i in range(4):   internalNodes.append(InternalNode(frequencies,externalNodes[2*i],externalNodes[2*i+1]))
+>>> nodeListToString(externalNodes)
+'[[select(0)], [select(1)], [select(2)], [select(3)], [select(4)], [select(5)], [select(6)], [select(7)], [select(8)]]'
+>>> nodeListToWeightList(internalNodes)
+[17, 21, 25, 29]
+>>> nbFrequenciesProcessed,externalNodes = GROUP(frequencies,8,32)
+>>> nodeListToString(externalNodes)
+'[[select(8)], [select(9)], [select(10)], [select(11)], [select(12)], [select(13)], [select(14)], [select(15)]]'
+>>> nodeListToWeightList(externalNodes)
+[16, 18, 20, 22, 24, 26, 28, 30]
+"""
+    nodes = [] 
+    while len(internalNodes)>0 and len(externalNodes)>0:
+        if internalNodes[0].weight() < externalNodes.weight():
+            nodes.append(internalNodes[0])
+            internalNodes = internalNodes[1:]                                        
+        else:
+            nodes.append(externalNodes[0])
+            externalNodes = externalNodes[1:]                                        
+    if len(internalNodes)>0 :
+        nodes = nodes + internalNodes
+    else:
+        nodes = nodes + externalNodes
+    return nodes
 
 
 # def WRAPUP(frequencies,nodes):
