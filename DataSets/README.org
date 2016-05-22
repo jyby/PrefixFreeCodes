@@ -1,0 +1,20 @@
+#+TITLE: Data Sets
+#+DESCRIPTION: Description of the sources of the Data Sets in this repository 
+#+AUTHOR: Jérémy Barbay
+#+EMAIL: jeremy@barbay.cl
+#+CATEGORY: 
+
+* Content of the repository
+
+- 14529-0.txt :: The Old English Physiologus, EBook #14529 from the Project Gutenberg
+- 32575-0.txt :: The Head Girl at the Gables, EBook #32575  from the Project Gutenberg
+- pg12944.txt  :: Punch, Or The London Charivari, EBook #12944 from the Project Gutenberg
+- pg24742.txt :: Mary, Mary, EBook  #24742  from the Project Gutenberg
+- pg25373.txt :: Woodward's Graperies and Horticultural Buildings, EBook #25373 from the Project Gutenberg
+- pg31471.txt :: The Girl in the Mirror, EBook #31471 from the Project Gutenberg
+- pg4545.txt :: An American Papyrus: 25 Poems, COPYRIGTHED EBook #4545 from the Project Gutenberg
+- pg7925.txt :: Expositions of Holy Scripture, EBook #7925 from the Project Gutenberg
+- shakespeare.txt :: The Complete Works of William Shakespeare, EBook #100 from the Project Gutenberg
+
+* Statistics on those files
+
