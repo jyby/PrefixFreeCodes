@@ -77,7 +77,6 @@ Note that when the weight of the last node of the list is compute, at each itera
             nodes = nodes[2:]
     return nodes
 
-
 def MERGE(internalNodes,externalNodes):
     """Given two lists of nodes A and B, return a list containing the union of both.
     
@@ -112,19 +111,31 @@ The current implementation is crude, as a first draft.
         nodes = nodes + externalNodes
     return nodes
 
+def WRAPUP(frequencies,nodes):
+    """Given a list of internal nodes (when there is no external nodes left), combine the nodes of the list until only one is left.
 
-# def WRAPUP(frequencies,nodes):
-#     """Combine the internal nodes of a list until only one is left.
-
-# """
-#     while len(nodes) > 1:
-#         if len(nodes) % 2 == 1:
-#             nodes[-1].weight()
-#         for i in range( len(nodes) // 2):
-#             nodes.append(InternalNode(frequencies,nodes[0],nodes[1]))
-#             nodes = nodes[2:]
-#     nodes[0].weight()
-#     return frequencies,nodes
+>>> frequencies = PartiallySortedArray([8,9,10,11,12,13,14,15,16,18,20,22,24,26,28,30])
+>>> nbFrequenciesProcessed = 0
+>>> nbFrequenciesProcessed,externalNodes = GROUP(frequencies,nbFrequenciesProcessed,16)
+>>> internalNodes = []
+>>> for i in range(4):   internalNodes.append(InternalNode(frequencies,externalNodes[2*i],externalNodes[2*i+1]))
+>>> nodeListToString(externalNodes)
+'[[select(0)], [select(1)], [select(2)], [select(3)], [select(4)], [select(5)], [select(6)], [select(7)], [select(8)]]'
+>>> nbFrequenciesProcessed,nodes = WRAPUP(frequencies,internalNodes)
+>>> nodeListToString(nodes)
+'[(92,(rangeSum(0,4),(rangeSum(0,2),[select(0)],[select(1)]),(rangeSum(2,4),[select(2)],[select(3)])),(rangeSum(4,8),(rangeSum(4,6),[select(4)],[select(5)]),(rangeSum(6,8),[select(6)],[select(7)])))]'
+>>> nodeListToWeightList(nodes)
+[92]
+>>> 
+"""
+    while len(nodes) > 1:
+        if len(nodes) % 2 == 1:
+            nodes[-1].weight()
+        for i in range( len(nodes) // 2):
+            nodes.append(InternalNode(frequencies,nodes[0],nodes[1]))
+            nodes = nodes[2:]
+    nodes[0].weight()
+    return frequencies,nodes
 
 # def gdmCodeTree(frequencies):
 #     """Given a partially sorted list of weights, return a code tree of minimal
