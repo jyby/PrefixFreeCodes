@@ -20,8 +20,10 @@ False
 [select(0)]
 """
     def __init__(self, partiallySortedArray, position):
-        self.position = position
         self.partiallySortedArray = partiallySortedArray
+        self.position = position
+        self.left = None
+        self.right = None
         self.interval = Interval(position,position+1)
         self.CachedValueOfWeight = None
     def weight(self):
@@ -72,16 +74,18 @@ class InternalNode:
 """
     def __init__(self, partiallySortedArray, left, right):
         self.partiallySortedArray = partiallySortedArray
+        self.position = None
         self.left = left
         self.right = right
-        if(left.interval != None and right.interval != None and left.interval.right == right.interval.left):
-            self.interval = Interval(left.interval.left,right.interval.right)
-        else:
-            self.interval = None
         if left.CachedValueOfWeight == None or right.CachedValueOfWeight == None:
             self.CachedValueOfWeight = None
         else:
             self.CachedValueOfWeight = left.CachedValueOfWeight + right.CachedValueOfWeight
+        if(left.interval != None and right.interval != None and left.interval.right == right.interval.left):
+            self.interval = Interval(left.interval.left,right.interval.right)
+        else:
+            self.interval = None
+            self.CachedValueOfWeight = left.weight() + right.weight() # Mixed nodes are systematically computed.
     def weight(self):
         if self.CachedValueOfWeight == None:
             if self.interval != None:
@@ -101,8 +105,10 @@ class InternalNode:
     def __eq__(self,other):
         return self.__cmp__(other)
     def __str__(self):
-        if self.CachedValueOfWeight == None:
+        if self.CachedValueOfWeight == None and self.interval != None:
             string = "(rangeSum("+str(self.interval.left)+","+str(self.interval.right)+"),"+str(self.left)+","+str(self.right)+")"
+        elif self.CachedValueOfWeight == None and self.interval == None:
+            string = "(MixedNonComputedYet,"+str(self.left)+","+str(self.right)+")"
         else:
             string = "("+str(self.CachedValueOfWeight)+","+str(self.left)+","+str(self.right)+")"
         return string
