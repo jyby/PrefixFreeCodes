@@ -52,20 +52,30 @@ At the end of the process (as before it), all the nodes are within a factor of t
         newNodes.append(ExternalNode(frequencies,i))
     return nbFrequenciesProcessed,newNodes
 
-# def DOCK(frequencies,nodes,nbFrequenciesProcessed):
-#     """Given a set of internal nodes whose weight is all within a factor of two, group them two by two until at least one internal node has weight larger than the weight of the next External node (but smaller than twice this weight).
+def DOCK(frequencies,nbFrequenciesProcessed,nodes,maxWeight):
+    """Given a partially sorted array of frequencies and the number of frequencies already processed, a set of internal nodes whose weight is all within a factor of two, and a weight maxWeight;
+group the internal nodes two by two until at least one internal node has weight larger than maxWeight; and
+return the resulting set of nodes.
 
-# >>> frequencies = PartiallySortedArray([8]*4+[32])
-# >>> frequencies,nodes,nbFrequenciesProcessed = INITIALIZE(frequencies)
-# >>> print(len(nodes))
-# 2
-# """
-#     while len(nodes)>1 and nodes[-1].weight() <= frequencies.select(nbFrequenciesProcessed):
-#         nbPairsToForm = len(nodes) // 2
-#         for i in range(nbPairsToForm):
-#             nodes.append(InternalNode(frequencies,nodes[0],nodes[1]))
-#             nodes = nodes[2:]
-#     return frequencies,nodes,nbFrequenciesProcessed
+Note that when the weight of the last node of the list is compute, at each iteration of the main loop, the partially sorted array is partially reordered to make sure that this node's weight correspond to what it would be if the array was fully sorted.
+
+>>> frequencies = PartiallySortedArray([8]*4+[32])
+>>> nbFrequenciesProcessed = 0
+>>> nbFrequenciesProcessed,nodes = GROUP(frequencies,nbFrequenciesProcessed,8)
+>>> nodeListToString(nodes)
+'[[select(0)], [select(1)], [select(2)], [select(3)]]'
+>>> nodes = DOCK(frequencies,nbFrequenciesProcessed,nodes,32)
+>>> nodeListToString(nodes)
+'[(rangeSum(0,4),(rangeSum(0,2),[select(0)],[select(1)]),(16,[select(2)],[8]))]'
+>>> nodeListToWeightList(nodes)
+[32]
+"""
+    while len(nodes)>1 and nodes[-1].weight() <= maxWeight:
+        nbPairsToForm = len(nodes) // 2
+        for i in range(nbPairsToForm):
+            nodes.append(InternalNode(frequencies,nodes[0],nodes[1]))
+            nodes = nodes[2:]
+    return nodes
 
 
 # def MERGE(frequencies,nodes,nbFrequenciesProcessed):
