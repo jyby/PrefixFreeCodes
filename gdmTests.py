@@ -3,7 +3,7 @@ import unittest, doctest, copy
 from partiallySortedArrayWithPartialSumPrecomputed import PartiallySortedArray
 from collections import namedtuple
 from vanLeeuwen import vanLeeuwen
-from gdm import INITIALIZE, GROUP #, DOCK, MERGE, WRAPUP, gdm, 
+from gdm import INITIALIZE, GROUP, DOCK #,  MERGE, WRAPUP, gdm, 
 from codeTree import ExternalNode, InternalNode,  nodeListToStringOfWeights, nodeListToString, nodeListToWeightList
 
 
@@ -40,6 +40,40 @@ class GROUPTest(unittest.TestCase):
         self.assertEqual(nodeListToString(newNodes),"[[select(2)], [select(3)], [select(4)], [select(5)], [select(6)]]")
         self.assertEqual(nodeListToWeightList(newNodes),[11, 13, 14, 15, 20])
 
+class DOCKTest(unittest.TestCase):
+    def test_1(self):
+        """Number of nodes to dock equal to a power of three."""
+        frequencies = PartiallySortedArray([8]*4+[32])
+        nbFrequenciesProcessed = 0
+        nbFrequenciesProcessed,nodes = GROUP(frequencies,nbFrequenciesProcessed,8)
+        nodes = DOCK(frequencies,nbFrequenciesProcessed,nodes,32)
+        self.assertEqual(nodeListToString(nodes),'[(rangeSum(0,4),(rangeSum(0,2),[select(0)],[select(1)]),(16,[select(2)],[8]))]')
+        self.assertEqual(nodeListToWeightList(nodes),[32])
+    def test_2(self):
+        """Number of nodes to dock is a power of two minus one."""
+        frequencies = PartiallySortedArray([14,13,12,11,10,9,8,256])
+        nbFrequenciesProcessed = 0
+        nbFrequenciesProcessed,nodes = GROUP(frequencies,nbFrequenciesProcessed,15)
+        self.assertEqual(nodeListToString(nodes),'[[select(0)], [select(1)], [select(2)], [select(3)], [select(4)], [select(5)], [select(6)]]')
+        nodes = DOCK(frequencies,nbFrequenciesProcessed,nodes,255)
+        self.assertEqual(nodeListToString(nodes),'[(77,(31,[14],(17,[select(0)],[select(1)])),(46,(rangeSum(2,4),[select(2)],[select(3)]),(25,[select(4)],[select(5)])))]')
+        self.assertEqual(nodeListToWeightList(nodes),[77])
+#     def test_AlphaEqualTwoConvergingToTwoNodes(self):
+#         """Alpha Equal Two. Converging to four Nodes"""
+#         frequencies = PartiallySortedArray([8]*16+[32])
+#         frequencies,nodes,nbFrequenciesProcessed = INITIALIZE(frequencies)
+#         frequencies,nodes,nbFrequenciesProcessed = DOCK(frequencies,nodes,nbFrequenciesProcessed)
+#         self.assertEqual(nbFrequenciesProcessed,16)
+#         self.assertEqual(len(nodes),2)
+#     def test_ExponentialSequence(self):
+#         """Exponential Sequence."""
+#         frequencies = PartiallySortedArray([1,2,4,8,16,32,64,128,256])
+#         frequencies,nodes,nbFrequenciesProcessed = INITIALIZE(frequencies)
+#         frequencies,nodes,nbFrequenciesProcessed = DOCK(frequencies,nodes,nbFrequenciesProcessed)
+#         self.assertEqual(len(nodes),1)
+#         self.assertEqual(nbFrequenciesProcessed,2)
+
+        
 # class MERGETest(unittest.TestCase):
 #     def test_AlphaEqualTwoConvergingToOneNode(self):
 #         """Alpha Equal Two. All last level docking to a single node."""
@@ -74,28 +108,6 @@ class GROUPTest(unittest.TestCase):
 #         self.assertEqual(nodeListToWeightList(nodes),[25])
 #         self.assertEqual(nodeListToString(nodes),"[(25,(9,[select(0)],[select(1)]),(16,[select(2)],[select(3)]))]")
 
-# class DOCKTest(unittest.TestCase):
-#     def test_AlphaEqualTwoConvergingToOneNode(self):
-#         """Alpha Equal Two. All last level docking to a single node."""
-#         frequencies = PartiallySortedArray([8]*4+[32])
-#         frequencies,nodes,nbFrequenciesProcessed = INITIALIZE(frequencies)
-#         frequencies,nodes,nbFrequenciesProcessed = DOCK(frequencies,nodes,nbFrequenciesProcessed)
-#         self.assertEqual(nbFrequenciesProcessed,4)
-#         self.assertEqual(len(nodes),1)
-#     def test_AlphaEqualTwoConvergingToTwoNodes(self):
-#         """Alpha Equal Two. Converging to four Nodes"""
-#         frequencies = PartiallySortedArray([8]*16+[32])
-#         frequencies,nodes,nbFrequenciesProcessed = INITIALIZE(frequencies)
-#         frequencies,nodes,nbFrequenciesProcessed = DOCK(frequencies,nodes,nbFrequenciesProcessed)
-#         self.assertEqual(nbFrequenciesProcessed,16)
-#         self.assertEqual(len(nodes),2)
-#     def test_ExponentialSequence(self):
-#         """Exponential Sequence."""
-#         frequencies = PartiallySortedArray([1,2,4,8,16,32,64,128,256])
-#         frequencies,nodes,nbFrequenciesProcessed = INITIALIZE(frequencies)
-#         frequencies,nodes,nbFrequenciesProcessed = DOCK(frequencies,nodes,nbFrequenciesProcessed)
-#         self.assertEqual(len(nodes),1)
-#         self.assertEqual(nbFrequenciesProcessed,2)
         
 
 
