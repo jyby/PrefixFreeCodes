@@ -52,13 +52,13 @@ def outputStatisticsInFilesForLaTeX(filenames):
     """Given a list of files, print a latex formated string representing the statistics for each txt file in it.
 """
     stats = measureStatisticsInFiles(filenames)
-    print("\\begin{array}[c|c|c|c|c]")
+    print("\\begin{tabular}{c|c|c|c|c|c}")
     print("Filename & document size & alphabet size & alternation & maxCodeLength & nbDistinctCodeLengths \\\\ \\hline")
     for (filename,documentSize,alphabetSize,signature,alternation,maxCodelength,nbDistinctCodeLengths) in stats[0:-1]:
         print(filename+" & "+str(documentSize)+" & "+str(alphabetSize)+" & "+str(alternation)+" & "+str(maxCodelength)+" & "+str(nbDistinctCodeLengths)+" \\\\ \\hline")
     (filename,documentSize,alphabetSize,signature,alternation,maxCodelength,nbDistinctCodeLengths) = stats[-1]
     print(filename+" & "+str(documentSize)+" & "+str(alphabetSize)+" & "+str(alternation)+" & "+str(maxCodelength)+" & "+str(nbDistinctCodeLengths))
-    print("\\end{array}")
+    print("\\end{tabular}")
     
 if __name__ == '__main__':
     doctest.testmod()
