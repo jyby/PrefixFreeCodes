@@ -29,6 +29,17 @@ class INITIALIZETest(unittest.TestCase):
         self.assertEqual(nodeListToString(nodes),"[[select(0)], [select(1)]]")
         self.assertEqual(nodeListToWeightList(nodes),[10, 20])
 
+class GROUPTest(unittest.TestCase):
+    def test_BasicExample(self):
+        """Basic Example.
+"""       
+        frequencies = PartiallySortedArray([10,10,11,13,14,15,20,30])
+        nodes = [InternalNode(frequencies,ExternalNode(frequencies,0),ExternalNode(frequencies,1))]
+        nbFrequenciesProcessed = 2
+        nbFrequenciesProcessed,newNodes = GROUP(frequencies,nbFrequenciesProcessed,nodes[-1].weight())
+        self.assertEqual(nodeListToString(newNodes),"[[select(2)], [select(3)], [select(4)], [select(5)], [select(6)]]")
+        self.assertEqual(nodeListToWeightList(newNodes),[11, 13, 14, 15, 20])
+
 # class MERGETest(unittest.TestCase):
 #     def test_AlphaEqualTwoConvergingToOneNode(self):
 #         """Alpha Equal Two. All last level docking to a single node."""

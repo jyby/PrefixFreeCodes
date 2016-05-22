@@ -146,11 +146,11 @@ At the end of the process (as before it), all the nodes are within a factor of t
 #     return codeLengths
 
         
-def main():
-    unittest.main()
+# def main():
+#     unittest.main()
 if __name__ == '__main__':
     doctest.testmod()
-    main()
+    # main()
             
         
 
