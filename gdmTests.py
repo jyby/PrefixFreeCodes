@@ -58,20 +58,6 @@ class DOCKTest(unittest.TestCase):
         nodes = DOCK(frequencies,nbFrequenciesProcessed,nodes,255)
         self.assertEqual(nodeListToString(nodes),'[(77,(31,[14],(17,[select(0)],[select(1)])),(46,(rangeSum(2,4),[select(2)],[select(3)]),(25,[select(4)],[select(5)])))]')
         self.assertEqual(nodeListToWeightList(nodes),[77])
-#     def test_AlphaEqualTwoConvergingToTwoNodes(self):
-#         """Alpha Equal Two. Converging to four Nodes"""
-#         frequencies = PartiallySortedArray([8]*16+[32])
-#         frequencies,nodes,nbFrequenciesProcessed = INITIALIZE(frequencies)
-#         frequencies,nodes,nbFrequenciesProcessed = DOCK(frequencies,nodes,nbFrequenciesProcessed)
-#         self.assertEqual(nbFrequenciesProcessed,16)
-#         self.assertEqual(len(nodes),2)
-#     def test_ExponentialSequence(self):
-#         """Exponential Sequence."""
-#         frequencies = PartiallySortedArray([1,2,4,8,16,32,64,128,256])
-#         frequencies,nodes,nbFrequenciesProcessed = INITIALIZE(frequencies)
-#         frequencies,nodes,nbFrequenciesProcessed = DOCK(frequencies,nodes,nbFrequenciesProcessed)
-#         self.assertEqual(len(nodes),1)
-#         self.assertEqual(nbFrequenciesProcessed,2)
 
         
 # class MERGETest(unittest.TestCase):
