@@ -3,31 +3,30 @@ import unittest, doctest, copy
 from partiallySortedArrayWithPartialSumPrecomputed import PartiallySortedArray
 from collections import namedtuple
 from vanLeeuwen import vanLeeuwen
-from gdm import INITIALIZE, GROUP, DOCK,  MERGE  #, WRAPUP, gdm, 
+from gdm import INITIALIZE, GROUP, DOCK,  MERGE, WRAPUP, gdmCodeTree   #, gdm 
 from codeTree import ExternalNode, InternalNode,  nodeListToStringOfWeights, nodeListToString, nodeListToWeightList
-
 
 class INITIALIZETest(unittest.TestCase):
     def test_AlphaEqualOneTwoWeights(self):
         """Alpha Equal One. Two Weights."""
         frequencies = PartiallySortedArray([10,10])
-        frequencies,nodes,nbFrequenciesProcessed = INITIALIZE(frequencies)
-        self.assertEqual(len(nodes),2)
+        nbFrequenciesProcessed,nodes = INITIALIZE(frequencies)
+        self.assertEqual(len(nodes),1)
         self.assertEqual(nbFrequenciesProcessed,2)
     def test_AlphaEqualOneEighWeights(self):
         """Alpha Equal One. Various Weights."""
         frequencies = PartiallySortedArray([10]*8)
-        frequencies,nodes,nbFrequenciesProcessed = INITIALIZE(frequencies)
-        self.assertEqual(len(nodes),2)
+        nbFrequenciesProcessed,nodes = INITIALIZE(frequencies)
+        self.assertEqual(len(nodes),1)
         self.assertEqual(nbFrequenciesProcessed,2)
     def test_ExponentialSequence(self):
         """Exponential Sequence."""
         frequencies = PartiallySortedArray([10,20,40,80,160,320,640,1280,2560])
-        frequencies,nodes,nbFrequenciesProcessed = INITIALIZE(frequencies)
-        self.assertEqual(len(nodes),2)
+        nbFrequenciesProcessed,nodes = INITIALIZE(frequencies)
+        self.assertEqual(len(nodes),1)
         self.assertEqual(nbFrequenciesProcessed,2)
-        self.assertEqual(nodeListToString(nodes),"[[select(0)], [select(1)]]")
-        self.assertEqual(nodeListToWeightList(nodes),[10, 20])
+        self.assertEqual(nodeListToString(nodes),'[(rangeSum(0,2),[select(0)],[select(1)])]')
+        self.assertEqual(nodeListToWeightList(nodes),[30])
 
 class GROUPTest(unittest.TestCase):
     def test_BasicExample(self):
@@ -37,7 +36,7 @@ class GROUPTest(unittest.TestCase):
         nodes = [InternalNode(frequencies,ExternalNode(frequencies,0),ExternalNode(frequencies,1))]
         nbFrequenciesProcessed = 2
         nbFrequenciesProcessed,newNodes = GROUP(frequencies,nbFrequenciesProcessed,nodes[-1].weight())
-        self.assertEqual(nodeListToString(newNodes),"[[select(2)], [select(3)], [select(4)], [select(5)], [select(6)]]")
+        self.assertEqual(nodeListToString(newNodes),'[[select(2)], [select(3)], [select(4)], [select(5)], [select(6)]]')
         self.assertEqual(nodeListToWeightList(newNodes),[11, 13, 14, 15, 20])
 
 class DOCKTest(unittest.TestCase):
@@ -46,7 +45,7 @@ class DOCKTest(unittest.TestCase):
         frequencies = PartiallySortedArray([8]*4+[32])
         nbFrequenciesProcessed = 0
         nbFrequenciesProcessed,nodes = GROUP(frequencies,nbFrequenciesProcessed,8)
-        nodes = DOCK(frequencies,nbFrequenciesProcessed,nodes,32)
+        nodes = DOCK(frequencies,nodes,32)
         self.assertEqual(nodeListToString(nodes),'[(rangeSum(0,4),(rangeSum(0,2),[select(0)],[select(1)]),(16,[select(2)],[8]))]')
         self.assertEqual(nodeListToWeightList(nodes),[32])
     def test_2(self):
@@ -55,7 +54,7 @@ class DOCKTest(unittest.TestCase):
         nbFrequenciesProcessed = 0
         nbFrequenciesProcessed,nodes = GROUP(frequencies,nbFrequenciesProcessed,15)
         self.assertEqual(nodeListToString(nodes),'[[select(0)], [select(1)], [select(2)], [select(3)], [select(4)], [select(5)], [select(6)]]')
-        nodes = DOCK(frequencies,nbFrequenciesProcessed,nodes,255)
+        nodes = DOCK(frequencies,nodes,255)
         self.assertEqual(nodeListToString(nodes),'[(77,(31,[14],(17,[select(0)],[select(1)])),(46,(rangeSum(2,4),[select(2)],[select(3)]),(25,[select(4)],[select(5)])))]')
         self.assertEqual(nodeListToWeightList(nodes),[77])
 
