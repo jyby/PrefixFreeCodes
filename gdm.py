@@ -50,9 +50,10 @@ At the end of the process (as before it), all the nodes are within a factor of t
     newNodes = [] 
     for i in range(nbFrequenciesProcessed,r):
         newNodes.append(ExternalNode(frequencies,i))
+    nbFrequenciesProcessed = r
     return nbFrequenciesProcessed,newNodes
 
-def DOCK(frequencies,nbFrequenciesProcessed,nodes,maxWeight):
+def DOCK(frequencies,nodes,maxWeight):
     """Given a partially sorted array of frequencies and the number of frequencies already processed, a set of internal nodes whose weight is all within a factor of two, and a weight maxWeight;
 group the internal nodes two by two until at least one internal node has weight larger than maxWeight; and
 return the resulting set of nodes.
