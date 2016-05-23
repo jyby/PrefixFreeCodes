@@ -166,25 +166,23 @@ redundancy according to the GDM algorithm.
     nodes = WRAPUP(frequencies,nodes)
     return nodes[0]
 
-# def gdm(frequencies):
-#     """Given a sorted list of weights, return an array with the code lengths of an optimal prefix free code according to the GDM algorithm.
+def gdm(frequencies):
+    """Given a sorted list of weights, return an array with the code lengths of an optimal prefix free code according to the GDM algorithm.
 
-# >>> print(gdm([1,1,1,1]))
-# [2, 2, 2, 2]
-# >>> print(gdm([1,2,4,8,16,32,64,128,256]))
-# [8, 8, 7, 6, 5, 4, 3, 2, 1]
+>>> print(gdm([1,1,1,1]))
+[2, 2, 2, 2]
 
-# """
-#     # Degenerated cases
-#     if len(frequencies) == 0 :
-#         return []
-#     elif len(frequencies)==1:
-#         return [0]
-#     elif len(frequencies)==2:
-#         return [1,1]
-#     codeTree = gdmCodeTree(PartiallySortedArray(frequencies))
-#     codeLengths = codeTree.depths()
-#     return codeLengths
+"""
+    # Degenerated cases
+    if len(frequencies) == 0 :
+        return []
+    elif len(frequencies)==1:
+        return [0]
+    elif len(frequencies)==2:
+        return [1,1]
+    codeTree = gdmCodeTree(PartiallySortedArray(frequencies))
+    codeLengths = codeTree.depths()
+    return codeLengths
 
         
 # def main():

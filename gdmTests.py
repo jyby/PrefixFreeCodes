@@ -3,7 +3,7 @@ import unittest, doctest, copy
 from partiallySortedArrayWithPartialSumPrecomputed import PartiallySortedArray
 from collections import namedtuple
 from vanLeeuwen import vanLeeuwen
-from gdm import INITIALIZE, GROUP, DOCK,  MERGE, WRAPUP, gdmCodeTree   #, gdm 
+from gdm import INITIALIZE, GROUP, DOCK,  MERGE, WRAPUP, gdmCodeTree, gdm 
 from codeTree import ExternalNode, InternalNode,  nodeListToStringOfWeights, nodeListToString, nodeListToWeightList
 
 class INITIALIZETest(unittest.TestCase):
@@ -222,16 +222,16 @@ class gdmCodeTreeTest(unittest.TestCase):
     #     L = T.depths()
     #     self.assertEqual(sorted(L),sorted(vanLeeuwen(frequencies)))
 
-# class GDMTest(unittest.TestCase):
-#     """Basic tests for the GDM algorithm computing optimal prefix free codes.
+class GDMTest(unittest.TestCase):
+    """Basic tests for the GDM algorithm computing optimal prefix free codes.
 
-#     """        
-#     # def test(self):
-#     #     """Generic test"""
-#     #     testPFCAlgorithm(gdm, "GDM")
-#     def testFourEqualWeights(self):
-#         """Four Equal Weights"""
-#         self.assertEqual(gdm([1,1,1,1]),[2,2,2,2])
+    """        
+    # def test(self):
+    #     """Generic test"""
+    #     testPFCAlgorithm(gdm, "GDM")
+    def testFourEqualWeights(self):
+        """Four Equal Weights"""
+        self.assertEqual(gdm([1,1,1,1]),[2,2,2,2])
 #     def testEightEqualWeights(self):
 #         """Eight Equal Weights"""
 #         self.assertEqual(gdm([1]*8),[3]*8)
