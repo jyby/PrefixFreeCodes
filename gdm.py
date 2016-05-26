@@ -25,32 +25,6 @@ Beware: don't base yourself on the content of the list when printed (print(nodeL
     nbFrequenciesProcessed = 2
     return nbFrequenciesProcessed,nodes
 
-def GROUP(frequencies,nbFrequenciesProcessed, maxWeight):
-
-    """Given a partially sorted array of frequencies,  the number of frequencies already transformed into nodes, and a weight w, 
-       returns the new value of nbFrequenciesProcessed and a vector of new nodes made of the frequencies less than or requal to w.
-
->>> frequencies = PartiallySortedArray([10,10,11,13,14,15,20,30])
->>> nodes = [InternalNode(frequencies,ExternalNode(frequencies,0),ExternalNode(frequencies,1))]
->>> nbFrequenciesProcessed = 2
->>> nbFrequenciesProcessed,newNodes = GROUP(frequencies,nbFrequenciesProcessed,nodes[-1].weight())
->>> print(nodeListToString(newNodes))
-[[select(2)], [select(3)], [select(4)], [select(5)], [select(6)]]
->>> print(nbFrequenciesProcessed)
-7
-
-At the end of the process (as before it), all the nodes are within a factor of two of each other:
-
->>> nodeListToWeightList(newNodes)
-[11, 13, 14, 15, 20]
-"""
-    r = frequencies.rankRight(maxWeight)
-    newNodes = [] 
-    for i in range(nbFrequenciesProcessed,r):
-        newNodes.append(ExternalNode(frequencies,i))
-    nbFrequenciesProcessed = r
-    return nbFrequenciesProcessed,newNodes
-
 def DOCK(frequencies,nodes,maxWeight):
     """Given a partially sorted array of frequencies and the number of frequencies already processed, a set of internal nodes whose weight is all within a factor of two, and a weight maxWeight;
 group the internal nodes two by two until at least one internal node has weight larger than maxWeight; and
@@ -75,6 +49,31 @@ Note that when the weight of the last node of the list is compute, at each itera
             nodes.append(InternalNode(frequencies,nodes[0],nodes[1]))
             nodes = nodes[2:]
     return nodes
+
+def GROUP(frequencies,nbFrequenciesProcessed, maxWeight):
+    """Given a partially sorted array of frequencies,  the number of frequencies already transformed into nodes, and a weight w, 
+returns the new value of nbFrequenciesProcessed and a vector of new nodes made of the frequencies less than or requal to w.
+
+>>> frequencies = PartiallySortedArray([10,10,11,13,14,15,20,30])
+>>> nodes = [InternalNode(frequencies,ExternalNode(frequencies,0),ExternalNode(frequencies,1))]
+>>> nbFrequenciesProcessed = 2
+>>> nbFrequenciesProcessed,newNodes = GROUP(frequencies,nbFrequenciesProcessed,nodes[-1].weight())
+>>> print(nodeListToString(newNodes))
+[[select(2)], [select(3)], [select(4)], [select(5)], [select(6)]]
+>>> print(nbFrequenciesProcessed)
+7
+
+At the end of the process (as before it), all the nodes are within a factor of two of each other:
+
+>>> nodeListToWeightList(newNodes)
+[11, 13, 14, 15, 20]
+"""
+    r = frequencies.rankRight(maxWeight)
+    newNodes = []
+    for i in range(nbFrequenciesProcessed,r):
+        newNodes.append(ExternalNode(frequencies,i))
+    nbFrequenciesProcessed = r
+    return nbFrequenciesProcessed,newNodes
 
 def MERGE(internalNodes,externalNodes):
     """Given two lists of nodes A and B, return a list containing the union of both.
