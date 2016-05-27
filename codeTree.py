@@ -43,6 +43,10 @@ False
             return "[select("+str(self.position)+")]"
         else:
             return "["+str(self.CachedValueOfWeight)+"]"
+    def toStringWithAllWeightsCalculated(self):
+        """Given an External node, return a string with its computed weight.
+        """
+        return "["+str(self.weight())+"]"
 
 
 class InternalNode:
@@ -95,7 +99,6 @@ class InternalNode:
         return self.CachedValueOfWeight
     def depths(self, depth=0):
         """Given a code tree, return the (unsorted) list of the depths of its leaves.
-
 """
         depthsOnLeft =  self.left.depths(depth+1)
         depthsOnRight = self.right.depths(depth+1)
@@ -105,9 +108,9 @@ class InternalNode:
 """
         return self.partiallySortedArray == other.partiallySortedArray and self.interval == other.interval and self.left == other.left and self.right == other.right and self.CachedValueOfWeight == other.CachedValueOfWeight
     def __eq__(self,other):
-        """Given two code trees, compare their weights without restrictions on the order of the children.
+        """Given two code trees, compare them without restrictions on the order of the children.
 """
-        return self.partiallySortedArray == other.partiallySortedArray and self.weight()==other.weight and (
+        return self.partiallySortedArray == other.partiallySortedArray and self.CachedValueOfWeight==other.CachedValueOfWeight and (
             (self.left.__eq__(other.left) and self.right.__eq__(other.right)) or 
             (self.left.__eq__(other.right) and self.right.__eq__(other.left)))
     def __str__(self):
@@ -118,7 +121,16 @@ class InternalNode:
         else:
             string = "("+str(self.CachedValueOfWeight)+","+str(self.left)+","+str(self.right)+")"
         return string
-
+    def toStringWithAllWeightsCalculated(self):
+        """Given a node, convert the corresponding code tree to a string with all the weights calculated, children ordered so that the smallest one comes first.
+        """
+        string = "("+str(self.weight())+","
+        if self.left.weight() <= self.right.weight():
+            string += self.left.toStringWithAllWeightsCalculated()+","+self.right.toStringWithAllWeightsCalculated()+")"
+        else:
+            string += self.right.toStringWithAllWeightsCalculated()+","+self.left.toStringWithAllWeightsCalculated()+")"
+        return string
+            
 
 def nodeListToString(nodes):
     """Given a list of nodes, returns a string listing the trees in the list.
