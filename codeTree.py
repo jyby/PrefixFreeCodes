@@ -101,9 +101,15 @@ class InternalNode:
         depthsOnRight = self.right.depths(depth+1)
         return depthsOnLeft+depthsOnRight
     def __cmp__(self,other):
+        """Given two code trees, compare them exactly.
+"""
         return self.partiallySortedArray == other.partiallySortedArray and self.interval == other.interval and self.left == other.left and self.right == other.right and self.CachedValueOfWeight == other.CachedValueOfWeight
     def __eq__(self,other):
-        return self.__cmp__(other)
+        """Given two code trees, compare their weights without restrictions on the order of the children.
+"""
+        return self.partiallySortedArray == other.partiallySortedArray and self.weight()==other.weight and (
+            (self.left.__eq__(other.left) and self.right.__eq__(other.right)) or 
+            (self.left.__eq__(other.right) and self.right.__eq__(other.left)))
     def __str__(self):
         if self.CachedValueOfWeight == None and self.interval != None:
             string = "(rangeSum("+str(self.interval.left)+","+str(self.interval.right)+"),"+str(self.left)+","+str(self.right)+")"
