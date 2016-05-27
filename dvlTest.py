@@ -1,5 +1,5 @@
 import unittest, doctest, copy
-# from functionsToTestPrefixFreeCodes import testPFCAlgorithm, compressByRunLengths
+from functionsToTestPrefixFreeCodes import testPFCAlgorithm, compressByRunLengths
 from partiallySortedArrayWithPartialSumPrecomputed import PartiallySortedArray
 from collections import namedtuple
 from vanLeeuwen import vanLeeuwen
@@ -92,60 +92,60 @@ class DVLTest(unittest.TestCase):
     """Basic tests for the DVL algorithm computing optimal prefix free codes.
 
     """        
-    # def test(self):
-    #     """Generic test"""
-    #     testPFCAlgorithm(dvl, "DVL")
+    def test(self):
+        """Generic test"""
+        testPFCAlgorithm(dvl, "DVL")
     def testFourEqualWeights(self):
         """Four Equal Weights"""
         self.assertEqual(dvl([1,1,1,1]),[2,2,2,2])
-#     def testEightEqualWeights(self):
-#         """Eight Equal Weights"""
-#         self.assertEqual(dvl([1]*8),[3]*8)
-#     def test_ExponentialSequence(self):
-#         """Exponential Sequence. (No docking required ever)"""
-#         W = [1,2,4,8,16,32,64,128,256]
-#         self.assertEqual(sorted(dvl(W)),sorted(vanLeeuwen(W)))
-#     def test_SuperExponentialSequence(self):
-#         """Super Exponential Sequence. (Still no docking required ever)"""
-#         W = [1,4,16,64,256]
-#         self.assertEqual(sorted(dvl(W)),sorted(vanLeeuwen(W)))
-#     # def test_ExponentialSequenceWithLongSteps(self):
-#     #     """Exponential Sequence With Long Steps."""
-#     #     W = [1,1,2,2,4,4,8,8,16,16,32,32,64,64,128,128,256,256]
-#     #     self.assertEqual(sorted(dvl(W)),sorted(vanLeeuwen(W)))
-#     # def test_ExponentialSequenceWithVeryLongSteps(self):
-#     #     """Exponential Sequence With Very Long Steps."""
-#     #     W = [1,1,1,1,2,2,2,2,4,4,4,4,8,8,8,8,16,16,16,16,32,32,32,32,64,64,64,64,128,128,128,128,256,256,256,256]
-#     #     self.assertEqual(sorted(dvl(W)),sorted(vanLeeuwen(W)))
-#     # def test_SequenceRequiringMixing(self):
-#     #     """Sequence requiring Mixing."""
-#     #     W = [32,33,33,34,34,35,35,36,36,37,37,38,38,39,39,40,40,63,63,64,64,66,68,70,72,74,126]
-#     #     self.assertEqual(sorted(dvl(W)),sorted(vanLeeuwen(W)))
-#     # def test_AlphaEqualTwoWithMinorMixing(self):
-#     #     """Alpha Equal Two. Minor Mixing between Internal Nodes and External Nodes"""
-#     #     W = [1]*8+[7]*3
-#     #     L = dvl(W)
-#     #     self.assertEqual(sorted(L),[2]*3+[5]*8)
-#     # def test_AlphaEqualTwoTightMatch(self):
-#     #     """Alpha Equal Two. Tight match between Internal Node and External Node"""
-#     #     W = [1]*8+[8]*3
-#     #     L = dvl(W)
-#     #     self.assertEqual(sorted(L),[2]*3+[5]*8)
-#     # def test_AlphaEqualTwoLargeGap(self):
-#     #     """Alpha Equal Two. Large gab between the weight of the Internal Node and the weights of the largest external nodes."""
-#     #     W = [1]*8+[32]*3
-#     #     L = dvl(W)
-#     #     self.assertEqual(sorted(L),[2]*3+[5]*8)
-#     # def test_AlphaEqualThreeWithoutMixing(self):
-#     #     """Alpha Equal Three with no Mixing."""
-#     #     W = [1]*4+[4]*3+[16]*3
-#     #     L = dvl(W)
-#     #     self.assertEqual(sorted(L),[2]*3+[4]*3+[6]*4)
-#     # def test_AlphaEqualFourWithoutMixing(self):
-#     #     """Alpha Equal Three with no Mixing."""
-#     #     W = [1]*4+[4]*3+[16]*3+[128]*3
-#     #     L = dvl(W)
-#     #     self.assertEqual(sorted(L),sorted(vanLeeuwen(W)))
+    def testEightEqualWeights(self):
+        """Eight Equal Weights"""
+        self.assertEqual(dvl([1]*8),[3]*8)
+    def test_ExponentialSequence(self):
+        """Exponential Sequence. (No docking required ever)"""
+        W = [1,2,4,8,16,32,64,128,256]
+        self.assertEqual(sorted(dvl(W)),sorted(vanLeeuwen(W)))
+    def test_SuperExponentialSequence(self):
+        """Super Exponential Sequence. (Still no docking required ever)"""
+        W = [1,4,16,64,256]
+        self.assertEqual(sorted(dvl(W)),sorted(vanLeeuwen(W)))
+    def test_ExponentialSequenceWithLongSteps(self):
+        """Exponential Sequence With Long Steps."""
+        W = [1,1,2,2,4,4,8,8,16,16,32,32,64,64,128,128,256,256]
+        self.assertEqual(sorted(dvl(W)),sorted(vanLeeuwen(W)))
+    def test_ExponentialSequenceWithVeryLongSteps(self):
+        """Exponential Sequence With Very Long Steps."""
+        W = [1,1,1,1,2,2,2,2,4,4,4,4,8,8,8,8,16,16,16,16,32,32,32,32,64,64,64,64,128,128,128,128,256,256,256,256]
+        self.assertEqual(sorted(dvl(W)),sorted(vanLeeuwen(W)))
+    def test_SequenceRequiringMixing(self):
+        """Sequence requiring Mixing."""
+        W = [32,33,33,34,34,35,35,36,36,37,37,38,38,39,39,40,40,63,63,64,64,66,68,70,72,74,126]
+        self.assertEqual(sorted(dvl(W)),sorted(vanLeeuwen(W)))
+    def test_AlphaEqualTwoWithMinorMixing(self):
+        """Alpha Equal Two. Minor Mixing between Internal Nodes and External Nodes"""
+        W = [1]*8+[7]*3
+        L = dvl(W)
+        self.assertEqual(sorted(L),[2]*3+[5]*8)
+    def test_AlphaEqualTwoTightMatch(self):
+        """Alpha Equal Two. Tight match between Internal Node and External Node"""
+        W = [1]*8+[8]*3
+        L = dvl(W)
+        self.assertEqual(sorted(L),[2]*3+[5]*8)
+    def test_AlphaEqualTwoLargeGap(self):
+        """Alpha Equal Two. Large gab between the weight of the Internal Node and the weights of the largest external nodes."""
+        W = [1]*8+[32]*3
+        L = dvl(W)
+        self.assertEqual(sorted(L),[2]*3+[5]*8)
+    def test_AlphaEqualThreeWithoutMixing(self):
+        """Alpha Equal Three with no Mixing."""
+        W = [1]*4+[4]*3+[16]*3
+        L = dvl(W)
+        self.assertEqual(sorted(L),[2]*3+[4]*3+[6]*4)
+    def test_AlphaEqualFourWithoutMixing(self):
+        """Alpha Equal Three with no Mixing."""
+        W = [1]*4+[4]*3+[16]*3+[128]*3
+        L = dvl(W)
+        self.assertEqual(sorted(L),sorted(vanLeeuwen(W)))
 
 
 
