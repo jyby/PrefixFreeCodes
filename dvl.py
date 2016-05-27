@@ -51,9 +51,16 @@ redundancy according to the GDM algorithm.
                 internals.append(InternalNode(frequencies,internals[2*i],internals[2*i+1]))
             internals = internals[2*nbPairsToForm:]
         # IE
-        if len(externals)>0 and len(internals)==1 and internals[0].weight() < externals[1].weight() :
-            internals = [InternalNode(internals[0],externals[0])]
-            externals = externals[1:]
+        if len(internals)+len(externals)>1:
+            children = []
+            for i in range(2):            
+                if len(externals)==0 or (len(internals)>0 and internals[0].weight() < externals[0].weight()) :
+                    children.append(internals[0])
+                    internals = internals[1:]
+                else:
+                    children.append(externals[0])
+                    externals = externals[1:]
+            internals.append(InternalNode(frequencies,children[0],children[1]))
     internals = WRAPUP(frequencies,internals)
     return internals[0]
 
