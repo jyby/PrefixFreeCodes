@@ -147,8 +147,6 @@ class DVLTest(unittest.TestCase):
         L = dvl(W)
         self.assertEqual(sorted(L),sorted(vanLeeuwen(W)))
 
-
-
         
 def main():
     unittest.main()

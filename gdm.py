@@ -3,135 +3,114 @@ import unittest,doctest
 from partiallySortedArrayWithPartialSumPrecomputed import PartiallySortedArray
 from codeTree import Interval, ExternalNode, InternalNode, nodeListToStringOfWeights, nodeListToString, nodeListToWeightList
 
+
 def INITIALIZE(frequencies):
-    """Given a partially sorted array, initialize the list of internal nodes with the two first external nodes:
+    """Given a partially sorted array, initialize the list of external nodes and the list of internal nodes with the two first external nodes:
 
 >>> frequencies = PartiallySortedArray([90,80,70,60,50,40,30,20,10])
->>> nbFrequenciesProcessed,nodes = INITIALIZE(frequencies)
->>> print(nodeListToString(nodes))
+>>> frequencies,externals,internals = INITIALIZE(frequencies)
+>>> print(nodeListToString(internals))
 [(rangeSum(0,2),[select(0)],[select(1)])]
 
 Note that the weight of those external nodes is not computed yet, for a reason:
-the function GROUP will join those two nodes, and compute the weight of the resulting node, *without* ordering those nodes between themselves. It saves only one comparison but it's the spirit that counts. So the cached value of those two nodes is still None:
+the function GroupExternals will join those two nodes, and compute the weight of the resulting node, *without* ordering those nodes between themselves. It saves only one comparison but it's the spirit that counts. So the cached value of those two nodes is still None:
 
->>> print(nodes[0].CachedValueOfWeight)
+>>> print(internals[0].CachedValueOfWeight)
 None
 
 Beware: don't base yourself on the content of the list when printed (print(nodeListToStringOfWeights(nodes))): this depends of the implementation of PartiallySortedArray!
 
 """
     assert(len(frequencies)>1)
-    nodes = [InternalNode(frequencies,ExternalNode(frequencies,0),ExternalNode(frequencies,1))]
-    nbFrequenciesProcessed = 2
-    return nbFrequenciesProcessed,nodes
+    externals = [ExternalNode(frequencies,i) for i in range(2,len(frequencies))]
+    internals = [InternalNode(frequencies,ExternalNode(frequencies,0),ExternalNode(frequencies,1))]
+    return frequencies,externals,internals
 
-def DOCK(frequencies,nodes,maxWeight):
+def GroupExternals(frequencies,externals,internals):
+    """Given a partially sorted array of frequencies, a list of external nodes and a list of internal nodes, 
+selects the external nodes of weight smaller than the smallest internal node, and pairs them two by two in internal node.
+ 
+>>> frequencies = PartiallySortedArray([50, 50, 51, 52, 53, 54, 55, 1000])
+>>> frequencies,externals,internals = INITIALIZE(frequencies)
+>>> nodeListToWeightList(externals)
+[51, 52, 53, 54, 55, 1000]
+>>> nodeListToWeightList(internals)
+[100]
+>>> frequencies,externals,internals = GroupExternals(frequencies,externals,internals)
+>>> nodeListToWeightList(externals)
+[1000]
+>>> nodeListToWeightList(internals)
+[103, 107, 155]
+"""
+    # EE...E
+    r = frequencies.rankRight(internals[0].weight())
+    nbNodes = r-len(frequencies)+len(externals)
+    nbPairs = nbNodes/2
+    for i in range(0,nbPairs):
+        internals.append(InternalNode(frequencies,externals[0],externals[1]))
+        externals = externals[2:]
+    # EI
+    if 2*nbPairs < nbNodes:
+        internals.append(InternalNode(frequencies, externals[0],internals[0]))
+        externals = externals[1:]
+        internals = internals[1:]
+    return frequencies,externals,internals
+
+def DockInternals(frequencies,externals,internals):
     """Given a partially sorted array of frequencies and the number of frequencies already processed, a set of internal nodes whose weight is all within a factor of two, and a weight maxWeight;
 group the internal nodes two by two until at least one internal node has weight larger than maxWeight; and
 return the resulting set of nodes.
 
-Note that when the weight of the last node of the list is compute, at each iteration of the main loop, the partially sorted array is partially reordered to make sure that this node's weight correspond to what it would be if the array was fully sorted.
+Note that when the weight of the last node of the list is computed, at each iteration of the main loop, the partially sorted array is partially reordered to make sure that this node's weight correspond to what it would be if the array was fully sorted.
 
->>> frequencies = PartiallySortedArray([8]*4+[32])
->>> nbFrequenciesProcessed = 0
->>> nbFrequenciesProcessed,nodes = GROUP(frequencies,nbFrequenciesProcessed,8)
->>> nodeListToString(nodes)
-'[[select(0)], [select(1)], [select(2)], [select(3)]]'
->>> nodes = DOCK(frequencies,nodes,32)
->>> nodeListToString(nodes)
-'[(rangeSum(0,4),(rangeSum(0,2),[select(0)],[select(1)]),(16,[select(2)],[8]))]'
->>> nodeListToWeightList(nodes)
-[32]
+>>> frequencies = PartiallySortedArray([8]*8+[255])
+>>> frequencies,externals,internals = INITIALIZE(frequencies)
+>>> frequencies,externals,internals = GroupExternals(frequencies,externals,internals)
+>>> frequencies,externals,internals = DockInternals(frequencies,externals,internals)
+>>> nodeListToWeightList(internals)
+[64]
+>>> nodeListToWeightList(externals)
+[255]
 """
-    while len(nodes)>1 and nodes[-1].weight() <= maxWeight:
-        nbPairsToForm = len(nodes) // 2
+    while len(externals)>0 and len(internals)>1 and internals[-1].weight() <= externals[0].weight():
+        nbPairsToForm = len(internals) // 2
         for i in range(nbPairsToForm):
-            nodes.append(InternalNode(frequencies,nodes[0],nodes[1]))
-            nodes = nodes[2:]
-    return nodes
+            internals.append(InternalNode(frequencies,internals[2*i],internals[2*i+1]))
+        internals = internals[2*nbPairsToForm:]
+    return frequencies,externals,internals
 
-def GROUP(frequencies,nbFrequenciesProcessed, maxWeight):
-    """Given a partially sorted array of frequencies,  the number of frequencies already transformed into nodes, and a weight w, 
-returns the new value of nbFrequenciesProcessed and a vector of new nodes made of the frequencies less than or requal to w.
-
->>> frequencies = PartiallySortedArray([10,10,11,13,14,15,20,30])
->>> nodes = [InternalNode(frequencies,ExternalNode(frequencies,0),ExternalNode(frequencies,1))]
->>> nbFrequenciesProcessed = 2
->>> nbFrequenciesProcessed,newNodes = GROUP(frequencies,nbFrequenciesProcessed,nodes[-1].weight())
->>> print(nodeListToString(newNodes))
-[[select(2)], [select(3)], [select(4)], [select(5)], [select(6)]]
->>> print(nbFrequenciesProcessed)
-7
-
-At the end of the process (as before it), all the nodes are within a factor of two of each other:
-
->>> nodeListToWeightList(newNodes)
-[11, 13, 14, 15, 20]
-"""
-    r = frequencies.rankRight(maxWeight)
-    newNodes = []
-    for i in range(nbFrequenciesProcessed,r):
-        newNodes.append(ExternalNode(frequencies,i))
-    nbFrequenciesProcessed = r
-    return nbFrequenciesProcessed,newNodes
-
-def MERGE(internalNodes,externalNodes):
-    """Given two lists of nodes A and B, return a list containing the union of both.
+def MixInternalWithExternal(frequencies,externals,internals):
+    """Given a partially sorted array of frequencies, a list of external nodes and a list of internal nodes, 
     
-The current implementation is crude, as a first draft.
-
->>> frequencies = PartiallySortedArray([8,9,10,11,12,13,14,15,16,18,20,22,24,26,28,30])
->>> nbFrequenciesProcessed = 0
->>> nbFrequenciesProcessed,externalNodes = GROUP(frequencies,nbFrequenciesProcessed,16)
->>> internalNodes = []
->>> for i in range(4):   internalNodes.append(InternalNode(frequencies,externalNodes[2*i],externalNodes[2*i+1]))
->>> nodeListToString(externalNodes)
-'[[select(0)], [select(1)], [select(2)], [select(3)], [select(4)], [select(5)], [select(6)], [select(7)], [select(8)]]'
->>> nodeListToWeightList(internalNodes)
-[17, 21, 25, 29]
->>> nbFrequenciesProcessed,externalNodes = GROUP(frequencies,8,32)
->>> nodeListToString(externalNodes)
-'[[select(8)], [select(9)], [select(10)], [select(11)], [select(12)], [select(13)], [select(14)], [select(15)]]'
->>> nodeListToWeightList(externalNodes)
-[16, 18, 20, 22, 24, 26, 28, 30]
-
-nodes = MERGE(internalNodes,externalNodes)
-nodeListToWeightList(nodes)
-[16, 17, 18, 20, 21, 22, 24, 25, 26, 28, 29, 30]
-nodeListToString(nodes)
-'[[16], (17,[select(0)],[select(1)]), [18], [20], (21,[select(2)],[select(3)]), [22], [24], (25,[select(4)],[select(5)]), [26], [28], (29,[select(6)],[select(7)]), [30]]'
-
+>>> frequencies = PartiallySortedArray([8]*8+[255])
+>>> frequencies,externals,internals = INITIALIZE(frequencies)
+>>> frequencies,externals,internals = GroupExternals(frequencies,externals,internals)
+>>> frequencies,externals,internals = DockInternals(frequencies,externals,internals)
+>>> frequencies,externals,internals = MixInternalWithExternal(frequencies,externals,internals)
+>>> nodeListToWeightList(internals)
+[319]
 """
-    nodes = [] 
-    while len(internalNodes)>0 and len(externalNodes)>0:
-        if internalNodes[0].weight() < externalNodes[0].weight():
-            nodes.append(internalNodes[0])
-            internalNodes = internalNodes[1:]                                        
-        else:
-            nodes.append(externalNodes[0])
-            externalNodes = externalNodes[1:]                                        
-    if len(internalNodes)>0 :
-        nodes = nodes + internalNodes
-    else:
-        nodes = nodes + externalNodes
-    return nodes
+    if len(internals)+len(externals)>1:
+        children = []
+        for i in range(2):            
+            if len(externals)==0 or (len(internals)>0 and internals[0].weight() < externals[0].weight()) :
+                children.append(internals[0])
+                internals = internals[1:]
+            else:
+                children.append(externals[0])
+                externals = externals[1:]
+        internals.append(InternalNode(frequencies,children[0],children[1]))
+    return frequencies,externals,internals
 
 def WRAPUP(frequencies,nodes):
     """Given a list of internal nodes (when there is no external nodes left), combine the nodes of the list until only one is left.
 
->>> frequencies = PartiallySortedArray([8,9,10,11,12,13,14,15,16,18,20,22,24,26,28,30])
->>> nbFrequenciesProcessed = 0
->>> nbFrequenciesProcessed,externalNodes = GROUP(frequencies,nbFrequenciesProcessed,16)
->>> internalNodes = []
->>> for i in range(4):   internalNodes.append(InternalNode(frequencies,externalNodes[2*i],externalNodes[2*i+1]))
->>> nodeListToString(externalNodes)
-'[[select(0)], [select(1)], [select(2)], [select(3)], [select(4)], [select(5)], [select(6)], [select(7)], [select(8)]]'
->>> nodes = WRAPUP(frequencies,internalNodes)
->>> nodeListToString(nodes)
-'[(92,(rangeSum(0,4),(rangeSum(0,2),[select(0)],[select(1)]),(rangeSum(2,4),[select(2)],[select(3)])),(rangeSum(4,8),(rangeSum(4,6),[select(4)],[select(5)]),(rangeSum(6,8),[select(6)],[select(7)])))]'
->>> nodeListToWeightList(nodes)
-[92]
->>> 
+>>> frequencies = PartiallySortedArray([1]*64)
+>>> frequencies,externals,internals = INITIALIZE(frequencies)
+>>> frequencies,externals,internals = GroupExternals(frequencies,externals,internals)
+>>> frequencies,internals = WRAPUP(frequencies,internals)
+>>> nodeListToWeightList(internals)
+[64]
 """
     while len(nodes) > 1:
         if len(nodes) % 2 == 1:
@@ -140,7 +119,7 @@ def WRAPUP(frequencies,nodes):
             nodes.append(InternalNode(frequencies,nodes[0],nodes[1]))
             nodes = nodes[2:]
     nodes[0].weight()
-    return nodes
+    return frequencies,nodes
 
 def gdmCodeTree(frequencies):
     """Given a partially sorted list of weights, return a code tree of minimal
@@ -150,27 +129,25 @@ redundancy according to the GDM algorithm.
 >>> print(node.weight())
 20
 >>> print(node)
-(20,(8,[4],[4]),(12,[4],(8,(4,(2,[select(0)],[select(1)]),(2,[1],[1])),(4,(2,[1],[1]),(2,[1],[1])))))
-
+(20,(8,[4],[4]),(12,[4],(8,(rangeSum(0,4),(2,[select(0)],[select(1)]),(rangeSum(2,4),[select(2)],[select(3)])),(4,(rangeSum(4,6),[select(4)],[select(5)]),(2,[select(6)],[select(7)])))))
 """
     if len(frequencies) == 0 :
         return None
     elif len(frequencies)==1:
         return ExternalNode(frequencies,0)
-    nbFrequenciesProcessed,nodes = INITIALIZE(frequencies)
-    while nbFrequenciesProcessed < len(frequencies):
-        nodes = DOCK(frequencies,nodes,frequencies.select(nbFrequenciesProcessed))
-        nbFrequenciesProcessed,externalNodes = GROUP(frequencies,nbFrequenciesProcessed,nodes[-1].weight())
-        nodes = MERGE(nodes,externalNodes)
-    nodes = WRAPUP(frequencies,nodes)
-    return nodes[0]
+    frequencies,externals,internals = INITIALIZE(frequencies)
+    while len(externals)>0 :
+        frequencies,externals,internals = GroupExternals(frequencies,externals,internals)
+        frequencies,externals,internals = DockInternals(frequencies,externals,internals)
+        frequencies,externals,internals = MixInternalWithExternal(frequencies,externals,internals)
+    frequencies,internals = WRAPUP(frequencies,internals)
+    return internals[0]
 
 def gdm(frequencies):
     """Given a sorted list of weights, return an array with the code lengths of an optimal prefix free code according to the GDM algorithm.
 
->>> print(gdm([1,1,1,1]))
-[2, 2, 2, 2]
-
+>>> print(gdm([1]*4+[8]*3))
+[4, 4, 4, 4, 2, 2, 2]
 """
     # Degenerated cases
     if len(frequencies) == 0 :
