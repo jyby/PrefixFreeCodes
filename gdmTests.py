@@ -34,29 +34,29 @@ class GeneralTest(unittest.TestCase):
         """Basic Example.
 """       
         frequencies = PartiallySortedArray([10,10,11,13,14,15,20,30])
-        nodes = [InternalNode(frequencies,ExternalNode(frequencies,0),ExternalNode(frequencies,1))]
-        nbFrequenciesProcessed = 2
-        nbFrequenciesProcessed,newNodes = GroupExternals(frequencies,nbFrequenciesProcessed,nodes[-1].weight())
-        self.assertEqual(nodeListToString(newNodes),'[[select(2)], [select(3)], [select(4)], [select(5)], [select(6)]]')
-        self.assertEqual(nodeListToWeightList(newNodes),[11, 13, 14, 15, 20])
+        frequencies,externals,internals = INITIALIZE(frequencies)
+        self.assertEqual(nodeListToWeightList(internals),[20])
+        self.assertEqual(nodeListToWeightList(externals),[11,13,14,15,20,30])
+        frequencies,externals,internals = GroupExternals(frequencies,externals,internals)
+        self.assertEqual(nodeListToWeightList(internals),[24, 29, 40])
+        self.assertEqual(nodeListToWeightList(externals),[30])
 
     def test_DockInternals1(self):
         """Number of nodes to dock equal to a power of three."""
         frequencies = PartiallySortedArray([8]*4+[32])
-        nbFrequenciesProcessed = 0
-        nbFrequenciesProcessed,nodes = GroupExternals(frequencies,nbFrequenciesProcessed,8)
-        nodes = DockInternals(frequencies,nodes,32)
-        self.assertEqual(nodeListToString(nodes),'[(rangeSum(0,4),(rangeSum(0,2),[select(0)],[select(1)]),(16,[select(2)],[8]))]')
-        self.assertEqual(nodeListToWeightList(nodes),[32])
+        frequencies,externals,internals = INITIALIZE(frequencies)
+        frequencies,externals,internals = GroupExternals(frequencies,externals,internals)
+        frequencies,externals,internals = DockInternals(frequencies,externals,internals)
+        self.assertEqual(nodeListToString(internals),'[(rangeSum(0,4),(rangeSum(0,2),[select(0)],[select(1)]),(16,[select(2)],[8]))]')
+        self.assertEqual(nodeListToWeightList(internals),[32])
+
     def test_DockInternals2(self):
         """Number of nodes to dock is a power of two minus one."""
         frequencies = PartiallySortedArray([14,13,12,11,10,9,8,256])
-        nbFrequenciesProcessed = 0
-        nbFrequenciesProcessed,nodes = GroupExternals(frequencies,nbFrequenciesProcessed,15)
-        self.assertEqual(nodeListToString(nodes),'[[select(0)], [select(1)], [select(2)], [select(3)], [select(4)], [select(5)], [select(6)]]')
-        nodes = DockInternals(frequencies,nodes,255)
-        self.assertEqual(nodeListToString(nodes),'[(77,(31,[14],(17,[select(0)],[select(1)])),(46,(rangeSum(2,4),[select(2)],[select(3)]),(25,[select(4)],[select(5)])))]')
-        self.assertEqual(nodeListToWeightList(nodes),[77])
+        frequencies,externals,internals = INITIALIZE(frequencies)
+        frequencies,externals,internals = GroupExternals(frequencies,externals,internals)
+        frequencies,externals,internals = DockInternals(frequencies,externals,internals)
+        self.assertEqual(nodeListToString(internals),'[(77,(31,[14],(17,[select(0)],[select(1)])),(46,(rangeSum(2,4),[select(2)],[select(3)]),(25,[select(4)],[select(5)])))]')
         
     def test_TREE1(self):
         """Empty input."""
