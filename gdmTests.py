@@ -1,9 +1,8 @@
-import unittest, doctest, copy
+import unittest, doctest
 # from functionsToTestPrefixFreeCodes import testPFCAlgorithm, compressByRunLengths
 from partiallySortedArrayWithPartialSumPrecomputed import PartiallySortedArray
-from collections import namedtuple
 from vanLeeuwen import vanLeeuwen
-from gdm import INITIALIZE, GROUP, DOCK,  MERGE, WRAPUP, gdmCodeTree, gdm 
+from gdm import INITIALIZE, GroupExternals, DockInternals, MixInternalWithExternal, WRAPUP, gdmCodeTree, gdm 
 from codeTree import ExternalNode, InternalNode,  nodeListToStringOfWeights, nodeListToString, nodeListToWeightList
 
 class GeneralTest(unittest.TestCase):
@@ -30,50 +29,33 @@ class GeneralTest(unittest.TestCase):
         self.assertEqual(nodeListToString(nodes),'[(rangeSum(0,2),[select(0)],[select(1)])]')
         self.assertEqual(nodeListToWeightList(nodes),[30])
         
-    def test_GROUP1(self):
+    def test_GroupExternals1(self):
         """Basic Example.
 """       
         frequencies = PartiallySortedArray([10,10,11,13,14,15,20,30])
         nodes = [InternalNode(frequencies,ExternalNode(frequencies,0),ExternalNode(frequencies,1))]
         nbFrequenciesProcessed = 2
-        nbFrequenciesProcessed,newNodes = GROUP(frequencies,nbFrequenciesProcessed,nodes[-1].weight())
+        nbFrequenciesProcessed,newNodes = GroupExternals(frequencies,nbFrequenciesProcessed,nodes[-1].weight())
         self.assertEqual(nodeListToString(newNodes),'[[select(2)], [select(3)], [select(4)], [select(5)], [select(6)]]')
         self.assertEqual(nodeListToWeightList(newNodes),[11, 13, 14, 15, 20])
 
-    def test_DOCK1(self):
+    def test_DockInternals1(self):
         """Number of nodes to dock equal to a power of three."""
         frequencies = PartiallySortedArray([8]*4+[32])
         nbFrequenciesProcessed = 0
-        nbFrequenciesProcessed,nodes = GROUP(frequencies,nbFrequenciesProcessed,8)
-        nodes = DOCK(frequencies,nodes,32)
+        nbFrequenciesProcessed,nodes = GroupExternals(frequencies,nbFrequenciesProcessed,8)
+        nodes = DockInternals(frequencies,nodes,32)
         self.assertEqual(nodeListToString(nodes),'[(rangeSum(0,4),(rangeSum(0,2),[select(0)],[select(1)]),(16,[select(2)],[8]))]')
         self.assertEqual(nodeListToWeightList(nodes),[32])
-    def test_DOCK2(self):
+    def test_DockInternals2(self):
         """Number of nodes to dock is a power of two minus one."""
         frequencies = PartiallySortedArray([14,13,12,11,10,9,8,256])
         nbFrequenciesProcessed = 0
-        nbFrequenciesProcessed,nodes = GROUP(frequencies,nbFrequenciesProcessed,15)
+        nbFrequenciesProcessed,nodes = GroupExternals(frequencies,nbFrequenciesProcessed,15)
         self.assertEqual(nodeListToString(nodes),'[[select(0)], [select(1)], [select(2)], [select(3)], [select(4)], [select(5)], [select(6)]]')
-        nodes = DOCK(frequencies,nodes,255)
+        nodes = DockInternals(frequencies,nodes,255)
         self.assertEqual(nodeListToString(nodes),'[(77,(31,[14],(17,[select(0)],[select(1)])),(46,(rangeSum(2,4),[select(2)],[select(3)]),(25,[select(4)],[select(5)])))]')
         self.assertEqual(nodeListToWeightList(nodes),[77])
-
-        
-    def test_MERGE1(self):
-        """Interleaved union of two lists.
-        """
-        frequencies = PartiallySortedArray([8,9,10,11,12,13,14,15,16,18,20,22,24,26,28,30])
-        nbFrequenciesProcessed = 0
-        nbFrequenciesProcessed,externalNodes = GROUP(frequencies,nbFrequenciesProcessed,16)
-        internalNodes = []
-        for i in range(4):
-            internalNodes.append(InternalNode(frequencies,externalNodes[2*i],externalNodes[2*i+1]))
-        self.assertEqual(nodeListToWeightList(internalNodes),[17, 21, 25, 29])
-        nbFrequenciesProcessed,externalNodes = GROUP(frequencies,8,32)
-        self.assertEqual(nodeListToWeightList(externalNodes),[16, 18, 20, 22, 24, 26, 28, 30])
-        nodes = MERGE(internalNodes,externalNodes)
-        self.assertEqual(nodeListToWeightList(nodes),[16, 17, 18, 20, 21, 22, 24, 25, 26, 28, 29, 30])
-        self.assertEqual(nodeListToString(nodes),'[[16], (17,[select(0)],[select(1)]), [18], [20], (21,[select(2)],[select(3)]), [22], [24], (25,[select(4)],[select(5)]), [26], [28], (29,[select(6)],[select(7)]), [30]]')
         
     def test_TREE1(self):
         """Empty input."""
@@ -155,63 +137,6 @@ class GeneralTest(unittest.TestCase):
         L = T.depths()
         self.assertEqual(L,[1,2,3,4,5,6,7,8,8])
 
-    def test_TREE13(self):
-        """Exponential Sequence, Step by Step."""
-        frequencies = PartiallySortedArray([1,2,4,8,16,32,64,128,256])
-        nbFrequenciesProcessed,nodes = INITIALIZE(frequencies)
-        # self.assertEqual(nodeListToString(nodes),"[(3,[select(0)],[select(1)])]")
-        self.assertEqual(nodeListToWeightList(nodes),[3])
-        nodes = DOCK(frequencies,nodes,frequencies.select(nbFrequenciesProcessed))
-        self.assertEqual(nodeListToWeightList(nodes),[3])
-        nbFrequenciesProcessed,externalNodes = GROUP(frequencies,nbFrequenciesProcessed,nodes[-1].weight())
-        self.assertEqual(nodeListToWeightList(externalNodes),[])
-        if externalNodes == [] and nbFrequenciesProcessed < len(frequencies):
-            externalNodes = [ExternalNode(frequencies,nbFrequenciesProcessed)]
-        nodes = MERGE(nodes,externalNodes)
-        # self.assertEqual(nodeListToString(nodes),"[(7,(3,[select(0)],[select(1)]),[4])]")
-        self.assertEqual(nodeListToWeightList(nodes),[7])
-        nodes = DOCK(frequencies,nodes,frequencies.select(nbFrequenciesProcessed))
-        nbFrequenciesProcessed,externalNodes = GROUP(frequencies,nbFrequenciesProcessed,nodes[-1].weight())
-        if externalNodes == [] and nbFrequenciesProcessed < len(frequencies):
-            externalNodes = [ExternalNode(frequencies,nbFrequenciesProcessed)]
-        nodes = MERGE(nodes,externalNodes)        
-        # self.assertEqual(nodeListToString(nodes),"[(15,(7,(3,[select(0)],[select(1)]),[4]),[8])]")
-        self.assertEqual(nodeListToWeightList(nodes),[15])
-        nodes = DOCK(frequencies,nodes,frequencies.select(nbFrequenciesProcessed))
-        nbFrequenciesProcessed,externalNodes = GROUP(frequencies,nbFrequenciesProcessed,nodes[-1].weight())
-        if externalNodes == [] and nbFrequenciesProcessed < len(frequencies):
-            externalNodes = [ExternalNode(frequencies,nbFrequenciesProcessed)]
-        nodes = MERGE(nodes,externalNodes)        
-        # self.assertEqual(nodeListToString(nodes),"[(31,(15,(7,(3,[select(0)],[select(1)]),[4]),[8]),[16])]")
-        self.assertEqual(nodeListToWeightList(nodes),[31])
-        nodes = DOCK(frequencies,nodes,frequencies.select(nbFrequenciesProcessed))
-        nbFrequenciesProcessed,externalNodes = GROUP(frequencies,nbFrequenciesProcessed,nodes[-1].weight())
-        if externalNodes == [] and nbFrequenciesProcessed < len(frequencies):
-            externalNodes = [ExternalNode(frequencies,nbFrequenciesProcessed)]
-        nodes = MERGE(nodes,externalNodes)        
-        # self.assertEqual(nodeListToString(nodes),"[(63,(31,(15,(7,(3,[select(0)],[select(1)]),[4]),[8]),[16]),[32])]")
-        self.assertEqual(nodeListToWeightList(nodes),[63])
-        nodes = DOCK(frequencies,nodes,frequencies.select(nbFrequenciesProcessed))
-        nbFrequenciesProcessed,externalNodes = GROUP(frequencies,nbFrequenciesProcessed,nodes[-1].weight())
-        if externalNodes == [] and nbFrequenciesProcessed < len(frequencies):
-            externalNodes = [ExternalNode(frequencies,nbFrequenciesProcessed)]
-        nodes = MERGE(nodes,externalNodes)        
-        # self.assertEqual(nodeListToString(nodes),"[(127,(63,(31,(15,(7,(3,[select(0)],[select(1)]),[4]),[8]),[16]),[32]),[64])]")
-        self.assertEqual(nodeListToWeightList(nodes),[127])
-        nodes = DOCK(frequencies,nodes,frequencies.select(nbFrequenciesProcessed))
-        nbFrequenciesProcessed,externalNodes = GROUP(frequencies,nbFrequenciesProcessed,nodes[-1].weight())
-        if externalNodes == [] and nbFrequenciesProcessed < len(frequencies):
-            externalNodes = [ExternalNode(frequencies,nbFrequenciesProcessed)]
-        nodes = MERGE(nodes,externalNodes)        
-        # self.assertEqual(nodeListToString(nodes),"[(255,(127,(63,(31,(15,(7,(3,[select(0)],[select(1)]),[4]),[8]),[16]),[32]),[64]),[128])]")
-        self.assertEqual(nodeListToWeightList(nodes),[255])
-        nodes = DOCK(frequencies,nodes,frequencies.select(nbFrequenciesProcessed))
-        nbFrequenciesProcessed,externalNodes = GROUP(frequencies,nbFrequenciesProcessed,nodes[-1].weight())
-        if externalNodes == [] and nbFrequenciesProcessed < len(frequencies):
-            externalNodes = [ExternalNode(frequencies,nbFrequenciesProcessed)]
-        nodes = MERGE(nodes,externalNodes)        
-        # self.assertEqual(nodeListToString(nodes),"[(511,(255,(127,(63,(31,(15,(7,(3,[select(0)],[select(1)]),[4]),[8]),[16]),[32]),[64]),[128]),[256])]")
-        self.assertEqual(nodeListToWeightList(nodes),[511])
     
 
 class GDMTest(unittest.TestCase):
