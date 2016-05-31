@@ -81,7 +81,7 @@ class GeneralTest(unittest.TestCase):
         """Alpha Equal One. Four Equal Weights."""
         W = PartiallySortedArray([10]*4)
         T = gdmCodeTree(W)
-        self.assertEqual(str(T),'(40,(20,[select(0)],[select(1)]),(20,[10],[10]))')
+        self.assertEqual(T.toStringWithAllWeightsCalculated(),'(40,(20,[10],[10]),(20,[10],[10]))')
         L = T.depths()
         self.assertEqual(L,[2]*4)
         
@@ -127,17 +127,17 @@ class GeneralTest(unittest.TestCase):
         """Exponential Sequence."""
         W = PartiallySortedArray([1,2,4])
         T = gdmCodeTree(W)
-        self.assertEqual(str(T),'(7,[4],(3,[select(0)],[select(1)]))')
+        self.assertEqual(T.toStringWithAllWeightsCalculated(),'(7,(3,[1],[2]),[4])')
         L = T.depths()
-        self.assertEqual(L,[1,2,2])
+        self.assertEqual(sorted(L),[1,2,2])
 
     def test_TREE12(self):
         """Exponential Sequence."""
         W = PartiallySortedArray([1,2,4,8,16,32,64,128,256])
         T = gdmCodeTree(W)
-        self.assertEqual(str(T),'(511,[256],(255,[128],(127,[64],(63,[32],(31,[16],(15,[8],(7,[4],(3,[select(0)],[select(1)]))))))))')
+        self.assertEqual(T.toStringWithAllWeightsCalculated(),'(511,(255,(127,(63,(31,(15,(7,(3,[1],[2]),[4]),[8]),[16]),[32]),[64]),[128]),[256])')
         L = T.depths()
-        self.assertEqual(L,[1,2,3,4,5,6,7,8,8])
+        self.assertEqual(sorted(L),[1,2,3,4,5,6,7,8,8])
 
     
 
