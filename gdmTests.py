@@ -9,25 +9,26 @@ class GeneralTest(unittest.TestCase):
     def test_INIT1(self):
         """Alpha Equal One. Two Weights."""
         frequencies = PartiallySortedArray([10,10])
-        nbFrequenciesProcessed,nodes = INITIALIZE(frequencies)
-        self.assertEqual(len(nodes),1)
-        self.assertEqual(nbFrequenciesProcessed,2)
+        frequencies,externals,internals = INITIALIZE(frequencies)
+        self.assertEqual(nodeListToString(internals),'[(rangeSum(0,2),[select(0)],[select(1)])]')
+        self.assertEqual(nodeListToWeightList(internals),[20])
+        self.assertEqual(nodeListToWeightList(externals),[])
         
     def test_INIT2(self):
         """Alpha Equal One. Various Weights."""
         frequencies = PartiallySortedArray([10]*8)
-        nbFrequenciesProcessed,nodes = INITIALIZE(frequencies)
-        self.assertEqual(len(nodes),1)
-        self.assertEqual(nbFrequenciesProcessed,2)
+        frequencies,externals,internals = INITIALIZE(frequencies)
+        self.assertEqual(nodeListToString(internals),'[(rangeSum(0,2),[select(0)],[select(1)])]')
+        self.assertEqual(nodeListToWeightList(internals),[20])
+        self.assertEqual(nodeListToWeightList(externals),[10]*6)
         
     def test_INIT3(self):
         """Exponential Sequence."""
         frequencies = PartiallySortedArray([10,20,40,80,160,320,640,1280,2560])
-        nbFrequenciesProcessed,nodes = INITIALIZE(frequencies)
-        self.assertEqual(len(nodes),1)
-        self.assertEqual(nbFrequenciesProcessed,2)
-        self.assertEqual(nodeListToString(nodes),'[(rangeSum(0,2),[select(0)],[select(1)])]')
-        self.assertEqual(nodeListToWeightList(nodes),[30])
+        frequencies,externals,internals = INITIALIZE(frequencies)
+        self.assertEqual(nodeListToString(internals),'[(rangeSum(0,2),[select(0)],[select(1)])]')
+        self.assertEqual(nodeListToWeightList(internals),[30])
+        self.assertEqual(nodeListToWeightList(externals),[40,80,160,320,640,1280,2560])
         
     def test_GroupExternals1(self):
         """Basic Example.
