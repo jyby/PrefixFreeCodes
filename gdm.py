@@ -105,7 +105,8 @@ def MixInternalWithExternal(frequencies,externals,internals):
                 internals = internals[1:]+[InternalNode(frequencies,internals[0],externals[0])]
                 externals = externals[1:] 
             else:
-                internals = internals[2:]+[InternalNode(frequencies,internals[0],internals[1])]
+                internals.append(InternalNode(frequencies,externals[0],externals[1]))
+                externals = externals[2:]
         else:
             children = []
             for i in range(2):            
