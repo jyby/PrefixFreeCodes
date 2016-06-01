@@ -3,7 +3,6 @@ import unittest,doctest
 from partiallySortedArrayWithPartialSumPrecomputed import PartiallySortedArray
 from codeTree import Interval, ExternalNode, InternalNode, nodeListToStringOfWeights, nodeListToString, nodeListToWeightList
 
-
 def INITIALIZE(frequencies):
     """Given a partially sorted array, initialize the list of external nodes and the list of internal nodes with the two first external nodes:
 
@@ -90,6 +89,39 @@ def MixInternalWithExternal(frequencies,externals,internals):
 >>> nodeListToWeightList(internals)
 [319]
 """
+    if len(externals)==1:
+        if len(internals)==1:            
+            internals = [InternalNode(frequencies,internals[0],externals[0])]
+            externals = []
+        else:
+            if internals[1].weight() < externals[0].weight():
+                internals = internals[2:]+[InternalNode(frequencies,internals[0],internals[1])]
+            else:
+                internals = internals[1:]+[InternalNode(frequencies,internals[0],externals[0])]
+                externals = [] 
+    elif len(externals)>1:
+        if len(internals)==1:
+            if internals[0].weight() < externals[1].weight():
+                internals = internals[1:]+[InternalNode(frequencies,internals[0],externals[0])]
+                externals = externals[1:] 
+            else:
+                internals = internals[2:]+[InternalNode(frequencies,internals[0],internals[1])]
+        else:
+            children = []
+            for i in range(2):            
+                if len(externals)==0 or (len(internals)>0 and internals[0].weight() < externals[0].weight()) :
+                    children.append(internals[0])
+                    internals = internals[1:]
+                else:
+                    children.append(externals[0])
+                    externals = externals[1:]
+            internals.append(InternalNode(frequencies,children[0],children[1]))
+    return frequencies,externals,internals
+
+
+def pairTwoMinimumNodes(frequencies,externals,internals):
+    """Given a partially sorted array of frequencies, a list of external nodes and a list of internal nodes, execute one step of van Leeuwen's algorithm.
+"""    
     if len(internals)+len(externals)>1:
         children = []
         for i in range(2):            
