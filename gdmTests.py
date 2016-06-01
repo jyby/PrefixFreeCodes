@@ -106,18 +106,17 @@ class GeneralTest(unittest.TestCase):
         frequencies,externals,internals = MixInternalWithExternal(frequencies,externals,internals)
         self.assertEqual(nodeListToWeightList(internals),[319])
         self.assertEqual(nodeListToWeightList(externals),[1024])
+        frequencies,externals,internals = GroupExternals(frequencies,externals,internals)
+        self.assertEqual(nodeListToWeightList(internals),[319])
+        self.assertEqual(nodeListToWeightList(externals),[1024])
+        frequencies,externals,internals = DockInternals(frequencies,externals,internals)
+        self.assertEqual(nodeListToWeightList(internals),[319])
+        self.assertEqual(nodeListToWeightList(externals),[1024])
+        frequencies,externals,internals = MixInternalWithExternal(frequencies,externals,internals)
+        self.assertEqual(nodeListToWeightList(internals),[1343])
+        self.assertEqual(nodeListToWeightList(externals),[])
 
 
-    def test_TREE1(self):
-        """Empty input."""
-        frequencies = PartiallySortedArray([])
-        self.assertEqual(gdmCodeTree(frequencies),None)
-        
-    def test_TREE2(self):
-        """Alpha Equal One. Singleton input."""
-        frequencies = PartiallySortedArray([10])
-        self.assertEqual(gdmCodeTree(frequencies),ExternalNode(frequencies,0))
-        
     def test_TREE3(self):
         """Alpha Equal One. Two Weights."""
         W = PartiallySortedArray([10,10])
