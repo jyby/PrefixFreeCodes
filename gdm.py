@@ -164,10 +164,7 @@ redundancy according to the GDM algorithm.
 >>> print(node)
 (20,(8,[4],[4]),(12,[4],(8,(rangeSum(0,4),(2,[select(0)],[select(1)]),(rangeSum(2,4),[select(2)],[select(3)])),(4,(rangeSum(4,6),[select(4)],[select(5)]),(2,[select(6)],[select(7)])))))
 """
-    if len(frequencies) == 0 :
-        return None
-    elif len(frequencies)==1:
-        return ExternalNode(frequencies,0)
+    assert len(frequencies) > 0 
     frequencies,externals,internals = INITIALIZE(frequencies)
     while len(externals)>0 :
         frequencies,externals,internals = GroupExternals(frequencies,externals,internals)
